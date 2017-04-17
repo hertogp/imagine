@@ -1,8 +1,6 @@
 ---
-author: pdh.git@github.com
-date: 2017-04-10
-topic: Imagine, image generator for pandoc
 title: Imagine
+topic: Imagine, image generator for pandoc
 ...
 
 # Imagine
@@ -485,7 +483,7 @@ endif
 
 ## sequence graph
 
-```{.mermaid options="-w 500" keep=True}
+```{.mermaid keep=True width=70%}
 sequenceDiagram
     participant Alice
     participant Bob
