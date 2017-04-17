@@ -13,32 +13,32 @@ Commands include:
 ## Installation
 
 1. Put `imagine.py` anywhere along $PATH (pandoc's search path for filters).
-2. %% sudo pip install (mandatory):
+2. % sudo pip install (mandatory):
      - pandocfilters
-3. %% sudo apt-get install (1 or more of):
+3. % sudo apt-get install (1 or more of):
      - graphviz,   http://graphviz.org
      - plantuml,   http://plantuml.com
      - ditaa,      http://ditaa.sourceforge.net
      - figlet,     http://www.figlet.org
      - plotutils,  https://www.gnu.org/software/plotutils/
      - gnuplot,    http://www.gnuplot.info/
-   %% sudo pip install:
+   % sudo pip install:
      - blockdiag,  http://blockdiag.com
-   %% git clone
+   % git clone
      - https://github.com/luismartingarcia/protocol.git
 
 ## Pandoc usage
 
-  %% pandoc --filter imagine.py document.md -o document.pdf
+  % pandoc --filter imagine.py document.md -o document.pdf
 
 
 ## Markdown usage
 
-               or                               or
-  ```cmd       | ```{.cmd options="extras"}     | ```{.. prog=cmd}
-  source       | source                         | source
-  ```          | ```                            | ```
-  simple         with `options`                   with `prog`
+                or                               or
+   ```cmd       | ```{.cmd options="extras"}     | ```{.. prog=cmd}
+   source       | source                         | source
+   ```          | ```                            | ```
+   simple         with `options`                   with `prog`
 
   Image understands/consumes these fenced codeblock key,val-attributes:
   - `options` use this to feed extra arguments to the external command
