@@ -34,11 +34,11 @@ Commands include:
 
 ## Markdown usage
 
-                or                               or
-   ```cmd       | ```{.cmd options="extras"}     | ```{.. prog=cmd}
-   source       | source                         | source
-   ```          | ```                            | ```
-   simple         with `options`                   with `prog`
+                 or                               or
+    ```cmd       | ```{.cmd options="extras"}     | ```{.. prog=cmd}
+    source       | source                         | source
+    ```          | ```                            | ```
+    simple         with `options`                   with `prog`
 
   Image understands/consumes these fenced codeblock key,val-attributes:
   - `options` use this to feed extra arguments to the external command
