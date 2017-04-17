@@ -1,0 +1,6 @@
+# Imagine
+
+```imagine
+pandoc --filter imagine README -o README.md
+```
+
