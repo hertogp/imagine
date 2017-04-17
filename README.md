@@ -9,9 +9,9 @@ Imagine
   Commands include:
 
   actdiag, blockdiag, boxes, circo, ditaa, dot, fdp, figlet, gnugraph,
-  graph, graphviz, imagine, mermaid, mscgen, neato, nwdiag, packetdiag,
-  pic, pic2plot, plantuml, plot, protocol, rackdiag, seqdiag, sfdp,
-  twopi
+  gnuplot, graph, graphviz, imagine, mermaid, mscgen, neato, nwdiag,
+  packetdiag, pic, pic2plot, plantuml, plot, protocol, rackdiag,
+  seqdiag, sfdp, twopi
 
 
 Installation
@@ -41,21 +41,21 @@ Pandoc usage
 
 Markdown usage
 
-               or                               or
-  ```cmd       | ```{.cmd options="extras"}     | ```{.. prog=cmd}
-  source       | source                         | source
-  ```          | ```                            | ```
-  simple         with `options`                   with `prog`
+               or                                 or
+  ```cmd       |   ```{.cmd options="extras"}     |   ```{prog=cmd}
+  source       |   source                         |   source
+  ```          |   ```                            |   ```
+  simple           with `options`                     with `prog`
 
   Imagine understands/consumes these fenced codeblock key,val-attributes:
-  - `options` use this to feed extra arguments to the external command
-  - `prog`    use this when cmd is not an appropiate class for you
+  - `options` used to feed extra arguments to the external command
+  - `prog`    used when cmd is not an appropiate document class
   - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
 
   Notes:
-  - if cmd is not found, the codeblock is kept as-is.
+  - if `cmd` is not found, the codeblock is kept as-is.
   - input/output filenames are generated from a hash of the fenced codeblock.
-  - subdir `pd-images` is used to store input/output files
+  - subdir `pd-images` is used to store any input/output files
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
 
@@ -73,7 +73,7 @@ How Imagine works
   result.
 
   Imagine does no clean up so, after a while, you might want to clear the
-  `pd-images` directory.
+  `pd-images` subdirectory.
 
   Some commands are Imagine's aliases for system commands.  Examples are
   `graphviz` which is an alias for `dot` and `pic` which is an alias for
@@ -83,8 +83,8 @@ How Imagine works
   Some commands like `figlet` or `boxes` produce output on stdout.  This text is
   captured and used to replace the code in the fenced code block.
 
-  Some commands like `pic2plot (or its alias `pic`) interpret the code in the
-  fenced code block as an input filename to convert to some other output format.
+  Some commands like `plot` interpret the code in the fenced code block as an
+  input filename to convert to some other output format.
 
   If a command fails for some reason, the fenced codeblock is kept as is.  In
   that case, the output produced by Imagine on stderr hopefully provides some
