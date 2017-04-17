@@ -8,7 +8,7 @@ topic: Imagine, image generator for pandoc
 ```imagine
 ```
 
-# Unknown CodeBlock's are ignored
+# No `cmd`, no change
 
 ## Anonymous CodeBlock
 
@@ -63,7 +63,7 @@ digraph finite_state_machine {
 
 ## `fdp`
 
-```{.graphviz prog=fdp options="-Gsize=1,2" caption="Created by fdp" keep=True}
+```{.graphviz prog=fdp options="-Gsize=2,3" caption="Created by fdp" keep=True}
 
 digraph {
  blockcode -> fdp;
@@ -180,7 +180,7 @@ simple text files:
 
 ## blockdiag
 
-```{.blockdiag prog=blockdiag keep=True}
+```{.blockdiag prog=blockdiag keep=True width=100%}
 blockdiag {
 // standard node shapes
 box [shape = "box"];
@@ -212,7 +212,7 @@ loopin -> loopout;
 
 ## seqdiag
 
-```{.seqdiag keep=True}
+```{.seqdiag keep=True width=80% height=50%}
 {
 browser -> webserver [label = "GET /index.html"];
 browser <-- webserver;
@@ -247,7 +247,7 @@ browser <- webserver;
 
 ## actdiag
 
-```{.actdiag keep=True}
+```{.actdiag keep=True height=60%}
 {
    A -> B -> C -> D;
 
@@ -263,7 +263,7 @@ browser <- webserver;
 ## rackdiag
 
 
-```{.rackdiag keep=True}
+```{.rackdiag keep=True height=80%}
 {
   // define 1st rack
   rack {
@@ -402,7 +402,7 @@ allows to quickly write:
 
 ## sequence diagrams
 
-```{.plantuml keep=True}
+```{.plantuml keep=True width=60%}
 @startuml
 autonumber "<b>[000]"
 Bob -> Alice : Authentication Request
@@ -421,7 +421,7 @@ Bob <- Alice : Yet another authentication Response
 
 ## class diagrams
 
-```{.plantuml keep=True}
+```{.plantuml keep=True width=60%}
 @startuml
 Class01 <|-- Class02
 Class03 *-- Class04
@@ -530,7 +530,7 @@ released under the GPL license.
 
 ## Ditaa with options="-r"
 
-```{.ditaa options="-r" keep=True}
+```{.ditaa options="-r" keep=True width=70%}
 +--------+   +-------+    +-------+
 |        +---+ ditaa +--> |       |
 |  Text  |   +-------+    |diagram|
@@ -563,7 +563,7 @@ released under the GPL license.
 
 ## ditaa reminder
 
-```{.ditaa keep=True}
+```{.ditaa keep=True height=20%}
 /-----------------\
 | Things to do    |
 | cYEL            |
@@ -673,7 +673,7 @@ GNU implementation, and some sample pic macros contributed by the late W.
 Richard Stevens.
 
 
-```{.pic keep="True"}
+```{.pic keep="True" width=80%}
 .PS
 box "START"; arrow; circle dashed filled; arrow
 circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
