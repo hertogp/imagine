@@ -42,7 +42,7 @@ Commands include:
     ```          | ```                            | ```
     simple         with `options`                   with `prog`
 
-  Image understands/consumes these fenced codeblock key,val-attributes:
+  Imagine understands/consumes these fenced codeblock key,val-attributes:
   - `options` use this to feed extra arguments to the external command
   - `prog`    use this when cmd is not an appropiate class for you
   - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
@@ -91,7 +91,7 @@ usefull info.
 Imagine just wraps some commands and provides no checks.
 
 So use it with care and make sure you understand the fenced codeblocks before
-running it through the filter.
+running them through the filter.
 
 
 ## Imagine command
@@ -99,7 +99,7 @@ running it through the filter.
 Finally, a quick way to read this help text again, is to include a fenced
 codeblock in your markdown document as follows:
 
-  ```imagine
-  ```
+    ```imagine
+    ```
 
-  That's it, enjoy!
+That's it, enjoy!
