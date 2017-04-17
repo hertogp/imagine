@@ -5,9 +5,6 @@
 *.so
 *.swp
 
-# other files
-sample.pdf
-
 ## Unit test / coverage reports
 .coverage
 .tox

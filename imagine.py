@@ -42,7 +42,7 @@ Markdown usage
   ```          | ```                            | ```
   simple         with `options`                   with `prog`
 
-  Image understands/consumes these fenced codeblock key,val-attributes:
+  Imagine understands/consumes these fenced codeblock key,val-attributes:
   - `options` use this to feed extra arguments to the external command
   - `prog`    use this when cmd is not an appropiate class for you
   - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
@@ -59,7 +59,7 @@ How Imagine works
 
   The general format for an external command looks something like:
 
-  %% cmd <options> <inputfile> <outputfile>
+    % cmd <options> <inputfile> <outputfile>
 
   Input/Output filenames are generated using `pandocfilters.get_filename4code`
   supplying both the codeblock and its attributes as a string for hashing. If
