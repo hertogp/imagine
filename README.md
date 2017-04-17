@@ -28,12 +28,15 @@ Installation
        - gnuplot,    http://www.gnuplot.info/
      % sudo pip install:
        - blockdiag,  http://blockdiag.com
+       - phantomjs,  http://phantomjs.org/
      % git clone
        - https://github.com/luismartingarcia/protocol.git
+     % npm install:
+       - -g mermaid
 
 Pandoc usage
 
-  % pandoc --filter imagine.py document.md -o document.pdf
+    % pandoc --filter imagine.py document.md -o document.pdf
 
 
 Markdown usage
@@ -44,7 +47,7 @@ Markdown usage
   ```          | ```                            | ```
   simple         with `options`                   with `prog`
 
-  Image understands/consumes these fenced codeblock key,val-attributes:
+  Imagine understands/consumes these fenced codeblock key,val-attributes:
   - `options` use this to feed extra arguments to the external command
   - `prog`    use this when cmd is not an appropiate class for you
   - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
@@ -61,7 +64,7 @@ How Imagine works
 
   The general format for an external command looks something like:
 
-  % cmd <options> <inputfile> <outputfile>
+     % cmd <options> <inputfile> <outputfile>
 
   Input/Output filenames are generated using `pandocfilters.get_filename4code`
   supplying both the codeblock and its attributes as a string for hashing. If
@@ -101,8 +104,8 @@ Imagine command
   Finally, a quick way to read this help text again, is to include a fenced
   codeblock in your markdown document as follows:
 
-  ```imagine
-  ```
+    ```imagine
+    ```
 
   That's it, enjoy!
 ```
