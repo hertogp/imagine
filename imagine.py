@@ -323,7 +323,7 @@ class Boxes(Handler):
 
 
 class Protocol(Handler):
-    'output protocol headers in text graphics'
+    'protocol `codetxt` -> CodeBlock(output)'
     codecs = {'protocol': 'protocol'}
 
     def image(self, fmt=None):
@@ -332,7 +332,21 @@ class Protocol(Handler):
             return self.CodeBlock(self.codec[0], self.output)
 
 
+class GnuPlot(Handler):
+    'gnuplot inpfile -> Para(Img(outfile))'
+    codecs = {'gnuplot': 'gnuplot'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt, default='png')
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('wb', self.output, self.outfile)
+            return self.Para()
+
+
 class PlotUtilPlot(Handler):
+    'plot `cat codetxt` -> Para(Img(outfile))'
     codecs = {'plot': 'plot'}
 
     def image(self, fmt=None):

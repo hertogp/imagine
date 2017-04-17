@@ -25,6 +25,186 @@ else:
     print "Great, if you're reading this, it passed through Imagine unharmed"
 ```
 
+# Granddaddy GnuPlot
+
+[gnuplot](http://gnuplot.sourceforge.net) Gnuplot is a portable command-line
+driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other
+platforms. The source code is copyrighted but freely distributed (i.e., you
+don't have to pay for it). It was originally created to allow scientists and
+students to visualize mathematical functions and data interactively, but has
+grown to support many non-interactive uses such as web scripting. It is also
+used as a plotting engine by third-party applications like Octave. Gnuplot has
+been supported and under active development since 1986.
+
+Note:
+- Imagine catches gnuplot's output on stdout and saves it to an output file.
+  So don't `set output <name>` or Imagine will get confused and die miserably.
+
+
+## Line
+
+```{.gnuplot keep=True height=50%}
+set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
+set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
+set samples 200, 200
+plot [-30:20] besj0(x)*0.12e1 with impulses, (x**besj0(x))-2.5 with points
+```
+
+## real sine
+
+```{.gnuplot keep=True height=50%}
+set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350
+set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
+set samples 400, 400
+plot [-10:10] real(sin(x)**besj0(x))
+```
+
+## Surface
+
+```{.gnuplot keep=True}
+set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
+set border 4095 front linetype -1 linewidth 1.000
+set view 130, 10, 1, 1
+set samples 50, 50
+set isosamples 50, 50
+unset surface
+set title "set pm3d scansbackward: correctly looking surface" 
+set pm3d implicit at s
+set pm3d scansbackward
+splot sin(sqrt(x**2+y**2))/sqrt(x**2+y**2)
+```
+
+
+## Interlocking Tori
+
+```{.gnuplot keep=True}
+set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
+set dummy u,v
+set key bmargin center horizontal Right noreverse enhanced autotitles nobox
+set parametric
+set view 50, 30, 1, 1
+set isosamples 50, 20
+set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
+set ticslevel 0
+set title "Interlocking Tori" 
+set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
+set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines,       1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
+```
+
+# GNU's plotutils package
+
+*[plotutils site](https://www.gnu.org/software/plotutils)* It includes:
+
+- GNU *`graph`*, which plots 2-D datasets or data streams in real time. Being
+  designed for command-line use, it can be used in shell scripts. It produces
+  output on an X Window System display, in SVG format, in PNG format, in PNM
+  format, in pseudo-GIF format, in WebCGM format, in Illustrator format, in
+  Postscript format, in PCL 5 format, in HP-GL/2 format, in Fig format (editable
+  with the xfig drawing editor), in ReGIS format, in Tektronix format, or in GNU
+  Metafile format.
+
+    Output in Postscript format may be edited with the idraw drawing editor. idraw
+    is available in the ivtools package from Vectaport, Inc. Both xfig and idraw
+    are free software. 
+
+- GNU *`plot`*, which translates GNU Metafile format to any of the other formats.
+
+- GNU *`tek2plot`*, for translating legacy Tektronix data to any of the above
+  formats.
+
+- GNU *`pic2plot`*, for translating the pic language (a scripting language for
+  designing box-and-arrow diagrams) to any of the above formats. The pic language
+  was designed at Bell Labs as an enhancement to the troff text formatter. 
+
+- GNU *`plotfont`*, for displaying character maps of the fonts that are available
+  in the above formats.
+
+- GNU *`spline`*, which does spline interpolation of data. It normally uses either
+  cubic spline interpolation or exponential splines in tension, but it can
+  function as a real-time filter under some circumstances.
+
+- GNU *`ode`*, which numerically integrates a system consisting of one or more
+  ordinary differential equations.
+
+We developed these command-line programs to replace the Unix command-line
+programs graph, plot, and spline. The GNU versions are far more powerful, and
+are free software.
+
+Note:
+
+- Imagine only wraps `plot` and `pic2plot` (`pic` is an alias for `pic2plot`).
+
+### graph
+
+Each invocation of
+[graph](https://www.gnu.org/software/plotutils/manual/en/html_node/graph-Invocation.html#graph-Invocation)
+reads one or more datasets from files named on the command line or from
+standard input, and prepares a plot. There are many command-line options for
+adjusting the visual appearance of the plot. The following sections explain how
+to use the most frequently used options, by giving examples.
+
+```{.graph options="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" keep=True}
+0.0  0.0
+1.0  0.2
+2.0  0.0
+3.0  0.4
+4.0  0.2
+5.0  0.6
+```
+
+### plot
+
+The GNU *`plot`* filter displays GNU graphics metafiles or translates them to
+other formats. It will take input from files specified on the command line or
+from standard input. The ‘-T’ option is used to specify the desired output
+format. Supported output formats include "X", "png", "pnm", "gif", "svg", "ai",
+"ps", "cgm", "fig", "pcl", "hpgl", "regis", "tek", and "meta" (the default).
+
+The metafile format is a device-independent format for storage of vector
+graphics. By default, it is a binary rather than a human-readable format (see
+Metafiles). Each of the graph, pic2plot, tek2plot, and plotfont utilities will
+write a graphics metafile to standard output if no ‘-T’ option is specified on
+its command line. The GNU libplot graphics library may also be used to produce
+metafiles. Metafiles may contain arbitrarily many pages of graphics, but each
+metafile produced by graph contains only a single page.
+
+*`plot`*, like the metafile format itself, is useful if you wish to preserve a
+vector graphics file, and display or edit it with more than one drawing editor.
+
+```{.plot options="--bitmap-size 300x200" keep=True}
+input.meta
+```
+
+
+### pic2plot
+
+*From the gnu website*:
+
+The [pic language](
+https://www.gnu.org/software/plotutils/manual/en/html_node/pic2plot-Introduction.html#pic2plot-Introduction)
+is a 'little language' that was developed at Bell Laboratories for creating
+box-and-arrow diagrams of the kind frequently found in technical papers and
+textbooks. A directory containing documentation on the pic language is
+distributed along with the plotting utilities. On most systems it is installed
+as /usr/share/pic2plot or /usr/local/share/pic2plot. The directory includes
+Brian Kernighan's original technical report on the language, Eric S. Raymond's
+[tutorial](http://floppsie.comp.glam.ac.uk/Glamorgan/gaius/web/pic.html) on the
+GNU implementation, and some sample pic macros contributed by the late W.
+Richard Stevens.
+
+
+```{.pic keep="True" width=80%}
+.PS
+box "START"; arrow; circle dashed filled; arrow
+circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
+arrow from top of last circle; ellipse "loopback" dashed
+arrow dotted from left of last ellipse to top of last box
+arc cw radius 1/2 from top of last ellipse; arrow
+box "END"
+.PE
+```
+
 # Graphviz
 
 *[graphviz.org site:](http://www.graphviz.org)* `Graphviz` is open source graph
@@ -572,116 +752,6 @@ released under the GPL license.
 | o Fix car       |
 | o Make website  |
 \-----------------/
-```
-
-# Plotutils
-
-*[plotutils site](https://www.gnu.org/software/plotutils)* It includes:
-
-- GNU *`graph`*, which plots 2-D datasets or data streams in real time. Being
-  designed for command-line use, it can be used in shell scripts. It produces
-  output on an X Window System display, in SVG format, in PNG format, in PNM
-  format, in pseudo-GIF format, in WebCGM format, in Illustrator format, in
-  Postscript format, in PCL 5 format, in HP-GL/2 format, in Fig format (editable
-  with the xfig drawing editor), in ReGIS format, in Tektronix format, or in GNU
-  Metafile format.
-
-    Output in Postscript format may be edited with the idraw drawing editor. idraw
-    is available in the ivtools package from Vectaport, Inc. Both xfig and idraw
-    are free software. 
-
-- GNU *`plot`*, which translates GNU Metafile format to any of the other formats.
-
-- GNU *`tek2plot`*, for translating legacy Tektronix data to any of the above
-  formats.
-
-- GNU *`pic2plot`*, for translating the pic language (a scripting language for
-  designing box-and-arrow diagrams) to any of the above formats. The pic language
-  was designed at Bell Labs as an enhancement to the troff text formatter. 
-
-- GNU *`plotfont`*, for displaying character maps of the fonts that are available
-  in the above formats.
-
-- GNU *`spline`*, which does spline interpolation of data. It normally uses either
-  cubic spline interpolation or exponential splines in tension, but it can
-  function as a real-time filter under some circumstances.
-
-- GNU *`ode`*, which numerically integrates a system consisting of one or more
-  ordinary differential equations.
-
-We developed these command-line programs to replace the Unix command-line
-programs graph, plot, and spline. The GNU versions are far more powerful, and
-are free software.
-
-
-## graph
-
-Each invocation of
-[graph](https://www.gnu.org/software/plotutils/manual/en/html_node/graph-Invocation.html#graph-Invocation)
-reads one or more datasets from files named on the command line or from
-standard input, and prepares a plot. There are many command-line options for
-adjusting the visual appearance of the plot. The following sections explain how
-to use the most frequently used options, by giving examples.
-
-```{.graph options="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" keep=True}
-0.0  0.0
-1.0  0.2
-2.0  0.0
-3.0  0.4
-4.0  0.2
-5.0  0.6
-```
-
-## plot
-
-The GNU *`plot`* filter displays GNU graphics metafiles or translates them to
-other formats. It will take input from files specified on the command line or
-from standard input. The ‘-T’ option is used to specify the desired output
-format. Supported output formats include "X", "png", "pnm", "gif", "svg", "ai",
-"ps", "cgm", "fig", "pcl", "hpgl", "regis", "tek", and "meta" (the default).
-
-The metafile format is a device-independent format for storage of vector
-graphics. By default, it is a binary rather than a human-readable format (see
-Metafiles). Each of the graph, pic2plot, tek2plot, and plotfont utilities will
-write a graphics metafile to standard output if no ‘-T’ option is specified on
-its command line. The GNU libplot graphics library may also be used to produce
-metafiles. Metafiles may contain arbitrarily many pages of graphics, but each
-metafile produced by graph contains only a single page.
-
-*`plot`*, like the metafile format itself, is useful if you wish to preserve a
-vector graphics file, and display or edit it with more than one drawing editor.
-
-```{.plot options="--bitmap-size 300x200" keep=True}
-input.meta
-```
-
-
-## pic2plot
-
-*From the gnu website*:
-
-The [pic language](
-https://www.gnu.org/software/plotutils/manual/en/html_node/pic2plot-Introduction.html#pic2plot-Introduction)
-is a 'little language' that was developed at Bell Laboratories for creating
-box-and-arrow diagrams of the kind frequently found in technical papers and
-textbooks. A directory containing documentation on the pic language is
-distributed along with the plotting utilities. On most systems it is installed
-as /usr/share/pic2plot or /usr/local/share/pic2plot. The directory includes
-Brian Kernighan's original technical report on the language, Eric S. Raymond's
-[tutorial](http://floppsie.comp.glam.ac.uk/Glamorgan/gaius/web/pic.html) on the
-GNU implementation, and some sample pic macros contributed by the late W.
-Richard Stevens.
-
-
-```{.pic keep="True" width=80%}
-.PS
-box "START"; arrow; circle dashed filled; arrow
-circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
-arrow from top of last circle; ellipse "loopback" dashed
-arrow dotted from left of last ellipse to top of last box
-arc cw radius 1/2 from top of last ellipse; arrow
-box "END"
-.PE
 ```
 
 # Text output
