@@ -22,14 +22,16 @@ Commands include:
      - figlet,     http://www.figlet.org
      - plotutils,  https://www.gnu.org/software/plotutils/
      - gnuplot,    http://www.gnuplot.info/
+
    % sudo pip install:
      - blockdiag,  http://blockdiag.com
+
    % git clone
      - https://github.com/luismartingarcia/protocol.git
 
 ## Pandoc usage
 
-  % pandoc --filter imagine.py document.md -o document.pdf
+    % pandoc --filter imagine.py document.md -o document.pdf
 
 
 ## Markdown usage
