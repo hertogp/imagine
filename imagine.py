@@ -150,7 +150,7 @@ class Handler(object):
             self.msg(0, 'Invalid codec passed in', codec)
             raise e
 
-        # try dispatching by class first
+        # try dispatching by class attribute first
         for klass in klasses:
             worker = self.workers.get(klass.lower(), None)
             if worker is not None:
@@ -158,7 +158,7 @@ class Handler(object):
                 self.msg(4, klass, 'dispatched by class to', worker)
                 return worker(codec)
 
-        # None of the classes were registered, try prog=cmd key-value
+        # try dispatching via 'cmd' named by prog=cmd key-value
         if len(keyvals) == 0:  # pf.get_value barks if keyvals == []
             self.msg(4, codec, 'dispatched by default', self)
             return self
@@ -187,7 +187,7 @@ class Handler(object):
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
 
-        # Extract Imagine's keyvals
+        # Extract Imagine's keyvals from codeblock's attributes
         # - pf.get_value(..) returns (value, new_keyval)
         # - value is that of last matching key in the keyval list
         # - new_keyval has all occurrences of matching key removed
@@ -195,6 +195,7 @@ class Handler(object):
         self.prog, self.keyvals = pf.get_value(self.keyvals, u'prog', None)
         self.keep, self.keyvals = pf.get_value(self.keyvals, u'keep', '')
 
+        # prefer prog=cmd key-value over .cmd class attribute
         self.prog = self.prog if self.prog else self.codecs.get(self.klass, None)
         if self.prog is None:
             self.msg(0, self.klass, 'not listed in', self.codecs)
@@ -269,28 +270,27 @@ class Handler(object):
 
     def cmd(self, *args, **kwargs):
         'run, possibly forced, a cmd and return success indicator'
-        force = kwargs.get('_force', False) # no need to pop
-        if os.path.isfile(self.outfile) and force is False:
+        forced = kwargs.get('forced', False) # no need to pop
+        if os.path.isfile(self.outfile) and forced is False:
             self.msg(1, 'exists:', *args)
             return True
 
         try:
             self.output = check_output(args, stderr=STDOUT)
             self.msg(1, 'ok:', *args)
-            self.msg('len self.output is', len(self.output))
             return True
         except CalledProcessError as e:
             try: os.remove(self.outfile)
             except: pass
-            self.msg(0, 'fail:', args)
-            self.msg(0, ' ', self.prog, ':' , e.output)
+            self.msg(0, 'fail:', *args)
+            self.msg(0, ' ', self.prog, ': -' , e.output)
             return False
 
     def image(self, fmt=None):
         'return an Image url or None to keep CodeBlock'
-        # Worker (sub)classes must implement this method for their type of code
-        self.msg(3, self._name, 'keeping CodeBlock as-is (default)')
-        return None  # or return pf.CodeBlock(*self.codec)
+        # workers must override this method
+        self.msg(4, self._name, 'keeping CodeBlock as-is (default)')
+        return None
 
 
 class Imagine(Handler):
