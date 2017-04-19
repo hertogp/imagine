@@ -204,6 +204,287 @@ arc cw radius 1/2 from top of last ellipse; arrow
 box "END"
 .PE
 ```
+# Asymptote
+
+[Asymptote](http://asymptote.sourceforge.net/): The Vector Graphics Language.
+
+Asymptote is a powerful descriptive vector graphics language that provides a
+natural coordinate-based framework for technical drawing. Labels and equations
+are typeset with LaTeX, for high-quality PostScript output. A major advantage
+of Asymptote over other graphics packages is that it is a programming language,
+as opposed to just a graphics program.
+
+Features of Asymptote:
+
+- provides a portable standard for typesetting mathematical figures, just as
+  TeX/LaTeX has become the standard for typesetting equations;
+- generates high-quality PostScript, PDF, SVG, or 3D PRC vector graphics;
+- embeds 3D vector PRC graphics within PDF files;
+- inspired by MetaPost, with a much cleaner, powerful C++-like programming
+  syntax and IEEE floating-point numerics;
+- runs on all major platforms (UNIX, MacOS, Microsoft Windows);
+- mathematically oriented (e.g. rotation of vectors by complex multiplication);
+- LaTeX typesetting of labels (for document consistency);
+- uses simplex method and deferred drawing to solve overall size constraint
+  issues between fixed-sized objects (labels and arrowheads) and objects that
+  should scale with figure size;
+- fully generalizes MetaPost path construction algorithms to three dimensions;
+- compiles commands into virtual machine code for speed without sacrificing
+  portability;
+- high-level graphics commands are implemented in the Asymptote language
+  itself, allowing them to be easily tailored to specific applications.
+
+Notes:
+- eps formatted images don't go well together with pandoc.
+
+
+## a plot
+
+```{.asy keep=True}
+settings.outformat="png";
+settings.prc=false;
+settings.render=0;
+import three;
+size(6cm,0);
+draw(O--2X ^^ O--2Y ^^ O--2Z);
+triple circleCenter = (Y+Z)/sqrt(2) + X;
+path3 mycircle = circle(c=circleCenter, r=1, normal=Y+Z);
+draw(plane(O=sqrt(2)*Z, 2X, 2*unit(Y-Z)), gray + 0.1cyan);
+draw(mycircle, blue);
+draw(shift(circleCenter) * (O -- Y+Z), green, arrow=Arrow3());
+```
+
+## a sphere
+
+```{.asy keep=True}
+settings.outformat="png";
+settings.prc=false;
+settings.render=0;
+import graph3;
+size(8cm,0);
+path3 myarc = rotate(18,Z) * Arc(c=O, normal=X, v1=-Z, v2=Z, n=10);
+surface backHemisphere = surface(myarc, angle1=0, angle2=180, c=O, axis=Z, n=10);
+surface frontHemisphere = surface(myarc, angle1=180, angle2=360, c=O, axis=Z, n=10);
+draw(backHemisphere, surfacepen=material(white+opacity(0.8), ambientpen=white), meshpen=gray(0.4));
+draw(O--X, blue+linewidth(1pt));
+```
+
+# PyxPlot
+
+
+## ex01
+
+```{.pyxplot keep=True}
+set numerics complex
+set xlabel r"$x$"
+set ylabel r"$y$"
+set zlabel r"$z$"
+set xformat r"%s$\pi$"%(x/pi)
+set yformat r"%s$\pi$"%(y/pi)
+set xtics 3*pi ; set mxtics pi
+set ytics 3*pi ; set mytics pi
+set ztics 
+set key below
+set size 6 square
+set grid
+plot 3d [-6*pi:6*pi][-6*pi:6*pi][-0.3:1] sinc(hypot(x,y)) \
+     with surface col black \
+     fillcol hsb(atan2($1,$2)/(2*pi)+0.5,hypot($1,$2)/30+0.2,$3*0.5+0.5)
+```
+
+# Ploticus
+
+[Ploticus](http://ploticus.sourceforge.net/doc/welcome.html)
+
+Ploticus is a free GPL software utility that can produce various types of plots
+and graphs like shown here and here. Data input is usually csv files or text
+files such as used with sort, awk, etc. Output options are GIF, PNG,
+PostScript, SVG and some others. HTML imagemaps are supported. Ploticus can
+produce just-in-time plots in dynamic web content systems, or in batch
+production settings. It can be invoked from your command line, in shell
+scripts, via system() calls in web content environments and other programs, or
+via the libploticus API. 
+
+## prefab
+
+Ploticus scripts are pretty verbose, it also has a `prefab` method of quickly
+creating a graphic from a data-file, but that is not supported at the moment.
+
+
+## Curves script
+
+```{.ploticus keep=True}
+#proc getdata
+  data:
+  0 1
+  1 4
+  2 2
+  3 5
+  4 7 
+  5 10
+  6 7
+  7 8
+  8 4
+  9 8
+  10 7
+  11 3
+
+#proc areadef
+  rectangle: 1 1 4 3
+  xrange: 0 12
+  yrange: 0 12
+  xaxis.stubs: inc
+  yaxis.stubs: inc
+
+#proc lineplot
+  xfield: 1
+  yfield: 2
+  pointsymbol: radius=0.03 shape=square style=filled
+  linedetails: color=gray(0.8) width=0.5
+  legendlabel: Raw data points
+  legendsampletype: line+symbol
+
+#proc curvefit
+  xfield: 1
+  yfield: 2
+  curvetype: movingavg
+  order: 5
+  linedetails: color=blue width=0.5
+  legendlabel: Moving average (5 points)
+
+#proc curvefit
+  xfield: 1
+  yfield: 2
+  curvetype: regression
+  linedetails: color=green width=0.5
+  legendlabel: Linear regression
+
+#proc curvefit
+  xfield: 1
+  yfield: 2
+  curvetype: bspline
+  order: 5
+  linedetails: color=red width=0.5
+  legendlabel: Bspline, order=5
+
+#proc curvefit
+  xfield: 1
+  yfield: 2
+  curvetype: average
+  order: 5
+  linedetails: color=black width=0.5
+  legendlabel: Average (5 points)
+
+#proc curvefit
+  xfield: 1
+  yfield: 2
+  curvetype: interpolated
+  linedetails: color=orange width=0.5 
+  legendlabel: Interpolated
+
+#proc legend
+  location: max+0.5 max
+
+```
+
+## Heatmap (script)
+
+```{.ploticus keep=True}
+#set SYM = "radius=0.08 shape=square style=filled"
+#setifnotgiven CGI = "http://ploticus.sourceforge.net/cgi-bin/showcgiargs"
+
+
+// read in the SNP map data file..
+#proc getdata
+file: snpmap.dat
+fieldnameheader: yes
+
+// group into bins 4 cM wide..
+filter:
+   ##set A = $numgroup( @@2, 4, mid )
+   @@1 @@A
+
+// set up the plotting area
+#proc areadef
+rectangle: 1 1 6 3
+areacolor: gray(0.2)
+yscaletype: categories
+clickmapurl: @CGI?chrom=@@YVAL&cM=@@XVAL
+ycategories: 
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	X
+	
+yaxis.stubs: usecategories
+// yaxis.stubdetails: adjust=0.2,0
+//yaxis.stubslide: 0.08
+yaxis.label: chromosome
+yaxis.axisline: no
+yaxis.tics: no
+yaxis.clickmap: xygrid
+
+xrange: -3 120
+xaxis.label: position (cM)
+xaxis.axisline: no
+xaxis.tics: no
+xaxis.clickmap: xygrid
+xaxis.stubs: inc 10
+xaxis.stubrange: 0
+// xaxis.stubdetails: adjust=0,0.15
+
+
+// set up legend for color gradients..
+#proc legendentry
+sampletype: color
+details: yellow 
+label: >20
+tag: 21
+
+#proc legendentry
+sampletype: color
+details: orange 
+label: 11-20
+tag: 11 
+  
+#proc legendentry
+sampletype: color
+details: red 
+label: 6 - 10
+tag: 6
+
+#proc legendentry
+sampletype: color
+details: lightpurple 
+label: 1 - 5
+tag: 1
+
+#proc legendentry
+sampletype: color
+details: gray(0.2)
+label: 0
+tag: 0
+ 
+
+// use proc scatterplot to count # of instances and pick appropriate color from legend..
+#proc scatterplot
+yfield: chr
+xfield: cM
+cluster: yes
+dupsleg: yes
+rectangle: 4 1 outline
+  
+
+// display legend..
+#proc legend
+location: max+0.7 min+0.8
+textdetails: size=6
+
+```
 
 # Graphviz
 
@@ -754,16 +1035,27 @@ released under the GPL license.
 \-----------------/
 ```
 
-# Text output
+## Ditaa on protocol result
 
-## figlet
+```{.ditaa keep=True}
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|             Source            |      TTL      |               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               +
+|                            Reserved                           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+```
+
+
+
+# Figlet
 
 ```{#FIGLET .figlet options="-f slant" keep=True}
 figlet
 ```
 
 
-## boxes
+# boxes
 
 [boxes](http://boxes.thomasjensen.com) Boxes is a command line program that
 draws a box around its input text. It can remove and repair those boxes, too.
@@ -784,7 +1076,7 @@ none of them suit your needs.
 ```
 
 
-## Protocol
+# Protocol
 
 *[protocol github](Phttps://github.com/luismartingarcia/protocol):* Protocol is a simple command-line tool that serves two purposes:
 

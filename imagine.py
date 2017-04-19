@@ -1,6 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#-- Candidates:
+# o grace (ie gracebat, the batchmode variant; indirect mode?)
+# o flydraw (reads stdin, outputs to stdout so it seems, see man flydraw)
+# o gri http://gri.sourceforge.net/gridoc/html/
+
+# Notes:
+# - need to check if Imagine cleanly removes itself from codeblock attributes
+#   if it returns some kind of (ascii art) codeblock itself.  Otherwise
+#   converting to markdown and processing that again with --filter Imagine
+#   might be somewhat unpredictable..
+# - to avoid work, a hash of the entire codeblock is used and a check is done
+#   for the intended output file.  That doesn't work well if usage is indirect
+#   where the codeblock points to a file.  So howto elegantly pick up on changes
+#   to a datafile?
+
 #-- __doc__
 
 '''Imagine
@@ -132,12 +147,14 @@ class HandlerMeta(type):
 
 class Handler(object):
     'baseclass for image/ascii art generators'
+    severity  = 'error warn note info debug'.split()
     workers = {}    # dispatch mapping for Handler
     klass = None    # assigned when worker is dispatched
     __metaclass__ = HandlerMeta
 
     codecs = {}     # worker subclass must override, klass -> cli-program
-    level = 2       # log level: 0=err, 1=warn, 2=info, 3=verbose, 4=debug
+    level = 5       # log level: 0=err, 1=warn, 2=info, 3=verbose, 4=debug
+    outfmt = 'png'  # default output format for a worker
 
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
@@ -155,21 +172,21 @@ class Handler(object):
             worker = self.workers.get(klass.lower(), None)
             if worker is not None:
                 worker.klass = klass.lower()
-                self.msg(4, klass, 'dispatched by class to', worker)
+                self.msg(4, codec[0], 'dispatched by class to', worker)
                 return worker(codec)
 
         # try dispatching via 'cmd' named by prog=cmd key-value
         if len(keyvals) == 0:  # pf.get_value barks if keyvals == []
-            self.msg(4, codec, 'dispatched by default', self)
+            self.msg(4, codec[0], 'dispatched by default', self)
             return self
 
         prog, _ = pf.get_value(keyvals, 'prog', '')
         worker = self.workers.get(prog.lower(), None)
         if worker is not None:
-            self.msg(4, prog, 'dispatched by prog to', worker)
+            self.msg(4, codec[0], 'dispatched by prog to', worker)
             return worker(codec)
 
-        self.msg(4, codec, 'dispatched by default to', self)
+        self.msg(4, codec[0], 'dispatched by default to', self)
         return self
 
     def __init__(self, codec):
@@ -178,7 +195,7 @@ class Handler(object):
         # - prog=cmd (if any, otherwise self.prog is None)
         # - attributes are decoded & used in an image block-element
         self.codec = codec
-        self._name = self.__class__.__name__
+        self._name = self.__class__.__name__  # for default infile extension
         self.output = '' # catches output by self.cmd, if any
 
         if codec is None:
@@ -204,13 +221,22 @@ class Handler(object):
         self.keep = True if self.keep.lower() == 'true' else False
 
         self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
-        self.fext = 'png'  # workers use self.fmt(fmt) to reset this
-        self.outfile = self.basename + '.%s' % self.fext
-        self.inpfile = self.basename + '.%s' % 'txt'
+        self.outfile = self.basename + '.%s' % self.outfmt
+        self.inpfile = self.basename + '.%s' % self._name.lower()
 
         self.codetxt = self.code.encode(sys.getfilesystemencoding())
         if not os.path.isfile(self.inpfile):
             self.write('w', self.codetxt, self.inpfile)
+
+    def read(self, src):
+        try:
+            with open(src, 'r') as f:
+                return f.read()
+        except Exception as e:
+            self.msg(0, 'fail: could not read %s' % src)
+            return ''
+        return ''
+
 
     def write(self, mode, dta, dst):
         if len(dta) == 0:
@@ -228,15 +254,18 @@ class Handler(object):
 
     def msg(self, level, *a):
         if level > self.level: return
-        msg = '%s:%s:%s' % ('Imagine', self.__class__.__name__,
-                            ' '.join(str(s) for s in a))
+        level %= len(self.severity)
+        msg = '%s[%9s:%-5s] %s' % ('Imagine',
+                                self.__class__.__name__,
+                                self.severity[level],
+                                ' '.join(str(s) for s in a))
         print >> sys.stderr, msg
 
     def fmt(self, fmt, default='png', **specials):
         'set image file extension based on output document format'
         # if fmt is None or len(fmt)==0: return
-        self.fext = pf.get_extension(fmt, default, **specials)
-        self.outfile = self.basename + '.%s' % self.fext
+        self.outfmt = pf.get_extension(fmt, default, **specials)
+        self.outfile = self.basename + '.%s' % self.outfmt
 
     def Url(self):
         'return an Image link for existing/new output image-file'
@@ -272,18 +301,19 @@ class Handler(object):
         'run, possibly forced, a cmd and return success indicator'
         forced = kwargs.get('forced', False) # no need to pop
         if os.path.isfile(self.outfile) and forced is False:
-            self.msg(1, 'exists:', *args)
+            self.msg(3, 'exists:', *args)
             return True
 
         try:
             self.output = check_output(args, stderr=STDOUT)
-            self.msg(1, 'ok:', *args)
+            self.msg(2, 'ok:', *args)
             return True
         except CalledProcessError as e:
             try: os.remove(self.outfile)
             except: pass
-            self.msg(0, 'fail:', *args)
-            self.msg(0, ' ', self.prog, ': -' , e.output)
+            self.msg(1, 'fail:', *args)
+            maxchars = min(70, e.output.find(os.linesep))
+            self.msg(0, self.prog , e.output[0:maxchars])
             return False
 
     def image(self, fmt=None):
@@ -294,7 +324,7 @@ class Handler(object):
 
 
 class Imagine(Handler):
-    '''puts Imagine __doc__ string into codeblock'''
+    '''wraps self, yields new codeblock w/ Imagine __doc__ string'''
     codecs = {'imagine': 'imagine'}
 
     def image(self, fmt=None):
@@ -303,32 +333,49 @@ class Imagine(Handler):
 
 
 class Figlet(Handler):
-    'turn the codeblock into ascii art'
+    'figlet `codetxt` -> CodeBlock(ascii art)'
     codecs = {'figlet': 'figlet'}
+    outfmt = 'figled'
 
     def image(self, fmt=None):
         args = self.options.split() + [self.codetxt]
         if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            else:
+                self.output = self.read(self.outfile)
             return self.CodeBlock(self.codec[0], self.output)
 
 
 class Boxes(Handler):
-    'put a box around the codeblock'
+    'boxes `codetxt` -> CodeBlock(boxed text)'
     codecs = {'boxes': 'boxes'}
+    outfmt = 'boxed'
 
     def image(self, fmt=None):
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            else:
+                self.output = self.read(self.outfile)
+            return self.CodeBlock(self.codec[0], self.output)
             return self.CodeBlock(self.codec[0], self.output)
 
 
 class Protocol(Handler):
-    'protocol `codetxt` -> CodeBlock(output)'
+    'protocol `codetxt` -> CodeBlock(packet format in ascii)'
     codecs = {'protocol': 'protocol'}
+    outfmt = 'protocold'
 
     def image(self, fmt=None):
         args = self.options.split() + [self.codetxt]
         if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            else:
+                self.output = self.read(self.outfile)
+            return self.CodeBlock(self.codec[0], self.output)
             return self.CodeBlock(self.codec[0], self.output)
 
 
@@ -345,7 +392,7 @@ class GnuPlot(Handler):
             return self.Para()
 
 
-class PlotUtilPlot(Handler):
+class Plot(Handler):
     'plot `cat codetxt` -> Para(Img(outfile))'
     codecs = {'plot': 'plot'}
 
@@ -356,18 +403,18 @@ class PlotUtilPlot(Handler):
             self.msg(0, 'fail: cannot read file %r' % self.codetxt)
             return
         args = self.options.split() + [self.codetxt]
-        if self.cmd(self.prog, '-T', self.fext, *args):
+        if self.cmd(self.prog, '-T', self.outfmt, *args):
             self.write('wb', self.output, self.outfile)
             return self.Para()
 
 
-class PlotUtilsGraph(Handler):
+class Graph(Handler):
     codecs = {'graph': 'graph', 'gnugraph': 'graph'}
 
     def image(self, fmt=None):
         self.fmt(fmt, default='png')
         args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-T', self.fext, *args):
+        if self.cmd(self.prog, '-T', self.outfmt, *args):
             self.write('wb', self.output, self.outfile)
             return self.Para()
 
@@ -378,8 +425,44 @@ class Pic2Plot(Handler):
     def image(self, fmt=None):
         self.fmt(fmt, default='png')
         args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-T', self.fext, *args):
+        if self.cmd(self.prog, '-T', self.outfmt, *args):
             self.write('wb', self.output, self.outfile)
+            return self.Para()
+
+
+class PyxPlot(Handler):
+    codecs = {'pyxplot': 'pyxplot'}
+
+    # need to set output format and output filename in the script...
+    def image(self, fmt=None):
+        self.fmt(fmt, default=self.outfmt)
+        args = self.options.split() + [self.inpfile]
+        self.codetxt = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
+                                       'set output %s' % self.outfile,
+                                       self.codetxt)
+        self.write('w', self.codetxt, self.inpfile)
+        if self.cmd(self.prog, self.inpfile, *args):
+            return self.Para()
+
+
+class Asy(Handler):
+    codecs = {'asy': 'asy', 'asymptote': 'asy'}
+    outfmt = 'png'
+
+    def image(self, fmt=None):
+        self.fmt(fmt, default=self.outfmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-o', self.outfile, *args):
+            return self.Para()
+
+
+class Ploticus(Handler):
+    codecs = {'ploticus': 'ploticus'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt, default=self.outfmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-%s' % self.outfmt, '-o', self.outfile, *args):
             return self.Para()
 
 
@@ -388,7 +471,7 @@ class PlantUml(Handler):
 
     def image(self, fmt=None):
         self.fmt(fmt, default='png')
-        if self.cmd(self.prog, '-t%s' % self.fext, self.inpfile):
+        if self.cmd(self.prog, '-t%s' % self.outfmt, self.inpfile):
             return self.Para()
 
 class Mermaid(Handler):
@@ -399,7 +482,7 @@ class Mermaid(Handler):
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-o', IMG_BASEDIR+'-images', *args):
             # latex chokes on filename.txt.png
-            try: os.rename(self.inpfile+'.'+self.fext, self.outfile)
+            try: os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
             except: pass
             return self.Para()
 
@@ -417,7 +500,7 @@ class MscGen(Handler):
 
     def image(self, fmt=None):
         self.fmt(fmt)
-        if self.cmd(self.prog, '-T', self.fext, 
+        if self.cmd(self.prog, '-T', self.outfmt,
                     '-o', self.outfile, self.inpfile):
             return self.Para()
 
@@ -428,7 +511,7 @@ class BlockDiag(Handler):
 
     def image(self, fmt=None):
         self.fmt(fmt, default='png')
-        if self.cmd(self.prog, '-T', self.fext, self.inpfile,
+        if self.cmd(self.prog, '-T', self.outfmt, self.inpfile,
                     '-o', self.outfile):
             return self.Para()
 
@@ -441,7 +524,7 @@ class Graphviz(Handler):
     def image(self, fmt=None):
         self.fmt(fmt, default='png')
         args = self.options.split()
-        args.append('-T%s' % self.fext)
+        args.append('-T%s' % self.outfmt)
         args.extend([self.inpfile, '-o', self.outfile])
         if self.cmd(self.prog, *args):
             return self.Para()
