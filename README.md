@@ -3,16 +3,13 @@ Imagine
 
 ``` {.imagine}
 Imagine
-  A pandoc filter that wraps around a number of external command line utilities
-  used to turn a fenced codeblock into graphics or ascii art.
+  A pandoc filter that turns fenced codeblocks into graphics or ascii art by
+  wrapping some external command line utilities, such as:
 
-  Commands include:
-
-  actdiag, blockdiag, boxes, circo, ditaa, dot, fdp, figlet, gnugraph,
-  gnuplot, graph, graphviz, imagine, mermaid, mscgen, neato, nwdiag,
-  packetdiag, pic, pic2plot, plantuml, plot, protocol, rackdiag,
-  seqdiag, sfdp, twopi
-
+    actdiag, asy, asymptote, blockdiag, boxes, circo, ditaa, dot, fdp,
+    figlet, gnuplot, graph, graphviz, imagine, mermaid, mscgen, neato,
+    nwdiag, packetdiag, pic, pic2plot, plantuml, plot, ploticus, protocol,
+    pyxplot, rackdiag, seqdiag, sfdp, twopi
 
 Installation
 
@@ -24,15 +21,23 @@ Installation
        - plantuml,   http://plantuml.com
        - ditaa,      http://ditaa.sourceforge.net
        - figlet,     http://www.figlet.org
+       - boxes,      http://boxes.thomasjensen.com
        - plotutils,  https://www.gnu.org/software/plotutils/
        - gnuplot,    http://www.gnuplot.info/
+       - asymptote,  http://asymptote.sourceforge.net/
+       - pyxplot,    http://pyxplot.org.uk/
+       - ploticus,   http://ploticus.sourceforge.net/doc/welcome.html
+
      % sudo pip install:
        - blockdiag,  http://blockdiag.com
-       - phantomjs,  http://phantomjs.org/
+       - phantomjs,  http://phantomjs.org/ (for mermaid)
+
      % git clone
-       - https://github.com/luismartingarcia/protocol.git
+       - protocol,   https://github.com/luismartingarcia/protocol.git
+
      % npm install:
-       - -g mermaid
+       - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)
+
 
 Pandoc usage
 

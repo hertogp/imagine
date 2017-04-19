@@ -43,7 +43,7 @@ Note:
 
 ## Line
 
-```{.gnuplot keep=True height=50%}
+```{.gnuplot keep=True height=50% caption="Created by GnuPlot"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
 set samples 200, 200
@@ -52,7 +52,7 @@ plot [-30:20] besj0(x)*0.12e1 with impulses, (x**besj0(x))-2.5 with points
 
 ## real sine
 
-```{.gnuplot keep=True height=50%}
+```{.gnuplot keep=True height=50% caption="Created by GnuPlot"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350
 set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
 set samples 400, 400
@@ -61,7 +61,7 @@ plot [-10:10] real(sin(x)**besj0(x))
 
 ## Surface
 
-```{.gnuplot keep=True}
+```{.gnuplot keep=True caption="Another GnuPlot example"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set border 4095 front linetype -1 linewidth 1.000
 set view 130, 10, 1, 1
@@ -77,7 +77,7 @@ splot sin(sqrt(x**2+y**2))/sqrt(x**2+y**2)
 
 ## Interlocking Tori
 
-```{.gnuplot keep=True}
+```{.gnuplot keep=True caption="Gnuplot's interlocking Tori example"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set dummy u,v
 set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -144,7 +144,8 @@ standard input, and prepares a plot. There are many command-line options for
 adjusting the visual appearance of the plot. The following sections explain how
 to use the most frequently used options, by giving examples.
 
-```{.graph options="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" keep=True}
+```{.graph options="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" keep=True
+caption="PlotUtil's graph"}
 0.0  0.0
 1.0  0.2
 2.0  0.0
@@ -172,7 +173,7 @@ metafile produced by graph contains only a single page.
 *`plot`*, like the metafile format itself, is useful if you wish to preserve a
 vector graphics file, and display or edit it with more than one drawing editor.
 
-```{.plot options="--bitmap-size 300x200" keep=True}
+```{.plot options="--bitmap-size 300x200" keep=True caption="Created by plot"}
 input.meta
 ```
 
@@ -194,7 +195,7 @@ GNU implementation, and some sample pic macros contributed by the late W.
 Richard Stevens.
 
 
-```{.pic keep="True" width=80%}
+```{.pic keep="True" width=80% caption="Created by pic"}
 .PS
 box "START"; arrow; circle dashed filled; arrow
 circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
@@ -235,12 +236,13 @@ Features of Asymptote:
   itself, allowing them to be easily tailored to specific applications.
 
 Notes:
+
 - eps formatted images don't go well together with pandoc.
 
 
 ## a plot
 
-```{.asy keep=True}
+```{.asy keep=True caption="Created by Asymptote"}
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
@@ -256,7 +258,7 @@ draw(shift(circleCenter) * (O -- Y+Z), green, arrow=Arrow3());
 
 ## a sphere
 
-```{.asy keep=True}
+```{.asy keep=True caption="Created by Asymptote"}
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
@@ -274,7 +276,7 @@ draw(O--X, blue+linewidth(1pt));
 
 ## ex01
 
-```{.pyxplot keep=True}
+```{.pyxplot keep=True caption="Created by PyxPlot"}
 set numerics complex
 set xlabel r"$x$"
 set ylabel r"$y$"
@@ -313,7 +315,7 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 ## Curves script
 
-```{.ploticus keep=True}
+```{.ploticus keep=True caption="Created by Ploticus"}
 #proc getdata
   data:
   0 1
@@ -389,7 +391,7 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 ## Heatmap (script)
 
-```{.ploticus keep=True}
+```{.ploticus keep=True caption="Created by Ploticus"}
 #set SYM = "radius=0.08 shape=square style=filled"
 #setifnotgiven CGI = "http://ploticus.sourceforge.net/cgi-bin/showcgiargs"
 
@@ -641,7 +643,7 @@ simple text files:
 
 ## blockdiag
 
-```{.blockdiag prog=blockdiag keep=True width=100%}
+```{.blockdiag prog=blockdiag keep=True width=100% caption="Created by Blockdiag"}
 blockdiag {
 // standard node shapes
 box [shape = "box"];
@@ -673,7 +675,7 @@ loopin -> loopout;
 
 ## seqdiag
 
-```{.seqdiag keep=True width=80% height=50%}
+```{.seqdiag keep=True width=80% height=50% caption="Created by seqdiag"}
 {
 browser -> webserver [label = "GET /index.html"];
 browser <-- webserver;
@@ -687,7 +689,7 @@ browser <- webserver;
 
 ## nwdiag
 
-```{.nwdiag keep=True}
+```{.nwdiag keep=True caption="Created by nwdiag"}
 {
   network dmz {
       address = "210.x.x.x/24"
@@ -708,7 +710,7 @@ browser <- webserver;
 
 ## actdiag
 
-```{.actdiag keep=True height=60%}
+```{.actdiag keep=True height=60% caption="Created by actdiag"}
 {
    A -> B -> C -> D;
 
@@ -724,7 +726,7 @@ browser <- webserver;
 ## rackdiag
 
 
-```{.rackdiag keep=True height=80%}
+```{.rackdiag keep=True height=80% caption="Created by rackdiag"}
 {
   // define 1st rack
   rack {
@@ -764,7 +766,7 @@ Unfortunately, packetdiag doesn't work properly due to a problem with some libra
     Imagine:BlockDiag:  packetdiag -> ERROR: images do not match
 ~~~
 
-```{.packetdiag keep=True}
+```{.packetdiag keep=True caption="Created by packetdiag"}
 {
   colwidth = 32
   node_height = 72
@@ -803,7 +805,7 @@ or printing.
 
 ## example w/ boxes
 
-```{.mscgen keep=True}
+```{.mscgen keep=True caption="Created by mscgen"}
 msc {
 
    # The entities
@@ -827,7 +829,7 @@ msc {
 
 # client-server interaction
 
-```{.mscgen keep=True}
+```{.mscgen keep=True caption="Created by mscgen"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -863,7 +865,7 @@ allows to quickly write:
 
 ## sequence diagrams
 
-```{.plantuml keep=True width=60%}
+```{.plantuml keep=True width=60% caption="Created by plantuml"}
 @startuml
 autonumber "<b>[000]"
 Bob -> Alice : Authentication Request
@@ -882,7 +884,7 @@ Bob <- Alice : Yet another authentication Response
 
 ## class diagrams
 
-```{.plantuml keep=True width=60%}
+```{.plantuml keep=True width=60% caption="Created by plantuml"}
 @startuml
 Class01 <|-- Class02
 Class03 *-- Class04
@@ -894,7 +896,7 @@ Class09 -- Class10
 
 ## larger plantuml
 
-```{.plantuml keep=True}
+```{.plantuml keep=True caption="Created by plantuml"}
 @startuml
 scale 580*690
 title Servlet Container
@@ -944,7 +946,7 @@ endif
 
 ## sequence graph
 
-```{.mermaid keep=True width=70%}
+```{.mermaid keep=True width=70% caption="Created by mermaid"}
 sequenceDiagram
     participant Alice
     participant Bob
@@ -960,7 +962,7 @@ sequenceDiagram
 
 ## gantt diagram
 
-```{.mermaid keep=True}
+```{.mermaid keep=True caption="Created by mermaid"}
 gantt
     title A Gantt Diagram
 
@@ -991,7 +993,7 @@ released under the GPL license.
 
 ## Ditaa with options="-r"
 
-```{.ditaa options="-r" keep=True width=70%}
+```{.ditaa options="-r" keep=True width=70% caption="Created by Ditaa"}
 +--------+   +-------+    +-------+
 |        +---+ ditaa +--> |       |
 |  Text  |   +-------+    |diagram|
@@ -1006,7 +1008,7 @@ released under the GPL license.
 
 ## Ditaa normal
 
-```{.ditaa keep=True}
+```{.ditaa keep=True caption="Created by Ditaa"}
    +---------+   +-------+   +-------+    +--------+      +--------+
    | Document|---+ split +---|       |----|        |----->|        |
    | o  this |   +-------+   |Diagram|    | Storage|      | In/Out |
@@ -1024,7 +1026,7 @@ released under the GPL license.
 
 ## ditaa reminder
 
-```{.ditaa keep=True height=20%}
+```{.ditaa keep=True height=20% caption="Created by Ditaa"}
 /-----------------\
 | Things to do    |
 | cYEL            |
@@ -1050,7 +1052,7 @@ released under the GPL license.
 
 # Figlet
 
-```{#FIGLET .figlet options="-f slant" keep=True}
+```{#FIGLET .figlet options="-f slant" keep=True caption="Figlet"}
 figlet
 ```
 
@@ -1064,13 +1066,13 @@ already provided.
 
 ## design 'peek'
 
-```{.boxes options="-d peek -a c -s 40x3" keep="true"}
+```{.boxes options="-d peek -a c -s 40x3" keep="true" caption="boxes"}
 boxes
 ```
 
 ## design 'ian_jones'
 
-```{.boxes options="-d ian_jones -a c -s 40x6" keep=True}
+```{.boxes options="-d ian_jones -a c -s 40x6" keep=True caption="boxes"}
 There are about 52 available styles, and you can create your own if
 none of them suit your needs.
 ```
@@ -1089,13 +1091,13 @@ none of them suit your needs.
 
 A **TCP Header**:
 
-```{.protocol keep=True}
+```{.protocol keep=True caption="protocol"}
 tcp
 ```
 
 and even custom layouts:
 
-```{.protocol options="--no-numbers" keep=True}
+```{.protocol options="--no-numbers" keep=True caption="protocol"}
 Source:16,TTL:8,Reserved:40
 ```
 

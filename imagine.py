@@ -3,8 +3,16 @@
 
 #-- Candidates:
 # o grace (ie gracebat, the batchmode variant; indirect mode?)
+#   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
+#   via `gracebat`, which symlinks to the real binary executable.
+#
 # o flydraw (reads stdin, outputs to stdout so it seems, see man flydraw)
+#   currently we don't feed the tools via stdin, a small bash script would
+#   do the trick: (flydrway < $1) but not really crossplatform.
+#
 # o gri http://gri.sourceforge.net/gridoc/html/
+#
+# o tizk, needs convert since eps wont go into pdflatex ..
 
 # Notes:
 # - need to check if Imagine cleanly removes itself from codeblock attributes
@@ -15,17 +23,23 @@
 #   for the intended output file.  That doesn't work well if usage is indirect
 #   where the codeblock points to a file.  So howto elegantly pick up on changes
 #   to a datafile?
+# - perhaps add an option to specify if a tool requires its input as
+#   -- an input file,
+#   -- on stdin or
+#   -- on its commandline?
+#   -- via redirect (ie codeblock=input filename)
+# - perhaps add ability to specify some globals via YAML in a document?
+#   -- like images subdir, instead of 'pd-images'
+#   -- verbosity level of output (or as codeblock option enable targetted
+#   debugging for a specific codeblock).
 
 #-- __doc__
 
 '''Imagine
-  A pandoc filter that wraps around a number of external command line utilities
-  used to turn a fenced codeblock into graphics or ascii art.
+  A pandoc filter that turns fenced codeblocks into graphics or ascii art by
+  wrapping some external command line utilities, such as:
 
-  Commands include:
-
-  %(cmds)s
-
+    %(cmds)s
 
 Installation
 
@@ -37,15 +51,23 @@ Installation
        - plantuml,   http://plantuml.com
        - ditaa,      http://ditaa.sourceforge.net
        - figlet,     http://www.figlet.org
+       - boxes,      http://boxes.thomasjensen.com
        - plotutils,  https://www.gnu.org/software/plotutils/
        - gnuplot,    http://www.gnuplot.info/
+       - asymptote,  http://asymptote.sourceforge.net/
+       - pyxplot,    http://pyxplot.org.uk/
+       - ploticus,   http://ploticus.sourceforge.net/doc/welcome.html
+
      %% sudo pip install:
        - blockdiag,  http://blockdiag.com
-       - phantomjs,  http://phantomjs.org/
+       - phantomjs,  http://phantomjs.org/ (for mermaid)
+
      %% git clone
-       - https://github.com/luismartingarcia/protocol.git
+       - protocol,   https://github.com/luismartingarcia/protocol.git
+
      %% npm install:
-       - -g mermaid
+       - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)
+
 
 Pandoc usage
 
@@ -153,7 +175,7 @@ class Handler(object):
     __metaclass__ = HandlerMeta
 
     codecs = {}     # worker subclass must override, klass -> cli-program
-    level = 5       # log level: 0=err, 1=warn, 2=info, 3=verbose, 4=debug
+    level = 2       # log severity level, see above
     outfmt = 'png'  # default output format for a worker
 
     def __call__(self, codec):
@@ -192,10 +214,8 @@ class Handler(object):
     def __init__(self, codec):
         'init by decoding the CodeBlock-s value'
         # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
-        # - prog=cmd (if any, otherwise self.prog is None)
-        # - attributes are decoded & used in an image block-element
         self.codec = codec
-        self._name = self.__class__.__name__  # for default infile extension
+        self._name = self.__class__.__name__  # the default inpfile extension
         self.output = '' # catches output by self.cmd, if any
 
         if codec is None:
@@ -204,10 +224,7 @@ class Handler(object):
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
 
-        # Extract Imagine's keyvals from codeblock's attributes
-        # - pf.get_value(..) returns (value, new_keyval)
-        # - value is that of last matching key in the keyval list
-        # - new_keyval has all occurrences of matching key removed
+        # `Extract` Imagine's keyvals from codeblock's attributes
         self.options, self.keyvals = pf.get_value(self.keyvals, u'options', '')
         self.prog, self.keyvals = pf.get_value(self.keyvals, u'prog', None)
         self.keep, self.keyvals = pf.get_value(self.keyvals, u'keep', '')
@@ -219,7 +236,6 @@ class Handler(object):
             raise Exception('worker has no cli command for %s' % self.klass)
 
         self.keep = True if self.keep.lower() == 'true' else False
-
         self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
         self.outfile = self.basename + '.%s' % self.outfmt
         self.inpfile = self.basename + '.%s' % self._name.lower()
@@ -256,15 +272,14 @@ class Handler(object):
         if level > self.level: return
         level %= len(self.severity)
         msg = '%s[%9s:%-5s] %s' % ('Imagine',
-                                self.__class__.__name__,
+                                self._name,
                                 self.severity[level],
                                 ' '.join(str(s) for s in a))
         print >> sys.stderr, msg
 
-    def fmt(self, fmt, default='png', **specials):
-        'set image file extension based on output document format'
-        # if fmt is None or len(fmt)==0: return
-        self.outfmt = pf.get_extension(fmt, default, **specials)
+    def fmt(self, fmt, **specials):
+        '(re)set image file extension based on output document format'
+        self.outfmt = pf.get_extension(fmt, self.outfmt, **specials)
         self.outfile = self.basename + '.%s' % self.outfmt
 
     def Url(self):
@@ -384,7 +399,7 @@ class GnuPlot(Handler):
     codecs = {'gnuplot': 'gnuplot'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, *args):
             if len(self.output):
@@ -398,7 +413,7 @@ class Plot(Handler):
 
     def image(self, fmt=None):
         'interpret code as input filename of meta graphics file'
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         if not os.path.isfile(self.codetxt):
             self.msg(0, 'fail: cannot read file %r' % self.codetxt)
             return
@@ -409,10 +424,10 @@ class Plot(Handler):
 
 
 class Graph(Handler):
-    codecs = {'graph': 'graph', 'gnugraph': 'graph'}
+    codecs = {'graph': 'graph'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-T', self.outfmt, *args):
             self.write('wb', self.output, self.outfile)
@@ -423,7 +438,7 @@ class Pic2Plot(Handler):
     codecs = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-T', self.outfmt, *args):
             self.write('wb', self.output, self.outfile)
@@ -435,7 +450,7 @@ class PyxPlot(Handler):
 
     # need to set output format and output filename in the script...
     def image(self, fmt=None):
-        self.fmt(fmt, default=self.outfmt)
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         self.codetxt = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
                                        'set output %s' % self.outfile,
@@ -450,7 +465,7 @@ class Asy(Handler):
     outfmt = 'png'
 
     def image(self, fmt=None):
-        self.fmt(fmt, default=self.outfmt)
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-o', self.outfile, *args):
             return self.Para()
@@ -460,7 +475,7 @@ class Ploticus(Handler):
     codecs = {'ploticus': 'ploticus'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default=self.outfmt)
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-%s' % self.outfmt, '-o', self.outfile, *args):
             return self.Para()
@@ -470,7 +485,7 @@ class PlantUml(Handler):
     codecs = {'plantuml': 'plantuml'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         if self.cmd(self.prog, '-t%s' % self.outfmt, self.inpfile):
             return self.Para()
 
@@ -478,7 +493,7 @@ class Mermaid(Handler):
     codecs = {'mermaid': 'mermaid'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
         if self.cmd(self.prog, '-o', IMG_BASEDIR+'-images', *args):
             # latex chokes on filename.txt.png
@@ -490,7 +505,7 @@ class Ditaa(Handler):
     codecs = {'ditaa': 'ditaa'}
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         if self.cmd(self.prog, self.inpfile, self.outfile, '-T', self.options):
             return self.Para()
 
@@ -510,7 +525,7 @@ class BlockDiag(Handler):
     codecs = dict(zip(progs,progs))
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         if self.cmd(self.prog, '-T', self.outfmt, self.inpfile,
                     '-o', self.outfile):
             return self.Para()
@@ -522,7 +537,7 @@ class Graphviz(Handler):
     codecs['graphviz'] = 'dot'
 
     def image(self, fmt=None):
-        self.fmt(fmt, default='png')
+        self.fmt(fmt)
         args = self.options.split()
         args.append('-T%s' % self.outfmt)
         args.extend([self.inpfile, '-o', self.outfile])
@@ -531,7 +546,7 @@ class Graphviz(Handler):
 
 from textwrap import wrap
 
-__doc__ = __doc__ % {'cmds':'\n  '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
+__doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 
 def walker(key, value, fmt, meta):
