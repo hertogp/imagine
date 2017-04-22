@@ -1057,6 +1057,11 @@ figlet
 ```
 
 
+```{.figlet keep=true}
+hello, world..
+and goodbye!
+```
+
 # boxes
 
 [boxes](http://boxes.thomasjensen.com) Boxes is a command line program that
