@@ -37,6 +37,7 @@ used as a plotting engine by third-party applications like Octave. Gnuplot has
 been supported and under active development since 1986.
 
 Note:
+
 - Imagine catches gnuplot's output on stdout and saves it to an output file.
   So don't `set output <name>` or Imagine will get confused and die miserably.
 
@@ -205,6 +206,178 @@ arc cw radius 1/2 from top of last ellipse; arrow
 box "END"
 .PE
 ```
+
+# GLE
+
+[GLE](http://gle.sf.net) (Graphics Layout Engine) is a graphics scripting
+language designed for creating publication quality figures (e.g., a chart,
+plot, graph, or diagram). It supports various chart types (including function
+plot, histogram, bar chart, scatter plot, contour plot, color map, and surface
+plot) through a simple but flexible set of graphing commands. More complex
+output can be created by relying on GLE's scripting language, which is full
+featured with subroutines, variables, and logic control. GLE relies on LaTeX
+for text output and supports mathematical formulae in graphs and figures. GLE's
+output formats include EPS, PS, PDF, JPEG, and PNG. GLE is licenced under the
+BSD license. QGLE, the GLE user interface, is licenced under the GPL license. 
+
+## Baudrate
+
+Notes:
+
+- ../test.dat is relative to the input file in pd-images ...
+
+
+```{.gle keep=true caption="Created by GLE"}
+size 18 19
+
+amove 2 1
+box 15 16 fill gray60
+rmove -1 1
+box 15 16 fill white
+rmove 2 4
+box 11 8 fill gray5
+
+set font texcmr hei 0.6
+
+begin graph
+	fullsize
+	size 11 8
+	title "BAUD Rate = 9600 bit/sec"
+	xtitle "Seconds"
+	ytitle "Bits"
+	data "../test.dat"
+	d1 line marker wsquare
+	xaxis min -1 max 6
+	yaxis min 0 max 11
+end graph
+
+```
+
+
+## simple 2D
+
+```{.gle keep=true caption="Created by GLE"}
+size 12 10
+
+set font texcmr
+begin graph
+   math
+   title "f(x) = sin(x)"
+   xaxis min -2*pi max 2*pi ftick -2*pi dticks pi/2 format "pi"
+   yaxis dticks 0.25 format "frac"
+   let d1 = sin(x)
+   d1 line color red
+end graph
+```
+
+## Semi-transparant fills
+
+Needs the `-cairo` option.
+
+```{.gle options="-cairo" keep=true caption="Created by GLE"}
+size 10 7
+
+set texlabels 1
+
+begin graph
+   scale auto
+   title  "Semi-Transparent Fills"
+   xtitle "Time"
+   ytitle "Output"
+   xaxis min 0 max 9
+   yaxis min 0 max 6 dticks 1
+   let d1 = sin(x)*1.5+1.5 from 0 to 10
+   let d2 = 1/x from 0.01 to 10
+   let d3 = 10*(1/sqrt(2*pi))*exp(-2*(sqr(x-4)/sqr(2))) from 0 to 10
+   key background gray5
+   begin layer 300
+      fill x1,d1 color rgba255(255,0,0,80)
+      d1 line color red key "$1.5\sin(x)+1.5$"
+   end layer
+   begin layer 301
+      fill x1,d2 color rgba255(0,128,0,80)
+      d2 line color green key "$1/x$"
+   end layer
+   begin layer 302
+      fill x1,d3 color rgba255(0,0,255,80)
+      d3 line color blue key "$\frac{10}{\sqrt{2\pi}}\exp\left(\frac{-2(x-4)^2}{2^2}\right)$"
+   end layer
+end graph
+```
+
+## saddle up
+
+```{.gle keep=true caption="Created by GLE"}
+size 10 9
+
+set font texcmr hei 0.5 just tc
+
+begin letz
+   data "saddle.z"
+   z = 3/2*(cos(3/5*(y-1))+5/4)/(1+(((x-4)/3)^2))
+   x from 0 to 20 step 0.5
+   y from 0 to 20 step 0.5
+end letz
+
+amove pagewidth()/2 pageheight()-0.1
+write "Saddle Plot (3D)"
+
+begin object saddle
+   begin surface
+      size 10 9
+      data "saddle.z"
+      xtitle "X-axis" hei 0.35 dist 0.7
+      ytitle "Y-axis" hei 0.35 dist 0.7
+      ztitle "Z-axis" hei 0.35 dist 0.9
+      top color blue
+      zaxis ticklen 0.1 min 0 hei 0.25
+      xaxis hei 0.25 dticks 4 nolast nofirst
+      yaxis hei 0.25 dticks 4
+   end surface
+end object
+
+amove pagewidth()/2 0.2
+draw "saddle.bc"
+```
+
+## An electronic circuit
+
+```{.gle keep=true caption="Created by GLE"}
+! An H-Bridge
+
+size 13 11
+include "electronics.gle"
+
+set lwidth 0.05 cap round font psh
+
+! Draw a grid if the line below is uncommented
+drawgrid 1
+
+! Top left of diagram
+amove 2.0 9.0
+
+! Battery leg
+gsave
+rline 0 -0.5
+cell_v "E_1"
+rline 0 -3.5
+rline 5 0
+rresistor_h R_4
+grestore
+
+rresistor_h R_1
+
+gsave
+rresistor_v R_2
+cell_v "E_2"
+grestore
+
+rline 5 0
+rresistor_v R_3
+rline 0 -4
+```
+
+
 # Asymptote
 
 [Asymptote](http://asymptote.sourceforge.net/): The Vector Graphics Language.
@@ -1048,7 +1221,77 @@ released under the GPL license.
 
 ```
 
+# Flydraw
 
+[flydraw](http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html) is
+an inline drawing tool that really only produces GIF images despite the claim
+in the manpage for producting png images.  Flydraw reads it's script from stdin
+and by *not* using the `output <filename.ext>` command, it will produce the image
+data on it's stdout.  This output is captured, saved and linked to.
+
+
+## frenchman
+
+```{.flydraw keep=true}
+comment : from KhanAcademy
+new 200,200
+comment ears
+fellipse 24, 100, 30, 40,255, 211, 178
+fellipse 174, 100, 30, 40,255, 211, 178
+ellipse 24, 100, 30, 40,black
+ellipse 174, 100, 30, 40,black
+comment face
+fellipse 100, 100, 150, 150,255, 211, 178
+ellipse 100, 100, 150, 150,black
+comment nose
+ellipse 100, 128, 17, 10,black
+comment beret
+fellipse 125, 25, 20, 20,red
+fellipse 100, 45, 142, 50, red
+comment mouth
+fellipse 100, 152, 32, 10,red
+linewidth 16
+point 63, 115,black
+point 135, 115 ,black
+linewidth 8
+line 80, 142, 96, 137, black
+line 120, 142, 104, 137,black
+```
+
+## hexagons
+
+```{.flydraw keep=true}
+comment x=horizontal, x=0 is left
+comment y=vertical,   y=0 is top
+new 300,300
+x0=150
+y0=150
+r=100
+t1=0
+t2=t1+2*pi
+linewidth=1
+plotstep 8
+trange t1,t2
+plot red,r*cos(t)+x0,r*sin(t)+y0
+plot green,r*0.5*cos(t)+x0,r*0.5*sin(t)+y0
+```
+
+## plotting a function
+
+```{.flydraw keep=true}
+w=360
+h=150
+new w,h
+linewidth=1
+plotstep=9000
+r=-2+h/2
+y0=h/2
+plot red,y0-r*sin(2*pi*x/w)
+linewidth=2
+rect 1,1, w-1,h-1, black
+line 0,y0,w,y0, black
+text green,3,h-16,normal,"flydraw"
+```
 
 # Figlet
 

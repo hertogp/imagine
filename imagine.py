@@ -6,10 +6,6 @@
 #   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
 #   via `gracebat`, which symlinks to the real binary executable.
 #
-# o flydraw (reads stdin, outputs to stdout so it seems, see man flydraw)
-#   currently we don't feed the tools via stdin, a small bash script would
-#   do the trick: (flydrway < $1) but not really crossplatform.
-#
 # o gri http://gri.sourceforge.net/gridoc/html/
 #
 # o tizk, needs convert since eps wont go into pdflatex ..
@@ -47,16 +43,18 @@ Installation
   2. %% sudo pip install (mandatory):
        - pandocfilters
   3. %% sudo apt-get install (1 or more of):
-       - graphviz,   http://graphviz.org
-       - plantuml,   http://plantuml.com
-       - ditaa,      http://ditaa.sourceforge.net
-       - figlet,     http://www.figlet.org
-       - boxes,      http://boxes.thomasjensen.com
-       - plotutils,  https://www.gnu.org/software/plotutils/
-       - gnuplot,    http://www.gnuplot.info/
-       - asymptote,  http://asymptote.sourceforge.net/
-       - pyxplot,    http://pyxplot.org.uk/
-       - ploticus,   http://ploticus.sourceforge.net/doc/welcome.html
+       - graphviz,      http://graphviz.org
+       - plantuml,      http://plantuml.com
+       - ditaa,         http://ditaa.sourceforge.net
+       - figlet,        http://www.figlet.org
+       - boxes,         http://boxes.thomasjensen.com
+       - plotutils,     https://www.gnu.org/software/plotutils/
+       - gnuplot,       http://www.gnuplot.info/
+       - asymptote,     http://asymptote.sourceforge.net/
+       - pyxplot,       http://pyxplot.org.uk/
+       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
+       - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+       - gle-graphics,  http://glx.sourceforge.net/
 
      %% sudo pip install:
        - blockdiag,  http://blockdiag.com
@@ -149,7 +147,7 @@ __version__ = 0.5
 
 import os
 import sys
-from subprocess import call, check_output, CalledProcessError, STDOUT
+from subprocess import Popen, check_output, CalledProcessError, STDOUT, PIPE
 
 import pandocfilters as pf
 
@@ -315,14 +313,27 @@ class Handler(object):
     def cmd(self, *args, **kwargs):
         'run, possibly forced, a cmd and return success indicator'
         forced = kwargs.get('forced', False) # no need to pop
+        stdinput = kwargs.get('stdinput', None)
+
         if os.path.isfile(self.outfile) and forced is False:
             self.msg(3, 'exists:', *args)
             return True
 
         try:
-            self.output = check_output(args, stderr=STDOUT)
-            self.msg(2, 'ok:', *args)
-            return True
+            pipes = {'stdin': None if stdinput is None else PIPE,
+                     'stdout': PIPE,
+                     'stderr': PIPE}
+            p = Popen(args, **pipes)
+            self.output, err = p.communicate(stdinput)
+            # self.output = check_output(args, stderr=STDOUT)
+            if len(err):
+                self.msg(1, 'ok?', *args)
+                for line in err.splitlines():
+                    self.msg(1, '>>:', line)
+            else:
+                self.msg(2, 'ok:', *args)
+            return p.returncode == 0
+
         except CalledProcessError as e:
             try: os.remove(self.outfile)
             except: pass
@@ -346,6 +357,17 @@ class Imagine(Handler):
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         return pf.CodeBlock(('',['imagine'], []), __doc__)
 
+class Flydraw(Handler):
+    'flydraw < `codetxt` -> Image'
+    codecs = {'flydraw': 'flydraw'}
+    outfmt = 'gif'
+
+    def image(self, fmt=None):
+        args = self.options.split()
+        if self.cmd(self.prog, stdinput=self.codetxt, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            return self.Para()
 
 class Figlet(Handler):
     'figlet `codetxt` -> CodeBlock(ascii art)'
@@ -353,9 +375,10 @@ class Figlet(Handler):
     outfmt = 'figled'
 
     def image(self, fmt=None):
-        args = self.options.split() + [self.codetxt]
-        if self.cmd(self.prog, *args):
+        args = self.options.split()
+        if self.cmd(self.prog, stdinput=self.codetxt, *args):
             if len(self.output):
+                # save figlet's stdout to outfile for next time around
                 self.write('w', self.output, self.outfile)
             else:
                 self.output = self.read(self.outfile)
@@ -392,6 +415,21 @@ class Protocol(Handler):
                 self.output = self.read(self.outfile)
             return self.CodeBlock(self.codec[0], self.output)
             return self.CodeBlock(self.codec[0], self.output)
+
+
+class Gle(Handler):
+    'gle -cairo -output <outfile> -> Para(Img(outfile))'
+    codecs = {'gle': 'gle'}
+
+    def image(self, fmt=None):
+        self.outfmt = self.fmt(fmt)
+        args = self.options.split()#  + ['-output', self.outfile, self.inpfile]
+        args.extend(['-verbosity', '0'])
+        args.extend(['-output', self.outfile, self.inpfile])
+
+        if self.cmd(self.prog, *args):
+            # remove ./gle ?
+            return self.Para()
 
 
 class GnuPlot(Handler):
@@ -545,7 +583,6 @@ class Graphviz(Handler):
             return self.Para()
 
 from textwrap import wrap
-
 __doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 

@@ -7,9 +7,9 @@ Imagine
   wrapping some external command line utilities, such as:
 
     actdiag, asy, asymptote, blockdiag, boxes, circo, ditaa, dot, fdp,
-    figlet, gnuplot, graph, graphviz, imagine, mermaid, mscgen, neato,
-    nwdiag, packetdiag, pic, pic2plot, plantuml, plot, ploticus, protocol,
-    pyxplot, rackdiag, seqdiag, sfdp, twopi
+    figlet, flydraw, gle, gnuplot, graph, graphviz, imagine, mermaid,
+    mscgen, neato, nwdiag, packetdiag, pic, pic2plot, plantuml, plot,
+    ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, twopi
 
 Installation
 
@@ -17,16 +17,18 @@ Installation
   2. % sudo pip install (mandatory):
        - pandocfilters
   3. % sudo apt-get install (1 or more of):
-       - graphviz,   http://graphviz.org
-       - plantuml,   http://plantuml.com
-       - ditaa,      http://ditaa.sourceforge.net
-       - figlet,     http://www.figlet.org
-       - boxes,      http://boxes.thomasjensen.com
-       - plotutils,  https://www.gnu.org/software/plotutils/
-       - gnuplot,    http://www.gnuplot.info/
-       - asymptote,  http://asymptote.sourceforge.net/
-       - pyxplot,    http://pyxplot.org.uk/
-       - ploticus,   http://ploticus.sourceforge.net/doc/welcome.html
+       - graphviz,      http://graphviz.org
+       - plantuml,      http://plantuml.com
+       - ditaa,         http://ditaa.sourceforge.net
+       - figlet,        http://www.figlet.org
+       - boxes,         http://boxes.thomasjensen.com
+       - plotutils,     https://www.gnu.org/software/plotutils/
+       - gnuplot,       http://www.gnuplot.info/
+       - asymptote,     http://asymptote.sourceforge.net/
+       - pyxplot,       http://pyxplot.org.uk/
+       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
+       - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+       - gle-graphics,  http://glx.sourceforge.net/
 
      % sudo pip install:
        - blockdiag,  http://blockdiag.com
