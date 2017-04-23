@@ -175,7 +175,7 @@ metafile produced by graph contains only a single page.
 vector graphics file, and display or edit it with more than one drawing editor.
 
 ```{.plot options="--bitmap-size 300x200" keep=True caption="Created by plot"}
-input.meta
+dta/input.meta
 ```
 
 
@@ -245,7 +245,7 @@ begin graph
 	title "BAUD Rate = 9600 bit/sec"
 	xtitle "Seconds"
 	ytitle "Bits"
-	data "../test.dat"
+	data "../dta/test.dat"
 	d1 line marker wsquare
 	xaxis min -1 max 6
 	yaxis min 0 max 11
@@ -307,13 +307,16 @@ end graph
 
 ## saddle up
 
+The following GLE script creates saddle.dta, which we want to be put in the dta
+directory so the file name is given relative to the pd-images directory.
+
 ```{.gle keep=true caption="Created by GLE"}
 size 10 9
 
 set font texcmr hei 0.5 just tc
 
 begin letz
-   data "saddle.z"
+   data "../dta/saddle.z"
    z = 3/2*(cos(3/5*(y-1))+5/4)/(1+(((x-4)/3)^2))
    x from 0 to 20 step 0.5
    y from 0 to 20 step 0.5
@@ -325,7 +328,7 @@ write "Saddle Plot (3D)"
 begin object saddle
    begin surface
       size 10 9
-      data "saddle.z"
+      data "../dta/saddle.z"
       xtitle "X-axis" hei 0.35 dist 0.7
       ytitle "Y-axis" hei 0.35 dist 0.7
       ztitle "Z-axis" hei 0.35 dist 0.9
@@ -405,7 +408,7 @@ With the following in `gri-01.dat`
 plot the first two columns like so:
 
 ```{.gri keep=true caption="Created by Gri"}
-open gri-01.dat
+open dta/gri-01.dat
 read columns x y
 draw curve
 draw title "http://gri.sf.net"
@@ -458,7 +461,7 @@ used on each of the y curves.
 }
 
 
-open gri-01.dat
+open dta/gri-01.dat
 draw curves time y1 y2 y3 y4
 
 ```
@@ -656,7 +659,7 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 // read in the SNP map data file..
 #proc getdata
-file: snpmap.dat
+file: dta/snpmap.dat
 fieldnameheader: yes
 
 // group into bins 4 cM wide..
