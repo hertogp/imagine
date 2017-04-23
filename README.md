@@ -6,10 +6,10 @@ Imagine
   A pandoc filter that turns fenced codeblocks into graphics or ascii art by
   wrapping some external command line utilities, such as:
 
-    actdiag, asy, asymptote, blockdiag, boxes, circo, ditaa, dot, fdp,
-    figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid,
-    mscgen, neato, nwdiag, packetdiag, pic, pic2plot, plantuml, plot,
-    ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, twopi
+    actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot,
+    fdp, figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine,
+    mermaid, mscgen, neato, nwdiag, packetdiag, pic, pic2plot, plantuml,
+    plot, ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, twopi
 
 Installation
 
@@ -22,22 +22,22 @@ Installation
        - ditaa,         http://ditaa.sourceforge.net
        - figlet,        http://www.figlet.org
        - boxes,         http://boxes.thomasjensen.com
-       - plotutils,     https://www.gnu.org/software/plotutils/
-       - gnuplot,       http://www.gnuplot.info/
-       - asymptote,     http://asymptote.sourceforge.net/
-       - pyxplot,       http://pyxplot.org.uk/
+       - plotutils,     https://www.gnu.org/software/plotutils
+       - gnuplot,       http://www.gnuplot.info
+       - asymptote,     http://asymptote.sourceforge.net
+       - pyxplot,       http://pyxplot.org.uk
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
-       - gle-graphics,  http://glx.sourceforge.net/
-       - gri,           http://gri.sourceforge.net/
-                        also needs imagemagick's convert command
+       - gle-graphics,  http://glx.sourceforge.net
+       - gri,           http://gri.sourceforge.net
+       - imagemagick,   http://www.imagemagick.org (gri needs this)
 
      % sudo pip install:
-       - blockdiag,  http://blockdiag.com
-       - phantomjs,  http://phantomjs.org/ (for mermaid)
+       - blockdiag,     http://blockdiag.com
+       - phantomjs,     http://phantomjs.org/ (for mermaid)
 
      % git clone
-       - protocol,   https://github.com/luismartingarcia/protocol.git
+       - protocol,      https://github.com/luismartingarcia/protocol.git
 
      % npm install:
        - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)

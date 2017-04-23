@@ -391,6 +391,17 @@ class BlockDiag(Handler):
                     '-o', self.outfile):
             return self.Para()
 
+class Ctioga2(Handler):
+    codecs = {'ctioga2': 'ctioga2'}
+    outfmt = 'pdf'
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split()
+        args.extend(['-f', self.inpfile])
+        if self.cmd(self.prog, *args):
+            return self.Para()
+
 
 class Ditaa(Handler):
     codecs = {'ditaa': 'ditaa'}
@@ -468,6 +479,7 @@ class Graphviz(Handler):
         if self.cmd(self.prog, *args):
             return self.Para()
 
+
 class Gri(Handler):
     'gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
     # cannot convince gri to output intermediate ps in pd-images/..
@@ -493,6 +505,7 @@ class Gri(Handler):
             # gri complains on stdout apparently ...
             for line in self.output.splitlines():
                 self.msg(1, '>>:', line)
+
 
 class GnuPlot(Handler):
     'gnuplot inpfile -> Para(Img(outfile))'

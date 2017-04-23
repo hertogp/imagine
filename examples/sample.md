@@ -24,6 +24,90 @@ if processed_by(Imagine):
 else:
     print "Great, if you're reading this, it passed through Imagine unharmed"
 ```
+# Ctioga2
+
+[ctioga2](http://ctioga2.sourceforge.net) is a powerful command-line based
+polymorphic plotting program, based on the Tioga plotting library. It produces
+publication-quality PDF files; you make yourself an opinion of those looking at
+the gallery. It is a complete rewrite of ctioga. Compatibility was kept when it
+was not a problem. Most simple graphs from ctioga can be used directly with
+ctioga2. It benefits from several years of experience writing ctioga, and in
+particular which mistakes to avoid. It features an original polymorphic
+interface, which can be driven either using directly the command-line or
+through command-files. Why yet another plotting program ?
+
+But I wanted something: fast: plotting a data file is done within one or two
+seconds, just run something like ctioga2 -X data.dat from a terminal beautiful:
+it is based on Tioga, that produces high-quality PDF files powerful: 
+
+ctioga2 offers many features that are not found on other plotting systems (at
+least not all at once), such as
+
+- gradients for successive curves,
+- color maps and countours,
+- nice filled curves...
+
+Have a look at the gallery.
+
+- equation-friendly: plotting programs offer surprisingly little facilities to
+  typeset equations onto a graph. ctioga2 uses LaTeX — you can’t get any better
+- scriptable: being a command-line utility, it integrates naturally into the
+  power of command-line scripting. 
+- It is very easy to animate graphs into a movie !
+
+
+## Parabolas, filling & intersection
+
+```{.ctioga2 keep=true caption="Created by ctioga2" width=60%}
+title "Intersection of two parabolas"
+math 
+plot x*x /fill=top /fill-transparency 0.8 /legend '$x^2$'
+plot 50-x*x /fill=bottom /fill-transparency 0.8 /legend '$50 - x^2$'
+```
+
+## a grid system
+
+```{.ctioga2 keep=true caption="Created by ctioga2" width=60%}
+define-axis-style '.grid-non-left axis.left' /decoration=ticks /axis-label-text=' '
+define-axis-style '.grid-non-bottom axis.bottom' /decoration=ticks /axis-label-text=' '
+define-background-style '.grid-odd-column background' /background-color Blue!15
+define-axis-style '.grid-2-0 axis' /decoration=None
+
+setup-grid 3x2 /top=1mm /right=2mm /dy=2mm /dx=2mm
+math 
+    
+
+inset grid:next
+  plot sin(x)
+next-inset grid:next
+  plot cos(x)
+next-inset grid:next
+  plot -cos(x)
+next-inset grid:next
+  plot x**2
+next-inset grid:next
+  plot 10*x
+next-inset grid:next
+  plot 0.1*x**3
+end
+```
+
+## plotting data
+
+The data file's name `../dta/cr2-ex01.dat` is relative to the saved fenced code
+block in pd-images.  Hence the `../dta` part.
+
+```{.ctioga2 keep=true caption="Created by ctioga2" width=60%}
+draw-line -15,0 15,0 /style=Dashes /color=Gray
+plot ../dta/ct2-ex01.dat
+plot ../dta/ct2-ex01.dat@1:3
+title '\centering This is a very long title about sine waves'  \
+      /text-width=5cm /shift=1.3
+xlabel 'My $x$ label'
+ylabel 'My $y$ label'
+plot ../dta/ct2-ex01.dat@'$1:$2*0.5'
+plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
+```
 
 # Granddaddy GnuPlot
 
@@ -307,8 +391,8 @@ end graph
 
 ## saddle up
 
-The following GLE script creates saddle.dta, which we want to be put in the dta
-directory so the file name is given relative to the pd-images directory.
+The following GLE script creates saddle.dta, which we want to be put in the dta directory
+so the file name is given relative to the pd-images directory.
 
 ```{.gle keep=true caption="Created by GLE"}
 size 10 9
