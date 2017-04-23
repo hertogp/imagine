@@ -394,25 +394,28 @@ symbols.
 ## Single plot
 
 With the following in `gri-01.dat`
+
 ```
 1  8 11  9
 2 22 21 20
 3 11 10  9
 4 20 15 10
 ```
+
 plot the first two columns like so:
 
 ```{.gri keep=true caption="Created by Gri"}
 open gri-01.dat
 read columns x y
 draw curve
-draw title 'http://gri.sf.net'
+draw title "http://gri.sf.net"
+
 ```
 
 ## Multiple curves
 
 ```{.gri keep=true caption="Created by Gri"}
-`draw curves \xname \y1name ...'
+`draw curves' \xname \y1name ...'`
 Draw multiple y columns versus an x column.  Assumes
 that the datafile is open, and that x is in the first
 column, with the y values in one or more following 
@@ -427,7 +430,7 @@ used on each of the y curves.
   # and 'curves', and the name of the x-column.
   .num_of_y_columns. = {rpn wordc 3 -}
   if {rpn .num_of_y_columns. 1 >}
-    show "ERROR: `draw curves' needs at least 1 y column!"
+    show "ERROR: 'draw curves' needs at least 1 y column!"
     quit
   end if
 
@@ -457,8 +460,8 @@ used on each of the y curves.
 
 open gri-01.dat
 draw curves time y1 y2 y3 y4
-```
 
+```
 
 # Asymptote
 

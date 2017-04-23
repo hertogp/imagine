@@ -8,8 +8,8 @@
 #
 # o tizk, needs convert since eps wont go into pdflatex ..
 #
-# o DISLIN, or its DISGCL command (http://www.mps.mpg.de/dislin)
-#   not installable via apt-get or pip install?
+# o ctioga2, a ruby script aimed at creating plots
+#   needs ruby installed on the system.
 
 # Notes:
 # - need to check if Imagine cleanly removes itself from codeblock attributes
@@ -49,22 +49,22 @@ Installation
        - ditaa,         http://ditaa.sourceforge.net
        - figlet,        http://www.figlet.org
        - boxes,         http://boxes.thomasjensen.com
-       - plotutils,     https://www.gnu.org/software/plotutils/
-       - gnuplot,       http://www.gnuplot.info/
-       - asymptote,     http://asymptote.sourceforge.net/
-       - pyxplot,       http://pyxplot.org.uk/
+       - plotutils,     https://www.gnu.org/software/plotutils
+       - gnuplot,       http://www.gnuplot.info
+       - asymptote,     http://asymptote.sourceforge.net
+       - pyxplot,       http://pyxplot.org.uk
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
-       - gle-graphics,  http://glx.sourceforge.net/
-       - gri,           http://gri.sourceforge.net/
-                        also needs imagemagick's convert command
+       - gle-graphics,  http://glx.sourceforge.net
+       - gri,           http://gri.sourceforge.net
+       - imagemagick,   http://www.imagemagick.org (gri needs this)
 
      %% sudo pip install:
-       - blockdiag,  http://blockdiag.com
-       - phantomjs,  http://phantomjs.org/ (for mermaid)
+       - blockdiag,     http://blockdiag.com
+       - phantomjs,     http://phantomjs.org/ (for mermaid)
 
      %% git clone
-       - protocol,   https://github.com/luismartingarcia/protocol.git
+       - protocol,      https://github.com/luismartingarcia/protocol.git
 
      %% npm install:
        - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)
@@ -328,13 +328,15 @@ class Handler(object):
                      'stderr': PIPE}
             p = Popen(args, **pipes)
             self.output, err = p.communicate(stdinput)
-            # self.output = check_output(args, stderr=STDOUT)
+
+            # print any complaints on stderr
             if len(err):
                 self.msg(1, 'ok?', *args)
                 for line in err.splitlines():
                     self.msg(1, '>>:', line)
             else:
                 self.msg(2, 'ok:', *args)
+
             return p.returncode == 0
 
         except CalledProcessError as e:
@@ -352,40 +354,15 @@ class Handler(object):
         return None
 
 
-class Imagine(Handler):
-    '''wraps self, yields new codeblock w/ Imagine __doc__ string'''
-    codecs = {'imagine': 'imagine'}
+class Asy(Handler):
+    codecs = {'asy': 'asy', 'asymptote': 'asy'}
+    outfmt = 'png'
 
     def image(self, fmt=None):
-        # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
-        return pf.CodeBlock(('',['imagine'], []), __doc__)
-
-class Flydraw(Handler):
-    'flydraw < `codetxt` -> Image'
-    codecs = {'flydraw': 'flydraw'}
-    outfmt = 'gif'
-
-    def image(self, fmt=None):
-        args = self.options.split()
-        if self.cmd(self.prog, stdinput=self.codetxt, *args):
-            if len(self.output):
-                self.write('w', self.output, self.outfile)
+        self.fmt(fmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-o', self.outfile, *args):
             return self.Para()
-
-class Figlet(Handler):
-    'figlet `codetxt` -> CodeBlock(ascii art)'
-    codecs = {'figlet': 'figlet'}
-    outfmt = 'figled'
-
-    def image(self, fmt=None):
-        args = self.options.split()
-        if self.cmd(self.prog, stdinput=self.codetxt, *args):
-            if len(self.output):
-                # save figlet's stdout to outfile for next time around
-                self.write('w', self.output, self.outfile)
-            else:
-                self.output = self.read(self.outfile)
-            return self.CodeBlock(self.codec[0], self.output)
 
 
 class Boxes(Handler):
@@ -404,45 +381,53 @@ class Boxes(Handler):
             return self.CodeBlock(self.codec[0], self.output)
 
 
-class Protocol(Handler):
-    'protocol `codetxt` -> CodeBlock(packet format in ascii)'
-    codecs = {'protocol': 'protocol'}
-    outfmt = 'protocold'
+class BlockDiag(Handler):
+    progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
+    codecs = dict(zip(progs,progs))
 
     def image(self, fmt=None):
-        args = self.options.split() + [self.codetxt]
-        if self.cmd(self.prog, *args):
+        self.fmt(fmt)
+        if self.cmd(self.prog, '-T', self.outfmt, self.inpfile,
+                    '-o', self.outfile):
+            return self.Para()
+
+
+class Ditaa(Handler):
+    codecs = {'ditaa': 'ditaa'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        if self.cmd(self.prog, self.inpfile, self.outfile, '-T', self.options):
+            return self.Para()
+
+
+class Figlet(Handler):
+    'figlet `codetxt` -> CodeBlock(ascii art)'
+    codecs = {'figlet': 'figlet'}
+    outfmt = 'figled'
+
+    def image(self, fmt=None):
+        args = self.options.split()
+        if self.cmd(self.prog, stdinput=self.codetxt, *args):
             if len(self.output):
+                # save figlet's stdout to outfile for next time around
                 self.write('w', self.output, self.outfile)
             else:
                 self.output = self.read(self.outfile)
             return self.CodeBlock(self.codec[0], self.output)
-            return self.CodeBlock(self.codec[0], self.output)
 
 
-class Gri(Handler):
-    'gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
-    # cannot convince gri to output intermediate ps in pd-images/..
-    # so we move it there.
-    codecs = {'gri': 'gri'}
+class Flydraw(Handler):
+    'flydraw < fcb > Image'
+    codecs = {'flydraw': 'flydraw'}
+    outfmt = 'gif'
 
     def image(self, fmt=None):
         args = self.options.split()
-        args.extend(['-c', '0'])
-        args.extend(['-b', self.inpfile])
-        # args.extend(['-o', self.outfile])
-        self.msg(3, 'inpfile', self.inpfile)
-        self.msg(3, 'outfile', self.outfile)
-        if self.cmd(self.prog, *args):
-            # since gri insists on producing a .ps in current working dir
-            tmpfile = self.inpfile.replace('.gri','.ps')
-            os.rename(os.path.split(tmpfile)[-1], tmpfile)
-            self.msg(3, 'tmpfile', tmpfile)
-            if self.cmd('convert', tmpfile, self.outfile, forced=True):
-                return self.Para()
-            else:
-                self.msg(4, "could not convert gri's ps to", self.outfmt)
-
+        if self.cmd(self.prog, stdinput=self.codetxt, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            return self.Para()
 
 class Gle(Handler):
     'gle -cairo -output <outfile> -> Para(Img(outfile))'
@@ -459,6 +444,56 @@ class Gle(Handler):
             return self.Para()
 
 
+class Graph(Handler):
+    codecs = {'graph': 'graph'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-T', self.outfmt, *args):
+            self.write('wb', self.output, self.outfile)
+            return self.Para()
+
+
+class Graphviz(Handler):
+    progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
+    codecs = dict(zip(progs,progs))
+    codecs['graphviz'] = 'dot'
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split()
+        args.append('-T%s' % self.outfmt)
+        args.extend([self.inpfile, '-o', self.outfile])
+        if self.cmd(self.prog, *args):
+            return self.Para()
+
+class Gri(Handler):
+    'gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
+    # cannot convince gri to output intermediate ps in pd-images/..
+    # so we move it there.
+    codecs = {'gri': 'gri'}
+
+    def image(self, fmt=None):
+        args = self.options.split()
+        args.extend(['-c', '0'])
+        args.extend(['-b', self.inpfile])
+        if self.cmd(self.prog, *args):
+            # since gri insists on producing a .ps in current working dir
+            dstfile = self.inpfile.replace('.gri','.ps')
+            srcfile = os.path.split(dstfile)[-1]   # the temp ps in working dir
+            if os.path.isfile(srcfile):
+                self.msg(3, 'moving', srcfile, dstfile)
+                os.rename(srcfile, dstfile)
+            if self.cmd('convert', dstfile, self.outfile):
+                return self.Para()
+            else:
+                self.msg(2, "could not convert gri's ps to", self.outfmt)
+        else:
+            # gri complains on stdout apparently ...
+            for line in self.output.splitlines():
+                self.msg(1, '>>:', line)
+
 class GnuPlot(Handler):
     'gnuplot inpfile -> Para(Img(outfile))'
     codecs = {'gnuplot': 'gnuplot'}
@@ -471,6 +506,55 @@ class GnuPlot(Handler):
                 self.write('wb', self.output, self.outfile)
             return self.Para()
 
+
+class Imagine(Handler):
+    '''wraps self, yields new codeblock w/ Imagine __doc__ string'''
+    codecs = {'imagine': 'imagine'}
+
+    def image(self, fmt=None):
+        # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
+        return pf.CodeBlock(('',['imagine'], []), __doc__)
+
+class Mermaid(Handler):
+    codecs = {'mermaid': 'mermaid'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-o', IMG_BASEDIR+'-images', *args):
+            # latex chokes on filename.txt.png
+            try: os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
+            except: pass
+            return self.Para()
+
+class MscGen(Handler):
+    codecs = {'mscgen': 'mscgen'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        if self.cmd(self.prog, '-T', self.outfmt,
+                    '-o', self.outfile, self.inpfile):
+            return self.Para()
+
+
+class Pic2Plot(Handler):
+    codecs = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, '-T', self.outfmt, *args):
+            self.write('wb', self.output, self.outfile)
+            return self.Para()
+
+
+class PlantUml(Handler):
+    codecs = {'plantuml': 'plantuml'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        if self.cmd(self.prog, '-t%s' % self.outfmt, self.inpfile):
+            return self.Para()
 
 class Plot(Handler):
     'plot `cat codetxt` -> Para(Img(outfile))'
@@ -488,26 +572,30 @@ class Plot(Handler):
             return self.Para()
 
 
-class Graph(Handler):
-    codecs = {'graph': 'graph'}
+class Ploticus(Handler):
+    codecs = {'ploticus': 'ploticus'}
 
     def image(self, fmt=None):
         self.fmt(fmt)
         args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-T', self.outfmt, *args):
-            self.write('wb', self.output, self.outfile)
+        if self.cmd(self.prog, '-%s' % self.outfmt, '-o', self.outfile, *args):
             return self.Para()
 
 
-class Pic2Plot(Handler):
-    codecs = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
+class Protocol(Handler):
+    'protocol `codetxt` -> CodeBlock(packet format in ascii)'
+    codecs = {'protocol': 'protocol'}
+    outfmt = 'protocold'
 
     def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-T', self.outfmt, *args):
-            self.write('wb', self.output, self.outfile)
-            return self.Para()
+        args = self.options.split() + [self.codetxt]
+        if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('w', self.output, self.outfile)
+            else:
+                self.output = self.read(self.outfile)
+            return self.CodeBlock(self.codec[0], self.output)
+            return self.CodeBlock(self.codec[0], self.output)
 
 
 class PyxPlot(Handler):
@@ -524,90 +612,6 @@ class PyxPlot(Handler):
         if self.cmd(self.prog, self.inpfile, *args):
             return self.Para()
 
-
-class Asy(Handler):
-    codecs = {'asy': 'asy', 'asymptote': 'asy'}
-    outfmt = 'png'
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-o', self.outfile, *args):
-            return self.Para()
-
-
-class Ploticus(Handler):
-    codecs = {'ploticus': 'ploticus'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-%s' % self.outfmt, '-o', self.outfile, *args):
-            return self.Para()
-
-
-class PlantUml(Handler):
-    codecs = {'plantuml': 'plantuml'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        if self.cmd(self.prog, '-t%s' % self.outfmt, self.inpfile):
-            return self.Para()
-
-class Mermaid(Handler):
-    codecs = {'mermaid': 'mermaid'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, '-o', IMG_BASEDIR+'-images', *args):
-            # latex chokes on filename.txt.png
-            try: os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
-            except: pass
-            return self.Para()
-
-class Ditaa(Handler):
-    codecs = {'ditaa': 'ditaa'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        if self.cmd(self.prog, self.inpfile, self.outfile, '-T', self.options):
-            return self.Para()
-
-
-class MscGen(Handler):
-    codecs = {'mscgen': 'mscgen'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        if self.cmd(self.prog, '-T', self.outfmt,
-                    '-o', self.outfile, self.inpfile):
-            return self.Para()
-
-
-class BlockDiag(Handler):
-    progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
-    codecs = dict(zip(progs,progs))
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        if self.cmd(self.prog, '-T', self.outfmt, self.inpfile,
-                    '-o', self.outfile):
-            return self.Para()
-
-
-class Graphviz(Handler):
-    progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
-    codecs = dict(zip(progs,progs))
-    codecs['graphviz'] = 'dot'
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split()
-        args.append('-T%s' % self.outfmt)
-        args.extend([self.inpfile, '-o', self.outfile])
-        if self.cmd(self.prog, *args):
-            return self.Para()
 
 from textwrap import wrap
 __doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
