@@ -6,9 +6,10 @@
 #   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
 #   via `gracebat`, which symlinks to the real binary executable.
 #
-# o gri http://gri.sourceforge.net/gridoc/html/
-#
 # o tizk, needs convert since eps wont go into pdflatex ..
+#
+# o DISLIN, or its DISGCL command (http://www.mps.mpg.de/dislin)
+#   not installable via apt-get or pip install?
 
 # Notes:
 # - need to check if Imagine cleanly removes itself from codeblock attributes
@@ -55,6 +56,8 @@ Installation
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
        - gle-graphics,  http://glx.sourceforge.net/
+       - gri,           http://gri.sourceforge.net/
+                        also needs imagemagick's convert command
 
      %% sudo pip install:
        - blockdiag,  http://blockdiag.com
@@ -415,6 +418,30 @@ class Protocol(Handler):
                 self.output = self.read(self.outfile)
             return self.CodeBlock(self.codec[0], self.output)
             return self.CodeBlock(self.codec[0], self.output)
+
+
+class Gri(Handler):
+    'gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
+    # cannot convince gri to output intermediate ps in pd-images/..
+    # so we move it there.
+    codecs = {'gri': 'gri'}
+
+    def image(self, fmt=None):
+        args = self.options.split()
+        args.extend(['-c', '0'])
+        args.extend(['-b', self.inpfile])
+        # args.extend(['-o', self.outfile])
+        self.msg(3, 'inpfile', self.inpfile)
+        self.msg(3, 'outfile', self.outfile)
+        if self.cmd(self.prog, *args):
+            # since gri insists on producing a .ps in current working dir
+            tmpfile = self.inpfile.replace('.gri','.ps')
+            os.rename(os.path.split(tmpfile)[-1], tmpfile)
+            self.msg(3, 'tmpfile', tmpfile)
+            if self.cmd('convert', tmpfile, self.outfile, forced=True):
+                return self.Para()
+            else:
+                self.msg(4, "could not convert gri's ps to", self.outfmt)
 
 
 class Gle(Handler):

@@ -378,6 +378,88 @@ rline 0 -4
 ```
 
 
+# GRI
+
+[GRI](http://gri.sf.net) is a language for scientific graphics programming. The
+word "language" is important: Gri is command-driven, not point/click.
+
+Some users liken Gri to LaTeX, since both provide extensive power in exchange
+for patience in learning syntax.
+
+Gri can make x-y graphs, contour graphs, and image graphs, in PostScript and
+(someday) SVG formats. Control is provided over all aspects of drawing, e.g.
+line widths, colors, and fonts. A TeX-like syntax provides common mathematical
+symbols.
+
+## Single plot
+
+With the following in `gri-01.dat`
+```
+1  8 11  9
+2 22 21 20
+3 11 10  9
+4 20 15 10
+```
+plot the first two columns like so:
+
+```{.gri keep=true caption="Created by Gri"}
+open gri-01.dat
+read columns x y
+draw curve
+draw title 'http://gri.sf.net'
+```
+
+## Multiple curves
+
+```{.gri keep=true caption="Created by Gri"}
+`draw curves \xname \y1name ...'
+Draw multiple y columns versus an x column.  Assumes
+that the datafile is open, and that x is in the first
+column, with the y values in one or more following 
+columns.
+
+
+The number of columns is figured out from the options, 
+as is the name of the x-axis, and the labels to be 
+used on each of the y curves.
+{
+  # NB. the 3 below lets us skip the words 'draw' 
+  # and 'curves', and the name of the x-column.
+  .num_of_y_columns. = {rpn wordc 3 -}
+  if {rpn .num_of_y_columns. 1 >}
+    show "ERROR: `draw curves' needs at least 1 y column!"
+    quit
+  end if
+
+
+  set x name {rpn 2 wordv}
+  set y name ""
+
+
+  # Loop through the columns.
+  .col. = 0
+  while {rpn .num_of_y_columns. .col. <}
+    # The x-values will be in column 1, with y-values
+    # in columns 2, 3, ..., of the file.
+    .ycol. = {rpn .col. 2 +}
+    rewind
+    read columns x=1 y=.ycol.
+    # At this point, you may want to change line thickness,
+    # thickness, color, dash-type, etc.  For illustration,
+    # let's set dash type to the column number.
+    set dash .col.
+    draw curve
+    draw label for last curve {rpn .col. 3 + wordv}
+    .col. += 1
+  end while
+}
+
+
+open gri-01.dat
+draw curves time y1 y2 y3 y4
+```
+
+
 # Asymptote
 
 [Asymptote](http://asymptote.sourceforge.net/): The Vector Graphics Language.
