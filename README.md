@@ -7,7 +7,7 @@ Imagine
   wrapping some external command line utilities, such as:
 
     actdiag, asy, asymptote, blockdiag, boxes, circo, ditaa, dot, fdp,
-    figlet, flydraw, gle, gnuplot, graph, graphviz, imagine, mermaid,
+    figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid,
     mscgen, neato, nwdiag, packetdiag, pic, pic2plot, plantuml, plot,
     ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, twopi
 
@@ -29,6 +29,8 @@ Installation
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
        - gle-graphics,  http://glx.sourceforge.net/
+       - gri,           http://gri.sourceforge.net/
+                        also needs imagemagick's convert command
 
      % sudo pip install:
        - blockdiag,  http://blockdiag.com
