@@ -7,28 +7,6 @@
 #   via `gracebat`, which symlinks to the real binary executable.
 #
 # o tizk, needs convert since eps wont go into pdflatex ..
-#
-# o ctioga2, a ruby script aimed at creating plots
-#   needs ruby installed on the system.
-
-# Notes:
-# - need to check if Imagine cleanly removes itself from codeblock attributes
-#   if it returns some kind of (ascii art) codeblock itself.  Otherwise
-#   converting to markdown and processing that again with --filter Imagine
-#   might be somewhat unpredictable..
-# - to avoid work, a hash of the entire codeblock is used and a check is done
-#   for the intended output file.  That doesn't work well if usage is indirect
-#   where the codeblock points to a file.  So howto elegantly pick up on changes
-#   to a datafile?
-# - perhaps add an option to specify if a tool requires its input as
-#   -- an input file,
-#   -- on stdin or
-#   -- on its commandline?
-#   -- via redirect (ie codeblock=input filename)
-# - perhaps add ability to specify some globals via YAML in a document?
-#   -- like images subdir, instead of 'pd-images'
-#   -- verbosity level of output (or as codeblock option enable targetted
-#   debugging for a specific codeblock).
 
 #-- __doc__
 
@@ -44,20 +22,22 @@ Installation
   2. %% sudo pip install (mandatory):
        - pandocfilters
   3. %% sudo apt-get install (1 or more of):
-       - graphviz,      http://graphviz.org
-       - plantuml,      http://plantuml.com
+
+       - asymptote,     http://asymptote.sourceforge.net
+       - boxes,         http://boxes.thomasjensen.com
+       - ctioga2,       http://ctioga2.sourceforge.net
        - ditaa,         http://ditaa.sourceforge.net
        - figlet,        http://www.figlet.org
-       - boxes,         http://boxes.thomasjensen.com
-       - plotutils,     https://www.gnu.org/software/plotutils
-       - gnuplot,       http://www.gnuplot.info
-       - asymptote,     http://asymptote.sourceforge.net
-       - pyxplot,       http://pyxplot.org.uk
-       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
        - gle-graphics,  http://glx.sourceforge.net
+       - gnuplot,       http://www.gnuplot.info
+       - graphviz,      http://graphviz.org
        - gri,           http://gri.sourceforge.net
        - imagemagick,   http://www.imagemagick.org (gri needs this)
+       - plantuml,      http://plantuml.com
+       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
+       - plotutils,     https://www.gnu.org/software/plotutils
+       - pyxplot,       http://pyxplot.org.uk
 
      %% sudo pip install:
        - blockdiag,     http://blockdiag.com
