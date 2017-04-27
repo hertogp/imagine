@@ -33,7 +33,9 @@ Installation
        - gnuplot,       http://www.gnuplot.info
        - graphviz,      http://graphviz.org
        - gri,           http://gri.sourceforge.net
-       - imagemagick,   http://www.imagemagick.org (gri needs this)
+       - imagemagick,   http://www.imagemagick.org (gri needs `convert`)
+       - mscgen,        http://www.mcternan.me.uk/mscgen
+       - octave,        https://www.gnu.org/software/octave
        - plantuml,      http://plantuml.com
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - plotutils,     https://www.gnu.org/software/plotutils
@@ -66,7 +68,7 @@ Markdown usage
   Imagine understands/consumes these fenced codeblock key,val-attributes:
   - `options` used to feed extra arguments to the external command
   - `prog`    used when cmd is not an appropiate document class
-  - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
+  - `keep`    if True, keeps (a reconstructued copy of) the original CodeBlock
 
   Notes:
   - if `cmd` is not found, the codeblock is kept as-is.
@@ -74,6 +76,7 @@ Markdown usage
   - subdir `pd-images` is used to store any input/output files
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
+  - when creating a pdf, images are placed `nearest` to their fenced code block
 
 
 How Imagine works
@@ -435,6 +438,19 @@ class Gle(Handler):
             return self.Para()
 
 
+class GnuPlot(Handler):
+    'gnuplot inpfile -> Para(Img(outfile))'
+    codecs = {'gnuplot': 'gnuplot'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = self.options.split() + [self.inpfile]
+        if self.cmd(self.prog, *args):
+            if len(self.output):
+                self.write('wb', self.output, self.outfile)
+            return self.Para()
+
+
 class Graph(Handler):
     codecs = {'graph': 'graph'}
 
@@ -487,19 +503,6 @@ class Gri(Handler):
                 self.msg(1, '>>:', line)
 
 
-class GnuPlot(Handler):
-    'gnuplot inpfile -> Para(Img(outfile))'
-    codecs = {'gnuplot': 'gnuplot'}
-
-    def image(self, fmt=None):
-        self.fmt(fmt)
-        args = self.options.split() + [self.inpfile]
-        if self.cmd(self.prog, *args):
-            if len(self.output):
-                self.write('wb', self.output, self.outfile)
-            return self.Para()
-
-
 class Imagine(Handler):
     '''wraps self, yields new codeblock w/ Imagine __doc__ string'''
     codecs = {'imagine': 'imagine'}
@@ -528,6 +531,19 @@ class MscGen(Handler):
         if self.cmd(self.prog, '-T', self.outfmt,
                     '-o', self.outfile, self.inpfile):
             return self.Para()
+
+
+class Octave(Handler):
+    codecs = {'octave': 'octave'}
+
+    def image(self, fmt=None):
+        self.fmt(fmt)
+        args = ['--no-gui', '-q'] + self.options.split()
+        args.extend([self.inpfile, self.outfile])
+        if self.cmd(self.prog, *args):
+            if os.path.isfile(self.outfile):
+                # octave script should create the outfile
+                return self.Para()
 
 
 class Pic2Plot(Handler):

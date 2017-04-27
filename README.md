@@ -8,8 +8,9 @@ Imagine
 
     actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot,
     fdp, figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine,
-    mermaid, mscgen, neato, nwdiag, packetdiag, pic, pic2plot, plantuml,
-    plot, ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, twopi
+    mermaid, mscgen, neato, nwdiag, octave, packetdiag, pic, pic2plot,
+    plantuml, plot, ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp,
+    twopi
 
 Installation
 
@@ -28,7 +29,9 @@ Installation
        - gnuplot,       http://www.gnuplot.info
        - graphviz,      http://graphviz.org
        - gri,           http://gri.sourceforge.net
-       - imagemagick,   http://www.imagemagick.org (gri needs this)
+       - imagemagick,   http://www.imagemagick.org (gri needs `convert`)
+       - mscgen,        http://www.mcternan.me.uk/mscgen
+       - octave,        https://www.gnu.org/software/octave
        - plantuml,      http://plantuml.com
        - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
        - plotutils,     https://www.gnu.org/software/plotutils
@@ -61,7 +64,7 @@ Markdown usage
   Imagine understands/consumes these fenced codeblock key,val-attributes:
   - `options` used to feed extra arguments to the external command
   - `prog`    used when cmd is not an appropiate document class
-  - `keep`    if True, keeps a reconstructued copy of the original CodeBlock
+  - `keep`    if True, keeps (a reconstructued copy of) the original CodeBlock
 
   Notes:
   - if `cmd` is not found, the codeblock is kept as-is.
@@ -69,6 +72,7 @@ Markdown usage
   - subdir `pd-images` is used to store any input/output files
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
+  - when creating a pdf, images are placed `nearest` to their fenced code block
 
 
 How Imagine works
