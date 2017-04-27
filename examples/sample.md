@@ -10,15 +10,19 @@ topic: Imagine, image generator for pandoc
 
 # Noop's
 
-
+Only codeblocks with one of Imagine's classes will be recognized and processed.
 
 ## Anonymous CodeBlock
+
+Anonymous codeblocks are not processed.
 
 ```
 This code block is anonymous and not processed by Imagine.
 ```
 
 ## A Python CodeBlock
+
+Neither is a python codeblock processed.
 
 ```python
 if processed_by(Imagine):
@@ -27,35 +31,8 @@ else:
     print "Great, if you're reading this, it passed through Imagine unharmed"
 ```
 
-# Asymptote
 
-[Asymptote](http://asymptote.sourceforge.net/): The Vector Graphics Language.
-
-Asymptote is a powerful descriptive vector graphics language that provides a
-natural coordinate-based framework for technical drawing. Labels and equations
-are typeset with LaTeX, for high-quality PostScript output. A major advantage
-of Asymptote over other graphics packages is that it is a programming language,
-as opposed to just a graphics program.
-
-Features of Asymptote:
-
-- provides a portable standard for typesetting mathematical figures, just as
-  TeX/LaTeX has become the standard for typesetting equations;
-- generates high-quality PostScript, PDF, SVG, or 3D PRC vector graphics;
-- embeds 3D vector PRC graphics within PDF files;
-- inspired by MetaPost, with a much cleaner, powerful C++-like programming
-  syntax and IEEE floating-point numerics;
-- runs on all major platforms (UNIX, MacOS, Microsoft Windows);
-- mathematically oriented (e.g. rotation of vectors by complex multiplication);
-- LaTeX typesetting of labels (for document consistency);
-- uses simplex method and deferred drawing to solve overall size constraint
-  issues between fixed-sized objects (labels and arrowheads) and objects that
-  should scale with figure size;
-- fully generalizes MetaPost path construction algorithms to three dimensions;
-- compiles commands into virtual machine code for speed without sacrificing
-  portability;
-- high-level graphics commands are implemented in the Asymptote language
-  itself, allowing them to be easily tailored to specific applications.
+# *[Asymptote](http://asymptote.sourceforge.net/)*
 
 Notes:
 
@@ -93,22 +70,10 @@ draw(backHemisphere, surfacepen=material(white+opacity(0.8), ambientpen=white), 
 draw(O--X, blue+linewidth(1pt));
 ```
 
-# Blockdiag
 
-*[blockdiag site:](http://blockdiag.com)* `blockdiag` and its family generate diagram images from
-simple text files:
+# *[blockdiag site:](http://blockdiag.com)*
 
-- Supports many types of diagrams.
-    + block diagram (w/ blockdiag)
-    + sequence diagram (w/ seqdiag)
-    + activity diagram (w/ actdiag)
-    + logical network diagram (w/ nwdiag)
-- Generates beautiful diagram images from simple text format (similar to
-  graphviz’s DOT format)
-- Layouts diagram elements automatically
-- Embeds to many documentations; Sphinx, Trac, Redmine and some wikis
-
-## blockdiag
+## blockdiag command
 
 ```{.blockdiag prog=blockdiag keep=True width=100% caption="Created by Blockdiag"}
 blockdiag {
@@ -258,12 +223,10 @@ Unfortunately, packetdiag doesn't work properly due to a problem with some libra
 }
 ```
 
-# boxes
+# *[boxes](http://boxes.thomasjensen.com)*
 
 [boxes](http://boxes.thomasjensen.com) Boxes is a command line program that
 draws a box around its input text. It can remove and repair those boxes, too.
-You can easily make your own box designs if you wish, but many designs are
-already provided.
 
 ## design 'peek'
 
@@ -279,37 +242,8 @@ none of them suit your needs.
 ```
 
 
-# Ctioga2
 
-[ctioga2](http://ctioga2.sourceforge.net) is a powerful command-line based
-polymorphic plotting program, based on the Tioga plotting library. It produces
-publication-quality PDF files; you make yourself an opinion of those looking at
-the gallery. It is a complete rewrite of ctioga. Compatibility was kept when it
-was not a problem. Most simple graphs from ctioga can be used directly with
-ctioga2. It benefits from several years of experience writing ctioga, and in
-particular which mistakes to avoid. It features an original polymorphic
-interface, which can be driven either using directly the command-line or
-through command-files. Why yet another plotting program ?
-
-But I wanted something: fast: plotting a data file is done within one or two
-seconds, just run something like ctioga2 -X data.dat from a terminal beautiful:
-it is based on Tioga, that produces high-quality PDF files powerful: 
-
-ctioga2 offers many features that are not found on other plotting systems (at
-least not all at once), such as
-
-- gradients for successive curves,
-- color maps and countours,
-- nice filled curves...
-
-Have a look at the gallery.
-
-- equation-friendly: plotting programs offer surprisingly little facilities to
-  typeset equations onto a graph. ctioga2 uses LaTeX — you can’t get any better
-- scriptable: being a command-line utility, it integrates naturally into the
-  power of command-line scripting. 
-- It is very easy to animate graphs into a movie !
-
+# *[ctioga2](http://ctioga2.sourceforge.net)*
 
 ## Parabolas, filling & intersection
 
@@ -364,21 +298,8 @@ plot ../dta/ct2-ex01.dat@'$1:$2*0.5'
 plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 ```
 
-# Ditaa
 
-*[ditaa site:](http://ditaa.sourceforge.net)* `ditaa` is a small command-line
-utility written in Java, that can convert diagrams drawn using ascii art
-('drawings' that contain characters that resemble lines like | / - ), into
-proper bitmap graphics. This is best illustrated by the following example --
-which also illustrates the benefits of using ditaa in comparison to other
-methods :)
-
-ditaa interprets ascci art as a series of open and closed shapes, but it also
-uses special markup syntax to increase the possibilities of shapes and symbols
-that can be rendered.
-
-ditaa is open source and free software (free as in free speech), since it is
-released under the GPL license.
+# *[ditaa site:](http://ditaa.sourceforge.net)*
 
 ## Ditaa with options="-r"
 
@@ -437,7 +358,7 @@ released under the GPL license.
 
 ```
 
-# Figlet
+# *[Figlet](http://www.figlet.org)*
 
 ## figlet
 
@@ -450,14 +371,12 @@ figlet
 hello, world!
 ```
 
-# Flydraw
+# *[Flydraw](http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html)*
 
-[flydraw](http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html) is
-an inline drawing tool that really only produces GIF images despite the claim
-in the manpage for producting png images.  Flydraw reads it's script from stdin
-and by *not* using the `output <filename.ext>` command, it will produce the image
-data on it's stdout.  This output is captured, saved and linked to.
+Notes:
 
+- seems to only want to produce GIF, despite the manual's mention of PNG.
+- only reads from stdin
 
 ## frenchman
 
@@ -522,18 +441,7 @@ line 0,y0,w,y0, black
 text green,3,h-16,normal,"flydraw"
 ```
 
-# GLE
-
-[GLE](http://gle.sf.net) (Graphics Layout Engine) is a graphics scripting
-language designed for creating publication quality figures (e.g., a chart,
-plot, graph, or diagram). It supports various chart types (including function
-plot, histogram, bar chart, scatter plot, contour plot, color map, and surface
-plot) through a simple but flexible set of graphing commands. More complex
-output can be created by relying on GLE's scripting language, which is full
-featured with subroutines, variables, and logic control. GLE relies on LaTeX
-for text output and supports mathematical formulae in graphs and figures. GLE's
-output formats include EPS, PS, PDF, JPEG, and PNG. GLE is licenced under the
-BSD license. QGLE, the GLE user interface, is licenced under the GPL license. 
+# *[GLE](http://gle.sf.net)*
 
 ## Baudrate
 
@@ -696,16 +604,7 @@ rline 0 -4
 ```
 
 
-# GnuPlot
-
-[gnuplot](http://gnuplot.sourceforge.net) Gnuplot is a portable command-line
-driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other
-platforms. The source code is copyrighted but freely distributed (i.e., you
-don't have to pay for it). It was originally created to allow scientists and
-students to visualize mathematical functions and data interactively, but has
-grown to support many non-interactive uses such as web scripting. It is also
-used as a plotting engine by third-party applications like Octave. Gnuplot has
-been supported and under active development since 1986.
+# *[Gnuplot](http://gnuplot.sourceforge.net)*
 
 Note:
 
@@ -764,14 +663,7 @@ set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
 splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines,       1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
 ```
 
-# Graphviz
-
-*[graphviz.org site:](http://www.graphviz.org)* `Graphviz` is open source graph
-visualization software. Graph visualization is a way of representing structural
-information as diagrams of abstract graphs and networks. It has important
-applications in networking, bioinformatics, software engineering, database and
-web design, machine learning, and in visual interfaces for other technical
-domains.
+# *[graphviz.org site:](http://www.graphviz.org)*
 
 ## `Graphviz` defaults to dot
 
@@ -902,18 +794,7 @@ sleep -- runmem;
 }
 ```
 
-# GRI
-
-[GRI](http://gri.sf.net) is a language for scientific graphics programming. The
-word "language" is important: Gri is command-driven, not point/click.
-
-Some users liken Gri to LaTeX, since both provide extensive power in exchange
-for patience in learning syntax.
-
-Gri can make x-y graphs, contour graphs, and image graphs, in PostScript and
-(someday) SVG formats. Control is provided over all aspects of drawing, e.g.
-line widths, colors, and fonts. A TeX-like syntax provides common mathematical
-symbols.
+# *[GRI](http://gri.sf.net)*
 
 ## Single plot
 
@@ -987,7 +868,7 @@ draw curves time y1 y2 y3 y4
 
 ```
 
-# Mermaid
+# *[Mermaid](https://knsv.github.io/mermaid)*
 
 ## sequence graph
 
@@ -1020,17 +901,7 @@ gantt
 ```
 
 
-# Mscgen
-
-*[mscgen site:](http://www.mcternan.me.uk/mscgen/)* mscgen is a small program
-that parses Message Sequence Chart descriptions and produces PNG, SVG, EPS or
-server side image maps (ismaps) as the output. Message Sequence Charts (MSCs)
-are a way of representing entities and interactions over some time period and
-are often used in combination with SDL. MSCs are popular in Telecoms to specify
-how protocols operate although MSCs need not be complicated to create or use.
-Mscgen aims to provide a simple text language that is clear to create, edit and
-understand, which can also be transformed into common image formats for display
-or printing.
+# *[Mscgen site:](http://www.mcternan.me.uk/mscgen/)*
 
 ## example w/ boxes
 
@@ -1076,7 +947,8 @@ msc {
 ```
 
 
-# Octave
+# *[Octave](https://www.gnu.org/software/octave)*
+
 
 Hints for using `Octave` as batch processor:
 
@@ -1147,20 +1019,7 @@ title("3-D waves");
 print(1, outname, '-dpng');
 ```
 
-# Plantuml
-
-*[plantuml site:](http://plantuml.com/)* `plantuml` is a component that
-allows to quickly write:
-
-- Sequence diagram
-- Usecase diagram
-- Class diagram
-- Activity diagram (here is the legacy syntax),
-- Component diagram
-- State diagram
-- Object diagram
-- Deployment diagram 
-- Timing diagram 
+# *[Plantuml site:](http://plantuml.com/)*
 
 ## sequence diagrams
 
@@ -1241,18 +1100,7 @@ endif
 @enduml
 ```
 
-# Ploticus
-
-[Ploticus](http://ploticus.sourceforge.net/doc/welcome.html)
-
-Ploticus is a free GPL software utility that can produce various types of plots
-and graphs like shown here and here. Data input is usually csv files or text
-files such as used with sort, awk, etc. Output options are GIF, PNG,
-PostScript, SVG and some others. HTML imagemaps are supported. Ploticus can
-produce just-in-time plots in dynamic web content systems, or in batch
-production settings. It can be invoked from your command line, in shell
-scripts, via system() calls in web content environments and other programs, or
-via the libploticus API. 
+# *[Ploticus](http://ploticus.sourceforge.net/doc/welcome.html)*
 
 ## prefab
 
@@ -1435,44 +1283,24 @@ textdetails: size=6
 
 ```
 
-# Plotutils
+# *[Plotutils site](https://www.gnu.org/software/plotutils)*
 
-*[plotutils site](https://www.gnu.org/software/plotutils)* It includes:
+It includes:
 
-- GNU *`graph`*, which plots 2-D datasets or data streams in real time. Being
-  designed for command-line use, it can be used in shell scripts. It produces
-  output on an X Window System display, in SVG format, in PNG format, in PNM
-  format, in pseudo-GIF format, in WebCGM format, in Illustrator format, in
-  Postscript format, in PCL 5 format, in HP-GL/2 format, in Fig format (editable
-  with the xfig drawing editor), in ReGIS format, in Tektronix format, or in GNU
-  Metafile format.
-
-    Output in Postscript format may be edited with the idraw drawing editor. idraw
-    is available in the ivtools package from Vectaport, Inc. Both xfig and idraw
-    are free software. 
-
+- GNU *`graph`*, which plots 2-D datasets or data streams in real time.
 - GNU *`plot`*, which translates GNU Metafile format to any of the other formats.
-
 - GNU *`tek2plot`*, for translating legacy Tektronix data to any of the above
   formats.
-
 - GNU *`pic2plot`*, for translating the pic language (a scripting language for
   designing box-and-arrow diagrams) to any of the above formats. The pic language
   was designed at Bell Labs as an enhancement to the troff text formatter. 
-
 - GNU *`plotfont`*, for displaying character maps of the fonts that are available
   in the above formats.
-
 - GNU *`spline`*, which does spline interpolation of data. It normally uses either
   cubic spline interpolation or exponential splines in tension, but it can
   function as a real-time filter under some circumstances.
-
 - GNU *`ode`*, which numerically integrates a system consisting of one or more
   ordinary differential equations.
-
-We developed these command-line programs to replace the Unix command-line
-programs graph, plot, and spline. The GNU versions are far more powerful, and
-are free software.
 
 Note:
 
@@ -1549,9 +1377,9 @@ box "END"
 .PE
 ```
 
-# Protocol
+# *[Protocol](https://github.com/luismartingarcia/protocol):*
 
-*[protocol github](Phttps://github.com/luismartingarcia/protocol):* Protocol is a simple command-line tool that serves two purposes:
+Protocol is a simple command-line tool that serves two purposes:
 
 - Provide a simple way for engineers to have a look at standard network
   protocol headers, directly from the command-line, without having to
@@ -1574,7 +1402,7 @@ and even custom layouts:
 Source:16,TTL:8,Reserved:40
 ```
 
-# PyxPlot
+# *[PyxPlot](http://pyxplot.org.uk)*
 
 
 ## ex01
@@ -1597,3 +1425,414 @@ plot 3d [-6*pi:6*pi][-6*pi:6*pi][-0.3:1] sinc(hypot(x,y)) \
      fillcol hsb(atan2($1,$2)/(2*pi)+0.5,hypot($1,$2)/30+0.2,$3*0.5+0.5)
 ```
 
+# SheBang
+
+The `imagine` filter also features the `shebang` class which will run
+the fenced code block as a system script.
+
+```shebang
+#!/bin/bash
+echo "This script is saved as :" $0
+echo "and its (user) executable flag is set:"
+echo
+echo $(ls -lpah $0 | cut -d' ' -f1,9) | boxes -d peek
+echo
+echo "When run, it should produce: $1"
+echo
+echo "If it doesn't, Imagine will report a missing image on stderr and"
+echo "will retain the original CodeBlock as-is.  The same holds true"
+echo "if the script returns with an exit code other than 0 (zero)"
+echo
+echo "Also, any text on stdout (like these echo's) is included in its own CodeBlock"
+```
+
+The code text is saved and its executable flag is set, after which is it used
+as a system command with the intended output filename as its sole argument.  If
+that file exists after the script returns, it is linked to as an Image.  Any
+output produced on stdout will be added after the figure in a separate
+codeblock.  If the script does not produce the intended image or exits with
+an error code, the original CodeBlock is retained as well.
+
+## *[Matplotlib](https://matplotlib.org)*
+
+### Agg
+
+```{.shebang keep=true caption="Created by Matplotlib"}
+#!/usr/bin/env python
+
+import sys
+import numpy as np
+import matplotlib as mpl
+# mpl.use('Agg')
+import matplotlib.pyplot as plt
+
+t = np.arange(0.0, 2.0, 0.01)
+s = 1 + np.sin(2*np.pi*t)
+plt.plot(t, s)
+
+plt.xlabel('time (s)')
+plt.ylabel('voltage (mV)')
+plt.title('A simple plot')
+plt.grid(True)
+#plt.savefig(sys.argv[-1])
+print "Saved as -->", sys.argv[-1]
+```
+
+### Fill with alpha
+
+```{.shebang keep=true caption="Created by Matplotlib"}
+#!/usr/bin/env python
+
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi, 500)
+y1 = np.sin(2 * x)
+y2 = np.sin(3 * x)
+
+fig, ax = plt.subplots()
+ax.fill(x, y1, 'b', x, y2, 'r', alpha=0.2)
+fig.savefig(sys.argv[-1])
+```
+
+### Axis scale transformations
+
+```{.shebang keep=true caption="Created by Matplotlib"}
+#!/usr/bin/env python
+
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
+
+np.random.seed(1)
+# make up some data in the interval ]0, 1[
+y = np.random.normal(loc=0.5, scale=0.4, size=1000)
+y = y[(y > 0) & (y < 1)]
+y.sort()
+x = np.arange(len(y))
+
+# plot with various axes scales
+fig, axs = plt.subplots(2, 2, sharex=True)
+fig.subplots_adjust(left=0.08, right=0.98, wspace=0.3)
+
+# linear
+ax = axs[0, 0]
+ax.plot(x, y)
+ax.set_yscale('linear')
+ax.set_title('linear')
+ax.grid(True)
+
+
+# log
+ax = axs[0, 1]
+ax.plot(x, y)
+ax.set_yscale('log')
+ax.set_title('log')
+ax.grid(True)
+
+
+# symmetric log
+ax = axs[1, 1]
+ax.plot(x, y - y.mean())
+ax.set_yscale('symlog', linthreshy=0.02)
+ax.set_title('symlog')
+ax.grid(True)
+
+# logit
+ax = axs[1, 0]
+ax.plot(x, y)
+ax.set_yscale('logit')
+ax.set_title('logit')
+ax.grid(True)
+ax.yaxis.set_minor_formatter(NullFormatter())
+
+fig.savefig(sys.argv[-1])
+```
+
+### Coherence of two signals
+
+```{.shebang keep=true caption="Created by Matplotlib"}
+#!/usr/bin/env python
+
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.subplots_adjust(wspace=0.5)                # space the subplots
+
+dt = 0.01
+t = np.arange(0, 30, dt)
+nse1 = np.random.randn(len(t))                 # white noise 1
+nse2 = np.random.randn(len(t))                 # white noise 2
+r = np.exp(-t/0.05)
+
+cnse1 = np.convolve(nse1, r, mode='same')*dt   # colored noise 1
+cnse2 = np.convolve(nse2, r, mode='same')*dt   # colored noise 2
+
+# two signals with a coherent part and a random part
+s1 = 0.01*np.sin(2*np.pi*10*t) + cnse1
+s2 = 0.01*np.sin(2*np.pi*10*t) + cnse2
+
+plt.subplot(211)
+plt.plot(t, s1, t, s2)
+plt.xlim(0, 5)
+plt.xlabel('time')
+plt.ylabel('s1 and s2')
+plt.grid(True)
+
+plt.subplot(212)
+cxy, f = plt.cohere(s1, s2, 256, 1./dt)
+plt.ylabel('coherence')
+plt.savefig(sys.argv[-1])
+```
+
+### 3D image
+
+```{.shebang keep=true caption="Created by Matplotlib"}
+#!/usr/bin/env python
+import sys
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import pyplot as plt
+import numpy as np
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Create the mesh in polar coordinates and compute corresponding Z.
+r = np.linspace(0, 1.25, 50)
+p = np.linspace(0, 2*np.pi, 50)
+R, P = np.meshgrid(r, p)
+Z = ((R**2 - 1)**2)
+
+# Express the mesh in the cartesian system.
+X, Y = R*np.cos(P), R*np.sin(P)
+
+# Plot the surface.
+ax.plot_surface(X, Y, Z, cmap=plt.cm.YlGnBu_r)
+
+# Tweak the limits and add latex math labels.
+ax.set_zlim(0, 1)
+ax.set_xlabel(r'$\phi_\mathrm{real}$')
+ax.set_ylabel(r'$\phi_\mathrm{im}$')
+ax.set_zlabel(r'$V(\phi)$')
+
+plt.savefig(sys.argv[-1])
+```
+
+## *[Pygal](http://pygal.org/en/stable)*
+
+- uses python3
+- needs cairosvg, tinycss, cssselect to render to png
+
+### Solid Gauges
+
+```{.shebang keep=true caption="Created by Pygal"}
+#!/usr/bin/env python3
+
+import sys
+import pygal
+
+gauge = pygal.SolidGauge(inner_radius=0.70)
+percent_formatter = lambda x: '{:.10g}%'.format(x)
+dollar_formatter = lambda x: '{:.10g}$'.format(x)
+gauge.value_formatter = percent_formatter
+
+gauge.add('Series 1', [{'value': 225000, 'max_value': 1275000}],
+          formatter=dollar_formatter)
+gauge.add('Series 2', [{'value': 110, 'max_value': 100}])
+gauge.add('Series 3', [{'value': 3}])
+gauge.add(
+    'Series 4', [
+        {'value': 51, 'max_value': 100},
+        {'value': 12, 'max_value': 100}])
+gauge.add('Series 5', [{'value': 79, 'max_value': 100}])
+gauge.add('Series 6', 99)
+gauge.add('Series 7', [{'value': 100, 'max_value': 100}])
+
+gauge.render_to_png(sys.argv[-1])
+```
+
+### Basic XY line
+
+```{.shebang keep=true caption="Created by Pygal"}
+#!/usr/bin/env python3
+
+import sys
+import pygal
+from math import cos
+
+xy_chart = pygal.XY()
+xy_chart.title = 'XY Cosinus'
+xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+xy_chart.add('x = 1',  [(1, -5), (1, 5)])
+xy_chart.add('x = -1', [(-1, -5), (-1, 5)])
+xy_chart.add('y = 1',  [(-5, 1), (5, 1)])
+xy_chart.add('y = -1', [(-5, -1), (5, -1)])
+xy_chart.render_to_png(sys.argv[-1])
+```
+
+## *[Octave](https://www.gnu.org/software/octave)*
+
+Earlier example of Octave, but now run as a script.
+
+```{.shebang keep=true caption="Created by Octave"}
+#!/usr/bin/env octave
+
+figure(1, 'visible', 'off');
+
+x = 0:0.01:2*pi;
+a = sin(x);
+b = cos(2*x);
+c = sin(4*x);
+d = 2*sin(3*x);
+plot(x,a,x,b,x,c,x,d, "linewidth", 2);
+set(gca, "xlim", [0,2*pi], "fontsize", 15);
+title("sinusoids");
+
+print(1, argv(){1})
+```
+
+## *[ChartDirector](http://www.advsofteng.com/index.html)*
+
+The yellow bars below the images created by ChartDirector are because this
+is the demo-version without a license.
+
+### Line Chart
+
+```{.shebang keep=true caption="Created by ChartDirector"}
+#!/usr/bin/python
+import sys
+from pychartdir import *
+
+data0 = [42, 49, NoValue, 38, 64, 56, 29, 41, 44, 57]
+data1 = [65, 75, 47, 34, 42, 49, 73, NoValue, 90, 69, 66, 78]
+data2 = [NoValue, NoValue, 25, 28, 38, 20, 22, NoValue, 25, 33, 30, 24]
+labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+c = XYChart(600, 360, brushedSilverColor(), Transparent, 2)
+c.setRoundedFrame()
+title = c.addTitle("Product Line Global Revenue", "timesbi.ttf", 18)
+title.setMargin2(0, 0, 6, 6)
+c.addLine(10, title.getHeight(), c.getWidth() - 11, title.getHeight(), LineColor)
+legendBox = c.addLegend(c.getWidth() / 2, title.getHeight(), 0, "arialbd.ttf", 10)
+legendBox.setAlignment(TopCenter)
+legendBox.setBackground(Transparent, Transparent)
+c.setPlotArea(70, 75, 460, 240, -1, -1, Transparent, 0x000000, -1)
+c.xAxis().setLabels(labels)
+c.syncYAxis()
+c.yAxis().setTickDensity(30)
+c.xAxis().setColors(Transparent)
+c.yAxis().setColors(Transparent)
+c.yAxis2().setColors(Transparent)
+c.xAxis().setMargin(15, 15)
+c.xAxis().setLabelStyle("arialbd.ttf", 8)
+c.yAxis().setLabelStyle("arialbd.ttf", 8)
+c.yAxis2().setLabelStyle("arialbd.ttf", 8)
+c.yAxis().setTitle("Revenue in USD millions", "arialbi.ttf", 10)
+c.yAxis2().setTitle("Revenue in USD millions", "arialbi.ttf", 10)
+layer0 = c.addLineLayer2()
+layer0.addDataSet(data0, 0xff0000, "Quantum Computer").setDataSymbol(GlassSphere2Shape, 11)
+layer0.setLineWidth(3)
+layer1 = c.addLineLayer2()
+layer1.addDataSet(data1, 0x00ff00, "Atom Synthesizer").setDataSymbol(GlassSphere2Shape, 11)
+layer1.setLineWidth(3)
+layer1.setGapColor(c.dashLineColor(0x00ff00))
+layer2 = c.addLineLayer2()
+layer2.addDataSet(data2, 0xff6600, "Proton Cannon").setDataSymbol(GlassSphere2Shape, 11)
+layer2.setLineWidth(3)
+layer2.setGapColor(SameAsMainColor)
+c.layoutLegend()
+c.packPlotArea(15, legendBox.getTopY() + legendBox.getHeight(), c.getWidth() - 16, c.getHeight(
+    ) - 25)
+
+c.makeChart(sys.argv[-1])
+```
+
+### Surface
+
+```{.shebang keep=true caption="Created by ChartDirector"}
+#!/usr/bin/python
+import sys
+from pychartdir import *
+
+dataX = [0.5, 1.9, 4.9, 1.0, 8.9, 9.8, 5.9, 2.9, 6.8, 9.0, 0.0, 8.9, 1.9, 4.8, 2.4, 3.4, 7.9, 7.5,
+    4.8, 7.5, 9.5, 0.4, 8.9, 0.9, 5.4, 9.4, 2.9, 8.9, 0.9, 8.9, 10.0, 1.0, 6.8, 3.8, 9.0, 5.3, 6.4,
+    4.9, 4.5, 2.0, 5.4, 0.0, 10.0, 3.9, 5.4, 5.9, 5.8, 0.3, 4.4, 8.3]
+dataY = [3.3, 3.0, 0.7, 1.0, 9.3, 4.5, 8.4, 0.1, 0.8, 0.1, 9.3, 1.8, 4.3, 1.3, 2.3, 5.4, 6.9, 9.0,
+    9.8, 7.5, 1.8, 1.4, 4.5, 7.8, 3.8, 4.0, 2.9, 2.4, 3.9, 2.9, 2.3, 9.3, 2.0, 3.4, 4.8, 2.3, 3.4,
+    2.3, 1.5, 7.8, 4.5, 0.9, 6.3, 2.4, 6.9, 2.8, 1.3, 2.9, 6.4, 6.3]
+dataZ = [6.6, 12.5, 7.4, 6.2, 9.6, 13.6, 19.9, 2.2, 6.9, 3.4, 8.7, 8.4, 7.8, 8.0, 9.4, 11.9, 9.6,
+    15.7, 12.0, 13.3, 9.6, 6.4, 9.0, 6.9, 4.6, 9.7, 10.6, 9.2, 7.0, 6.9, 9.7, 8.6, 8.0, 13.6, 13.2,
+    5.9, 9.0, 3.2, 8.3, 9.7, 8.2, 6.1, 8.7, 5.6, 14.9, 9.8, 9.3, 5.1, 10.8, 9.8]
+c = SurfaceChart(680, 550, brushedSilverColor(), 0x888888)
+c.setRoundedFrame(0xffffff, 20, 0, 20, 0)
+title = c.addTitle("Surface Created Using Scattered Data Points", "timesi.ttf", 20)
+title.setMargin2(0, 0, 8, 8)
+c.addLine(10, title.getHeight(), c.getWidth() - 10, title.getHeight(), 0x000000, 2)
+c.setPlotRegion(290, 235, 360, 360, 180)
+c.setViewAngle(45, -45)
+c.setPerspective(30)
+c.setData(dataX, dataY, dataZ)
+cAxis = c.setColorAxis(660, 80, TopRight, 200, Right)
+cAxis.setTitle("Z Title Placeholder", "arialbd.ttf", 12)
+cAxis.setBoundingBox(0xeeeeee, 0x888888)
+cAxis.setRoundedCorners(10, 0, 10, 0)
+c.setSurfaceAxisGrid(0xcc000000)
+c.setContourColor(0x80ffffff)
+c.setWallColor(0x000000)
+c.setWallGrid(0xffffff, 0xffffff, 0xffffff, 0x888888, 0x888888, 0x888888)
+c.setWallThickness(0, 0, 0)
+c.setWallVisibility(1, 0, 0)
+c.xAxis().setTitle("X Title\nPlaceholder", "arialbd.ttf", 12)
+c.yAxis().setTitle("Y Title\nPlaceholder", "arialbd.ttf", 12)
+c.makeChart(sys.argv[-1])
+```
+
+### Gauge
+
+```{.shebang keep=true caption="Created by ChartDirector"}
+#!/usr/bin/python
+import sys
+from pychartdir import *
+
+value = 54
+colorList = [0x0033dd, 0xaaaa00]
+mainColor = colorList[1]
+size = 300
+outerRadius = int(size / 2 - 2)
+scaleRadius = int(outerRadius * 92 / 100)
+colorScaleRadius = int(scaleRadius * 43 / 100)
+colorScaleWidth = int(scaleRadius * 10 / 100)
+tickLength = int(scaleRadius * 10 / 100)
+tickWidth = int(scaleRadius * 1 / 100 + 1)
+fontSize = int(scaleRadius * 13 / 100)
+readOutRadiusRatio = 0.333333333333
+readOutFontSize = int(scaleRadius * 24 / 100)
+m = AngularMeter(size, size, 0x000000)
+m.setColor(TextColor, 0xffffff)
+m.setColor(LineColor, 0xffffff)
+m.setMeter(size / 2, size / 2, scaleRadius, -180, 90)
+bgGradient = [0, mainColor, 0.5, m.adjustBrightness(mainColor, 0.75), 1, m.adjustBrightness(
+    mainColor, 0.15)]
+m.addRing(0, outerRadius, m.relativeRadialGradient(bgGradient, outerRadius * 0.66))
+neonGradient = [0.89, Transparent, 1, mainColor, 1.07, Transparent]
+m.addRing(int(scaleRadius * 85 / 100), outerRadius, m.relativeRadialGradient(neonGradient))
+m.addRing(scaleRadius, int(scaleRadius + scaleRadius / 80), m.adjustBrightness(mainColor, 2))
+m.setScale(0, 100, 10, 5, 1)
+m.setLabelStyle("ariali.ttf", fontSize)
+m.setTickLength( - tickLength,  - int(tickLength * 80 / 100),  - int(tickLength * 60 / 100))
+m.setLineWidth(0, tickWidth, int((tickWidth + 1) / 2), int((tickWidth + 1) / 2))
+smoothColorScale = [0, 0x0000ff, 25, 0x0088ff, 50, 0x00ff00, 75, 0xdddd00, 100, 0xff0000]
+highColorScale = [70, Transparent, 100, 0xff0000]
+m.addColorScale(highColorScale)
+m.addPointer2(value, 0xff0000, -1, TriangularPointer2, 0.4, 0.6, 6)
+m.setCap2(Transparent, m.adjustBrightness(mainColor, 0.3), m.adjustBrightness(mainColor, 1.5),
+    0.75, 0, readOutRadiusRatio, 0.015)
+m.addText(size / 2, size / 2, m.formatValue(value, "{value|0}"), "ariali.ttf", readOutFontSize,
+    m.adjustBrightness(mainColor, 2.5), Center).setMargin(0)
+m.addGlare(scaleRadius)
+m.makeChart(sys.argv[-1])
+```
