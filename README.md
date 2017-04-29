@@ -80,7 +80,10 @@ import imagine
 
 classes = set(imagine.Handler.workers.values())
 for cls in sorted(classes, key=lambda x: x.__name__):
-    print 'class', cls
+    print cls.__name__
+    print cls.__doc__
+    print
+
 
 print imagine.Asy.__doc__
 ```

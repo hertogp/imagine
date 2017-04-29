@@ -105,29 +105,175 @@ All details
 -----------
 
 ``` {.stdout}
-class <class 'imagine.Asy'>
-class <class 'imagine.BlockDiag'>
-class <class 'imagine.Boxes'>
-class <class 'imagine.Ctioga2'>
-class <class 'imagine.Ditaa'>
-class <class 'imagine.Figlet'>
-class <class 'imagine.Flydraw'>
-class <class 'imagine.Gle'>
-class <class 'imagine.GnuPlot'>
-class <class 'imagine.Graph'>
-class <class 'imagine.Graphviz'>
-class <class 'imagine.Gri'>
-class <class 'imagine.Imagine'>
-class <class 'imagine.Mermaid'>
-class <class 'imagine.MscGen'>
-class <class 'imagine.Octave'>
-class <class 'imagine.Pic2Plot'>
-class <class 'imagine.PlantUml'>
-class <class 'imagine.Plot'>
-class <class 'imagine.Ploticus'>
-class <class 'imagine.Protocol'>
-class <class 'imagine.PyxPlot'>
-class <class 'imagine.SheBang'>
+Asy
+
+    ```asy
+    code
+    ```
+    =>  asy -o <fname>.<fmt> [<options>] <fname>.asy
+    <=  Para(Image)
+    
+
+BlockDiag
+
+    ```cmd
+    text
+    ```
+    => cmd -T <fmt> <fname>.txt -o <fname>.ext
+    <= Para(Image)
+
+    where cmd is one of:
+      blockdiag, segdiag, rackdiag, nwdiag, packetdiag or actdiag
+
+    
+
+Boxes
+
+    ```boxes
+    text
+    ```
+    => boxes [options] <fname>.boxed
+    <= CodeBlock(stdout)
+    
+
+Ctioga2
+
+    ```ctioga2
+    code
+    ```
+    => ctioga2 [options] -f <fname>.ctioga2
+    -> <fname>.pdf
+    <= Para(Image)
+    
+
+Ditaa
+None
+
+Figlet
+figlet `codetxt` -> CodeBlock(ascii art)
+
+Flydraw
+
+    ```flydraw
+    code
+    ```
+    => flydraw < code > Image
+    <= Para(Image)
+
+    - flydraw reads its command from stdin
+    - produces output on stdout, which is saved to <fname>.gif
+    - insists on producing GIF files, despite claims in the manual
+    
+
+Gle
+gle -verbosity 0 -output <fname>.<fmt> <fname>.gle
+
+GnuPlot
+
+    ```gnuplot
+    code
+    ```
+    => gnuplot [options] <fname>.gnuplot -> image data on stdout
+    -> write(stdout, <fname>.fmt)
+    <= Para(Image)
+    
+
+Graph
+
+    ```graph
+    code
+    ```
+    => graph -T fmt [options] <fname>.graph
+    -> write(stdout, <fname>.<fmt>)
+    <= Para(Image(<fname>.<fmt>))
+    
+
+Graphviz
+
+    ```graphviz
+    code
+    ```
+    => dot [options] -T<fmt> <fname>.dot <fname>.<fmt>
+    
+
+Gri
+gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))
+
+Imagine
+wraps self, yields new codeblock w/ Imagine __doc__ string
+
+Mermaid
+
+    ```mermaid
+    code
+    ```
+    => mermaid -o <basedir> [options] <fname>.mermaid
+    -> <fname>.mermaid.fmt -> <fname>.fmt
+    <= Para(Image)
+    
+
+MscGen
+None
+
+Octave
+None
+
+Pic2Plot
+
+    ```pic[2plot]
+    code
+    ```
+    => pic2plot -T <fmt> [options] <fname>.pic2plot
+    -> write(stdout, <fname>.<fmt>)
+    <= Para(Image)
+    
+
+PlantUml
+None
+
+Plot
+
+    ```plot
+    filename
+    ```
+    -> test filename exists (is relative to source.md)
+    => plot -T <fmt> [options] filename
+    -> write(stdout, <fname>.<fmt>)
+    <= Para(Image)
+    
+
+Ploticus
+None
+
+Protocol
+protocol `codetxt` -> CodeBlock(packet format in ascii)
+
+PyxPlot
+
+    ```pyxplot
+    code
+    ```
+    .. write('set terminal <fmt>
+' +
+              'set output <fname>.<fmt>
+' +
+              code,
+             <fname>.pyxplot)
+    => pyxplot [options] <fname>.pyxplot
+    <= Para(Image)
+    
+
+SheBang
+
+    ```shebang
+    code
+    ```
+    .. write(code, <fname>.shebang)
+    .. chmod u+x <fname>.shebang
+    => <fname>.shebang <fname>.<fmt>
+    <= Para(Image)
+    
+
 
     ```asy
     code
