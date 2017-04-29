@@ -25,11 +25,10 @@ Imagine is a pandoc-filter that will turn codeblocks tagged with certain
 classes into images or ascii art. The following classes are currently
 supported:
 
-    actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot,
-    fdp, figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine,
-    mermaid, mscgen, neato, nwdiag, octave, packetdiag, pic, pic2plot,
-    plantuml, plot, ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp,
-    shebang, twopi
+        actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot, fdp,
+        figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid,
+        mscgen, neato, nwdiag, octave, packetdiag, pic, pic2plot, plantuml, plot,
+        ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, shebang, twopi
 
 Examples
 --------

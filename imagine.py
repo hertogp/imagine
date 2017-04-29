@@ -656,8 +656,9 @@ class Imagine(Handler):
         if len(self.codetxt) == 0:
             return pf.CodeBlock(('',['self.__doc__'],[]), __doc__)
         elif self.codetxt == 'classes':
-            classes = wrap(', '.join(sorted(Handler.workers.keys())))
-            return pf.CodeBlock(('',[],[]), '\n'.join(classes))
+            classes = wrap(', '.join(sorted(Handler.workers.keys())), 75)
+            classes[0] = '    ' + classes[0]
+            return pf.CodeBlock(('',[],[]), '\n    '.join(classes))
 
         doc = []
         for name in self.codetxt.splitlines():
