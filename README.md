@@ -70,6 +70,35 @@ xy_chart.render_to_png(sys.argv[-1])
 cat $0 | boxes -d peek -p h4
 ```
 
+## Installation
+
+ToDo: `pip install pandoc-imagine`
+
+Alternatively:
+
+```
+> mkdir -p ~/installs/pandoc-imagine
+> cd ~/installs/pandoc-imagine
+> git clone https://github.com/hertogp/imagine.git .
+> python setup.py
+```
+
+As a third option, you can also simply save the `imagine.py` file to a
+(sub)directory somewhere along your \$PATH, since that's where pandoc will be
+looking for its filters when you call `pandoc --filter imagine.py ...`.
+
+## Usage
+
+### Pandoc usage
+
+`pandoc --filter imagine.py source.md -o destination.pdf`
+
+or some other type of destination document.
+
+### Markdown usage
+
+todo
+
 ## All details
 
 ```{.shebang imgout="stdout"}
