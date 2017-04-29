@@ -64,7 +64,7 @@ Examples
 
 ![Created by Pygal](pd-images/b020c8da1dba52e586c460b0559f0bfea2aca7f8.png)
 
-### *[Mscgen site:](http://www.mcternan.me.uk/mscgen/)*
+### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
     ```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
     msc {

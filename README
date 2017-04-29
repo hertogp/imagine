@@ -43,7 +43,7 @@ xy_chart.add('y = -1', [(-5, -1), (5, -1)])
 xy_chart.render_to_png(sys.argv[-1])
 ```
 
-### *[Mscgen site:](http://www.mcternan.me.uk/mscgen/)*
+### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
 ```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
 msc {
