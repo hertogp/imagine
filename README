@@ -16,32 +16,9 @@ classes
 
 ## Examples
 
-### *[Octave](https://www.gnu.org/software/octave)*
-
-```{.octave imgout="fcb,img" caption="Created by Octave"}
-figure(1, 'visible', 'off');
-surf(peaks);
-title("peaks");
-print(1, argv(){1});
-```
-
-### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
-
-```{.shebang imgout="fcb,img" caption="Created by Pygal"}
-#!/usr/bin/env python3
-import sys
-import pygal
-from math import cos
-xy_chart = pygal.XY()
-xy_chart.title = 'XY Cosinus'
-xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
-xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
-xy_chart.render_to_png(sys.argv[-1])
-```
-
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
-```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
+```{.mscgen imgout="fcb,img"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -62,6 +39,37 @@ msc {
 For more examples see the [sample.pdf](examples/sample.pdf).
 
 
+### *[Octave](https://www.gnu.org/software/octave)*
+
+```{.octave imgout="fcb,img"}
+figure(1, 'visible', 'off');
+surf(peaks);
+title("peaks");
+print(1, argv(){1});
+```
+
+### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
+
+```{.shebang imgout="fcb,img"}
+#!/usr/bin/env python3
+import sys
+import pygal
+from math import cos
+xy_chart = pygal.XY()
+xy_chart.title = 'XY Cosinus'
+xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+xy_chart.render_to_png(sys.argv[-1])
+```
+
+### *[boxes](http://boxes.thomasjensen.com)*
+
+```{.shebang imgout="fcb,stdout"}
+#!/bin/bash
+# I seem to have got myself boxed in!
+cat $0 | boxes -d peek -p h4
+```
+
 ## All details
 
 ```{.shebang imgout="stdout"}
@@ -77,4 +85,4 @@ for cls in sorted(classes, key=lambda x: x.__name__):
 print imagine.Asy.__doc__
 ```
 
-
+<!-- vim:set ft=pandoc: -->

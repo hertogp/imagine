@@ -33,36 +33,9 @@ supported:
 Examples
 --------
 
-### *[Octave](https://www.gnu.org/software/octave)*
-
-    ```{.octave imgout="fcb,img" caption="Created by Octave"}
-    figure(1, 'visible', 'off');
-    surf(peaks);
-    title("peaks");
-    print(1, argv(){1});
-    ```
-
-![Created by Octave](pd-images/5a35c5c4d824c279986ed7d93b3710bd0c2dd9aa.png)
-
-### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
-
-    ```{.shebang imgout="fcb,img" caption="Created by Pygal"}
-    #!/usr/bin/env python3
-    import sys
-    import pygal
-    from math import cos
-    xy_chart = pygal.XY()
-    xy_chart.title = 'XY Cosinus'
-    xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
-    xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
-    xy_chart.render_to_png(sys.argv[-1])
-    ```
-
-![Created by Pygal](pd-images/aa83c1fd16ff03bff92ef7be7ff5f6221bd233df.png)
-
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
-    ```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
+    ```{.mscgen imgout="fcb,img"}
     msc {
      hscale="1.3", arcgradient = "8";
 
@@ -79,9 +52,54 @@ Examples
     }
     ```
 
-![Created by mscgen](pd-images/0fe5ded56c2631533c97af29e91570cfbcc077d3.png)
+![](pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png)
 
 For more examples see the [sample.pdf](examples/sample.pdf).
+
+### *[Octave](https://www.gnu.org/software/octave)*
+
+    ```{.octave imgout="fcb,img"}
+    figure(1, 'visible', 'off');
+    surf(peaks);
+    title("peaks");
+    print(1, argv(){1});
+    ```
+
+![](pd-images/97a5ccef8c2f73c2897bc3f07ebe27fb971d957b.png)
+
+### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
+
+    ```{.shebang imgout="fcb,img"}
+    #!/usr/bin/env python3
+    import sys
+    import pygal
+    from math import cos
+    xy_chart = pygal.XY()
+    xy_chart.title = 'XY Cosinus'
+    xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+    xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+    xy_chart.render_to_png(sys.argv[-1])
+    ```
+
+![](pd-images/8296b8c4e66da192e78d37c805a731fa3374e1c8.png)
+
+### *[boxes](http://boxes.thomasjensen.com)*
+
+    ```{.shebang imgout="fcb,stdout"}
+    #!/bin/bash
+    # I seem to have got myself boxed in!
+    cat $0 | boxes -d peek -p h4
+    ```
+
+``` {.stdout}
+/*       _\|/_
+         (o o)
+ +----oOO-{_}-OOo------------------------------+
+ |    #!/bin/bash                              |
+ |    # I seem to have got myself boxed in!    |
+ |    cat $0 | boxes -d peek -p h4             |
+ +--------------------------------------------*/
+```
 
 All details
 -----------
@@ -118,3 +136,6 @@ class <class 'imagine.SheBang'>
     <=  Para(Image)
     
 ```
+
+<!-- vim:set ft=pandoc: -->
+
