@@ -55,14 +55,10 @@ Examples
     xy_chart.title = 'XY Cosinus'
     xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
     xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
-    xy_chart.add('x = 1', [(1, -5), (1, 5)])
-    xy_chart.add('x = -1', [(-1, -5), (-1, 5)])
-    xy_chart.add('y = 1', [(-5, 1), (5, 1)])
-    xy_chart.add('y = -1', [(-5, -1), (5, -1)])
     xy_chart.render_to_png(sys.argv[-1])
     ```
 
-![Created by Pygal](pd-images/b020c8da1dba52e586c460b0559f0bfea2aca7f8.png)
+![Created by Pygal](pd-images/aa83c1fd16ff03bff92ef7be7ff5f6221bd233df.png)
 
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
