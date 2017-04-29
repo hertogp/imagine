@@ -25,10 +25,10 @@ Imagine is a pandoc-filter that will turn codeblocks tagged with certain
 classes into images or ascii art. The following classes are currently
 supported:
 
-        actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot, fdp,
-        figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid,
-        mscgen, neato, nwdiag, octave, packetdiag, pic, pic2plot, plantuml, plot,
-        ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp, shebang, twopi
+    actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot, fdp,
+    figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid, mscgen,
+    neato, nwdiag, octave, packetdiag, pic, pic2plot, plantuml, plot, ploticus,
+    protocol, pyxplot, rackdiag, seqdiag, sfdp, shebang, twopi
 
 Examples
 --------
@@ -44,7 +44,7 @@ Examples
 
 ![Created by Octave](pd-images/5a35c5c4d824c279986ed7d93b3710bd0c2dd9aa.png)
 
-### Shebang, using Python & Pygall
+### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
     ```{.shebang imgout="fcb,img" caption="Created by Pygal"}
     #!/usr/bin/env python3
@@ -64,7 +64,28 @@ Examples
 
 ![Created by Pygal](pd-images/b020c8da1dba52e586c460b0559f0bfea2aca7f8.png)
 
-For more examples see the [sample](examples/sample.pdf).
+### *[Mscgen site:](http://www.mcternan.me.uk/mscgen/)*
+
+    ```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
+    msc {
+     hscale="1.3", arcgradient = "8";
+
+     a [label="Client"],b [label="Server"];
+
+     a=>b [label="data1"];
+     a-xb [label="data2"];
+     a=>b [label="data3"];
+     a<=b [label="ack1, nack2"];
+     a=>b [label="data2", arcskip="1"];
+     |||;
+     a<=b [label="ack3"];
+     |||;
+    }
+    ```
+
+![Created by mscgen](pd-images/0fe5ded56c2631533c97af29e91570cfbcc077d3.png)
+
+For more examples see the [sample.pdf](examples/sample.pdf).
 
 All details
 -----------
