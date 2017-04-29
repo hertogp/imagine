@@ -3,8 +3,62 @@
 echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
 ```
 
-## A pandoc-filter to turn fenced codeblock's into images or ascii art
+## A pandoc-filter to process codeblocks into images and/or ascii art
+
+
+Imagine is a pandoc-filter that will turn codeblocks tagged with certain
+classes into images or ascii art. The following classes are currently
+supported:
 
 ```imagine
+classes
 ```
+
+## Examples
+
+### *[Octave](https://www.gnu.org/software/octave)*
+
+```{.octave imgout="fcb,img" caption="Created by Octave"}
+figure(1, 'visible', 'off');
+surf(peaks);
+title("peaks");
+print(1, argv(){1});
+```
+
+### Shebang, using Python & Pygall
+
+```{.shebang imgout="fcb,img" caption="Created by Pygal"}
+#!/usr/bin/env python3
+import sys
+import pygal
+from math import cos
+xy_chart = pygal.XY()
+xy_chart.title = 'XY Cosinus'
+xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+xy_chart.add('x = 1', [(1, -5), (1, 5)])
+xy_chart.add('x = -1', [(-1, -5), (-1, 5)])
+xy_chart.add('y = 1', [(-5, 1), (5, 1)])
+xy_chart.add('y = -1', [(-5, -1), (5, -1)])
+xy_chart.render_to_png(sys.argv[-1])
+```
+
+For more examples see the [sample](examples/sample.pdf).
+
+
+## All details
+
+```{.shebang imgout="stdout"}
+#!/usr/bin/env python
+import sys
+sys.path.append('.')
+import imagine
+
+classes = set(imagine.Handler.workers.values())
+for cls in sorted(classes, key=lambda x: x.__name__):
+    print 'class', cls
+
+print imagine.Asy.__doc__
+```
+
 

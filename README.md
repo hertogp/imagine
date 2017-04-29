@@ -18,13 +18,12 @@
                                              (_/
 ```
 
-A pandoc-filter to turn fenced codeblock's into images or ascii art
--------------------------------------------------------------------
+A pandoc-filter to process codeblocks into images and/or ascii art
+------------------------------------------------------------------
 
-``` {.img.__doc__}
-Imagine
-  A pandoc filter that turns fenced codeblocks into graphics or ascii art by
-  wrapping some external command line utilities, such as:
+Imagine is a pandoc-filter that will turn codeblocks tagged with certain
+classes into images or ascii art. The following classes are currently
+supported:
 
     actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot,
     fdp, figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine,
@@ -32,132 +31,74 @@ Imagine
     plantuml, plot, ploticus, protocol, pyxplot, rackdiag, seqdiag, sfdp,
     shebang, twopi
 
-Installation
+Examples
+--------
 
-  1. Put `imagine.py` anywhere along $PATH (pandoc's search path for filters).
-  2. % sudo pip install (mandatory):
-       - pandocfilters
-  3. % sudo apt-get install (1 or more of):
+### *[Octave](https://www.gnu.org/software/octave)*
 
-       - asymptote,     http://asymptote.sourceforge.net
-       - boxes,         http://boxes.thomasjensen.com
-       - ctioga2,       http://ctioga2.sourceforge.net
-       - ditaa,         http://ditaa.sourceforge.net
-       - figlet,        http://www.figlet.org
-       - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
-       - gle-graphics,  http://glx.sourceforge.net
-       - gnuplot,       http://www.gnuplot.info
-       - graphviz,      http://graphviz.org
-       - gri,           http://gri.sourceforge.net
-       - imagemagick,   http://www.imagemagick.org (gri needs `convert`)
-       - mscgen,        http://www.mcternan.me.uk/mscgen
-       - octave,        https://www.gnu.org/software/octave
-       - plantuml,      http://plantuml.com
-       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
-       - plotutils,     https://www.gnu.org/software/plotutils
-       - pyxplot,       http://pyxplot.org.uk
-
-     % sudo pip install:
-       - blockdiag,     http://blockdiag.com
-       - phantomjs,     http://phantomjs.org/ (for mermaid)
-
-     % git clone
-       - protocol,      https://github.com/luismartingarcia/protocol.git
-
-     % npm install:
-       - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)
-
-
-Pandoc usage
-
-    % pandoc --filter imagine.py document.md -o document.pdf
-
-
-Markdown usage
-
-  Imagine takes a Fenced Code Block and runs the associated `cmd` on it:
-
-  ```cmd  ||  {.cmd options=".." keep=true prog=<other-cmd>}
-  code
-  ```
-  =>  cmd <fname>.<cmd> [<options>] <fname>.<fmt>
-  <= [ FCB, Para[Image[<fname>.ext]], CodeBlock[stdout]]
-
-  For most of the commands, the FCB's code is stored in <fname>.cmd and it tries
-  to run the command as shown.  Any options are passed on the command line,
-  while an image filename is suggested via <fname>.<fmt>.
-
-  <fname> is derived from a hash on the entire FCB, so should be specific to
-  each individual FCB. Any changes to the codeblock or its attributes should
-  lead to new files being created.
-
-  - options=".." will be passed onto the command as shown above
-    Defaults to ""
-
-  - keep=true, will retain the original FCB in an anonymous CodeBlock.
-    Defaults to false.
-
-  - prog=<other-cmd>, will set the cmd to use.
-    Only useful if `cmd` itself is not an appropiate class.
-
-  If the command fails and/or produces no image, the FCB is always retained.
-  Any info on stderr is relayed by Imagine, which might be useful for
-  troubleshooting.
-
-  Notes:
-  - subdir `pd-images` is used to store any input/output files
-  - if an output filename exists, it is not regenerated but simply linked to.
-  - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
-  - when creating a pdf, images are placed `nearest` to their fenced code block
-  - There's no clean up of files in the temp subdir.
-
-  Some commands follow a slightly different pattern:
-  - `figlet` or `boxes` produce no images, just text on stdout.  In these cases,
-     a CodeBlock with stdout is included.
-  - `plot` takes the code as the filename of the image.meta filename to convert
-     to an image.
-
-
-Shebang
-
-  The Imagine filter also features a `shebang` class for fenced code blocks.
-  In this case, (fenced) code is saved to disk, the executable flag is set and
-  the script is run with the target image filename as its sole argument.
-
-  Any output on stdout is added after the image (if any) in a anonymous
-  codeblock. A returncode other than 0 (zero) means the original FCB is
-  retained.
-
-  That means that you can use any interpreter and its plotting libraries to
-  create your images and/or plots or simply generate text.
-
-
-Security
-
-  Imagine just hands the fenced code blocks to system commands or simply runs
-  them as system scripts themselves (shebang class).  Note that a lot of these
-  plotting tools, implement their own 'little' languages which can create
-  beautiful images but can also do *great* harm.
-
-  There is no way to check for 'side effects' in advance, so make sure the
-  fenced code blocks don't do something devious to your system when running
-  them through the Imagine filter.
-
-
-Imagine command
-
-  Finally, a quick way to read this help text again, is to include a fenced
-  codeblock in your markdown document as follows:
-
-    ```imagine
+    ```{.octave imgout="fcb,img" caption="Created by Octave"}
+    figure(1, 'visible', 'off');
+    surf(peaks);
+    title("peaks");
+    print(1, argv(){1});
     ```
 
-  or on one or more of the commands supported by Imagine:
+![Created by Octave](pd-images/5a35c5c4d824c279986ed7d93b3710bd0c2dd9aa.png)
 
-    ```imagine
-    boxes
-    asy
+### Shebang, using Python & Pygall
+
+    ```{.shebang imgout="fcb,img" caption="Created by Pygal"}
+    #!/usr/bin/env python3
+    import sys
+    import pygal
+    from math import cos
+    xy_chart = pygal.XY()
+    xy_chart.title = 'XY Cosinus'
+    xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+    xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+    xy_chart.add('x = 1', [(1, -5), (1, 5)])
+    xy_chart.add('x = -1', [(-1, -5), (-1, 5)])
+    xy_chart.add('y = 1', [(-5, 1), (5, 1)])
+    xy_chart.add('y = -1', [(-5, -1), (5, -1)])
+    xy_chart.render_to_png(sys.argv[-1])
     ```
 
-  That's it!
+![Created by Pygal](pd-images/b020c8da1dba52e586c460b0559f0bfea2aca7f8.png)
+
+For more examples see the [sample](examples/sample.pdf).
+
+All details
+-----------
+
+``` {.stdout}
+class <class 'imagine.Asy'>
+class <class 'imagine.BlockDiag'>
+class <class 'imagine.Boxes'>
+class <class 'imagine.Ctioga2'>
+class <class 'imagine.Ditaa'>
+class <class 'imagine.Figlet'>
+class <class 'imagine.Flydraw'>
+class <class 'imagine.Gle'>
+class <class 'imagine.GnuPlot'>
+class <class 'imagine.Graph'>
+class <class 'imagine.Graphviz'>
+class <class 'imagine.Gri'>
+class <class 'imagine.Imagine'>
+class <class 'imagine.Mermaid'>
+class <class 'imagine.MscGen'>
+class <class 'imagine.Octave'>
+class <class 'imagine.Pic2Plot'>
+class <class 'imagine.PlantUml'>
+class <class 'imagine.Plot'>
+class <class 'imagine.Ploticus'>
+class <class 'imagine.Protocol'>
+class <class 'imagine.PyxPlot'>
+class <class 'imagine.SheBang'>
+
+    ```asy
+    code
+    ```
+    =>  asy -o <fname>.<fmt> [<options>] <fname>.asy
+    <=  Para(Image)
+    
 ```

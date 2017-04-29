@@ -654,16 +654,23 @@ class Imagine(Handler):
     def image(self, fmt=None):
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if len(self.codetxt) == 0:
-            return pf.CodeBlock(('',['img.__doc__'],[]), __doc__)
-        sep = '-'*60
+            return pf.CodeBlock(('',['self.__doc__'],[]), __doc__)
+        elif self.codetxt == 'classes':
+            classes = wrap(', '.join(sorted(Handler.workers.keys())))
+            return pf.CodeBlock(('',[],[]), '\n'.join(classes))
+
         doc = []
         for name in self.codetxt.splitlines():
             worker = self.workers.get(name, None)
             doc.append('# %s - %s' % (name, str(worker)))
-            if worker.__doc__: doc.append(worker.__doc__)
-            else:              doc.append('No help available.')
+
+            if worker.__doc__:
+                doc.append(worker.__doc__)
+            else:
+                doc.append('No help available.')
             doc.append('\n')
-        return pf.CodeBlock(('', ['__doc__'], []), '\n'.join(doc))
+
+        return pf.CodeBlock(('', ['cmd.__doc__'], []), '\n'.join(doc))
 
 
 class Mermaid(Handler):

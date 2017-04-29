@@ -14,7 +14,9 @@ nosetests.xml
 scr/
 tmp/
 venv/
-pd-images/
+pd-images/*
+!pd-images/*.png
+*/pd-images/
 
 # Packages
 *.egg
