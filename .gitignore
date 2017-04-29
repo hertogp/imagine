@@ -4,6 +4,7 @@
 *.py[cod]
 *.so
 *.swp
+_notes.md
 
 ## Unit test / coverage reports
 .coverage
