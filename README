@@ -1,4 +1,11 @@
-# Imagine
+
+```{.shebang imgout="fcb,stdout"}
+#!/bin/bash
+echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
+```
+```
+
+## __doc__
 
 ```imagine
 pandoc --filter imagine README -o README.md

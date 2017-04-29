@@ -8,6 +8,13 @@
 #
 # o tizk, needs convert since eps wont go into pdflatex ..
 
+# Notes
+# - fix result() so output can be run through --filter imagine again
+#   + no imagine classes (dot, imagine, stdout, fcb, etc..
+#   + use __stdout__, __fcb__ and/or __img__ only ...?
+# - when outputting to md, & a codeblock is the first thing in the file
+#   it doesnt output an anon codeblock for a requested imgout="..,fcb,.."?
+
 #-- __doc__
 
 '''Imagine
@@ -146,7 +153,7 @@ Imagine command
   That's it!
 '''
 
-__version__ = 0.6
+__version__ = '1.0'
 
 import os
 import sys
@@ -158,7 +165,7 @@ import pandocfilters as pf
 
 #-- globs
 IMG_BASEDIR = 'pd'
-IMG_OUTPUTS = ['fcb', 'img', 'stdout']
+IMG_OUTPUTS = ['fcb', 'img', 'stdout', 'stderr']
 
 # Notes:
 # - if walker does not return anything, the element is kept
@@ -221,22 +228,24 @@ class Handler(object):
         # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
         self.codec = codec
         self._name = self.__class__.__name__  # the default inpfile extension
-        self.output = '' # catches output by self.cmd, if any
+        self.output = '' # catches stdout by self.cmd, if any
+        self.stderr = '' # catches stderr by self.cmd, if any
 
         if codec is None: return  # initial dispatch creation
 
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
 
-        # `Extract` Imagine's keyvals from codeblock's attributes
+        # `Extract` Imagine keywords/keyvals from codeblock's attributes
+        # - also remove any and all Imagine classes
+        self.classes = [k for k in self.classes if k not in self.workers]
         self.options, self.keyvals = pf.get_value(self.keyvals, u'options', '')
         self.options = self.options.split()
         self.prog, self.keyvals = pf.get_value(self.keyvals, u'prog', None)
         imgout, self.keyvals = pf.get_value(self.keyvals,
                                             u'imgout',
                                             self._output)
-        imgout = imgout.lower().replace(',',' ').split()
-        self.imgout = self.retain(imgout, IMG_OUTPUTS)
+        self.imgout = imgout.lower().replace(',',' ').split()
 
         # prog=cmd key-value trumps .cmd class attribute
         self.prog = self.prog if self.prog else self.codecs.get(self.klass, None)
@@ -252,14 +261,13 @@ class Handler(object):
         if not os.path.isfile(self.inpfile):
             self.write('w', self.codetxt, self.inpfile)
 
-    def retain(self, src, allowed):
+    def disallow(self, src, disallow=[]):
         'whilst preserving order, limit list of src elements to those allowed'
         # helper for managing imgout lists
         rv = []
         for elm in src:
-            if elm in rv: continue # no duplicates
-            if elm in allowed:
-                rv.append(elm)
+            if elm in rv or elm in disallow: continue # no duplicates
+            rv.append(elm)
         return rv
 
     def read(self, src):
@@ -282,7 +290,7 @@ class Handler(object):
             self.msg(3, 'wrote', len(dta), 'bytes to', dst)
         except Exception as e:
             self.msg(0, 'fail: could not write', len(dta), 'bytes to', dst)
-            self.msg(0, 'exception', e)
+            self.msg(0, '>>: exception', e)
             return False
         return True
 
@@ -307,19 +315,6 @@ class Handler(object):
         return pf.Image([self.id_, self.classes, self.keyvals],
                         self.caption, [self.outfile, self.typef])
 
-    # def Para(self):
-    #     'return Para containing an Image link to the generated image'
-    #     retval = pf.Para([self.Url()])
-    #     if self.keep:
-    #         return [self.AnonCodeBlock(), retval]
-    #     return retval
-
-    # def CodeBlock(self, attr, code):
-    #     'return a CodeBlock'
-    #     retval = pf.CodeBlock(attr, code)
-    #     if self.keep:
-    #         return [self.AnonCodeBlock(), retval]
-    #     return retval
 
     def AnonCodeBlock(self):
         'reproduce the original CodeBlock inside an anonymous CodeBlock'
@@ -340,14 +335,26 @@ class Handler(object):
                 if os.path.isfile(self.outfile):
                     rv.append(pf.Para([self.Url()]))
                 else:
-                    rv.append(pf.Para([pf.Str('?? missing %s' % self.outfile)]))
+                    msg = '?? missing %s' % self.outfile
+                    self.msg(1, '>>:', msg)
+                    rv.append(pf.Para([pf.Str(msg)]))
 
             elif output_elm == 'fcb':
                 rv.append(self.AnonCodeBlock())
 
             elif output_elm == 'stdout':
-                attr = ['', ['Imagine', 'stdout'], []]
-                rv.append(pf.CodeBlock(attr, self.output))
+                if len(self.output):
+                    attr = ['', self.classes + ['stdout'], self.keyvals]
+                    rv.append(pf.CodeBlock(attr, self.output))
+                else:
+                    self.msg(1, '>>:', 'stdout requested, but saw nothing')
+
+            elif output_elm == 'stderr':
+                if len(self.stderr):
+                    attr = ['', self.classes + ['stderr'], self.keyvals]
+                    rv.append(pf.CodeBlock(attr, self.stderr))
+                else:
+                    self.msg(1, '>>:', 'stderr requested, but saw nothing')
 
         if len(rv) == 0: return None  # no results -> None keeps original FCB
         if len(rv) > 1: return rv     # multiple results
@@ -356,23 +363,23 @@ class Handler(object):
     def cmd(self, *args, **kwargs):
         'run, possibly forced, a cmd and return success indicator'
         forced = kwargs.get('forced', False) # no need to pop
-        stdinput = kwargs.get('stdinput', None)
+        stdin = kwargs.get('stdin', None)
 
         if os.path.isfile(self.outfile) and forced is False:
             self.msg(3, 'exists:', *args)
             return True
 
         try:
-            pipes = {'stdin': None if stdinput is None else PIPE,
+            pipes = {'stdin': None if stdin is None else PIPE,
                      'stdout': PIPE,
                      'stderr': PIPE}
             p = Popen(args, **pipes)
-            self.output, err = p.communicate(stdinput)
+            self.output, self.stderr = p.communicate(stdin)
 
             # print any complaints on stderr
-            if len(err):
+            if len(self.stderr):
                 self.msg(1, 'ok?', *args)
-                for line in err.splitlines():
+                for line in self.stderr.splitlines():
                     self.msg(1, '>>:', line)
             else:
                 self.msg(2, 'ok:', *args)
@@ -383,7 +390,7 @@ class Handler(object):
             try: os.remove(self.outfile)
             except: pass
             self.msg(1, 'fail:', *args)
-            self.msg(0, self.prog , str(e))
+            self.msg(0, '>>:', self.prog , str(e))
             return False
 
     def image(self, fmt=None):
@@ -430,7 +437,7 @@ class Boxes(Handler):
     def image(self, fmt=None):
         'return FCB and/or CodeBlock(stdout)'
         # silently ignore 'img', default to stdout if needed
-        self.imgout = self.retain(self.imgout, ['fcb', 'stdout'])
+        self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
             if len(self.output):
@@ -500,9 +507,9 @@ class Figlet(Handler):
 
     def image(self, fmt=None):
         # silently ignore any request for an 'image'
-        self.imgout = self.retain(self.imgout, ['fcb', 'stdout'])
+        self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
-        if self.cmd(self.prog, stdinput=self.codetxt, *args):
+        if self.cmd(self.prog, stdin=self.codetxt, *args):
             if len(self.output):
                 # save figlet's stdout to outfile for next time around
                 self.write('w', self.output, self.outfile)
@@ -528,9 +535,9 @@ class Flydraw(Handler):
 
     def image(self, fmt=None):
         # silently ignore any request for stdout
-        self.imgout = self.retain(self.imgout, ['fcb', 'img'])
+        self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
-        if self.cmd(self.prog, stdinput=self.codetxt, *args):
+        if self.cmd(self.prog, stdin=self.codetxt, *args):
             if len(self.output):
                 self.write('w', self.output, self.outfile)
             return self.result()
@@ -564,7 +571,7 @@ class GnuPlot(Handler):
     def image(self, fmt=None):
         self.fmt(fmt)
         # stdout captures the graphic image
-        self.imgout = self.retain(self.imgout, ['fcb', 'img'])
+        self.imgout = self.disallow(self.imgout, ['stdout'])
         args = self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
             if len(self.output):
@@ -586,7 +593,7 @@ class Graph(Handler):
     def image(self, fmt=None):
         self.fmt(fmt)
         # stdout is used to capture graphic image data
-        self.imgout = self.retain(self.imgout, ['fcb', 'img'])
+        self.imgout = self.disallow(self.imgout, ['stdout'])
         args = ['-T', self.outfmt] + self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
             self.write('wb', self.output, self.outfile)
@@ -647,7 +654,7 @@ class Imagine(Handler):
     def image(self, fmt=None):
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if len(self.codetxt) == 0:
-            return pf.CodeBlock(('',['imagine'],[]), __doc__)
+            return pf.CodeBlock(('',['img.__doc__'],[]), __doc__)
         sep = '-'*60
         doc = []
         for name in self.codetxt.splitlines():
@@ -656,7 +663,7 @@ class Imagine(Handler):
             if worker.__doc__: doc.append(worker.__doc__)
             else:              doc.append('No help available.')
             doc.append('\n')
-        return pf.CodeBlock(('', ['imagine'], []), '\n'.join(doc))
+        return pf.CodeBlock(('', ['__doc__'], []), '\n'.join(doc))
 
 
 class Mermaid(Handler):
@@ -773,7 +780,7 @@ class Protocol(Handler):
 
     def image(self, fmt=None):
         args = self.options + [self.codetxt]
-        self.imgout = self.retain(self.imgout, ['fcb', 'stdout'])
+        self.imgout = self.disallow(self.imgout, ['img'])
         if self.cmd(self.prog, *args):
             if len(self.output):
                 self.write('w', self.output, self.outfile)
