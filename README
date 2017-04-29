@@ -1,13 +1,10 @@
-
-```{.shebang imgout="fcb,stdout"}
+```{.shebang imgout="stdout"}
 #!/bin/bash
 echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
 ```
-```
 
-## __doc__
+## A pandoc-filter to turn fenced codeblock's into images or ascii art
 
 ```imagine
-pandoc --filter imagine README -o README.md
 ```
 
