@@ -74,12 +74,10 @@ See [sample.pdf](examples/sample.pdf) for more examples.
 
 ## Documentation
 
-## Imagine
-
 ```imagine
 ```
 
-## Classes
+## Individual Classes
 
 ```{.shebang imgout="stdout"}
 #!/usr/bin/env python
