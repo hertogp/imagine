@@ -169,7 +169,7 @@ Markdown usage
   be useful for troubleshooting.
 
   If the command succeeds but produces no image, a line reporting the missing
-  Image is included in the output documentas output.
+  Image is included in the output document as output.
 
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
