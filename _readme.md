@@ -19,7 +19,7 @@ classes
 
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
-```{.mscgen imgout="fcb,img" width=50%}
+```{.mscgen imgout="fcb,img"}
 msc {
  hscale="1.3", arcgradient = "8";
 

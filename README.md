@@ -37,7 +37,7 @@ Examples
 
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
-    ```{.mscgen imgout="fcb,img" width="50%"}
+    ```{.mscgen imgout="fcb,img"}
     msc {
      hscale="1.3", arcgradient = "8";
 
@@ -54,7 +54,7 @@ Examples
     }
     ```
 
-![](pd-images/8002b7af64319121c8d8c1678f114dda05791bad.png){width="50%"}
+![](pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png)
 
 ### *[Octave](https://www.gnu.org/software/octave)*
 
