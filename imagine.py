@@ -117,8 +117,7 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  to quickly get some information on a particular class of interest. Use
-  `imagine` to get the module's docstring.
+  Use `imagine` as class to get the module's docstring (ie this text).
 '''
 
 __version__ = '1.0'
