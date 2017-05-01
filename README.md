@@ -3,10 +3,10 @@
 echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
 ```
 
-## A pandoc-filter to process codeblocks into images and/or ascii art
 
+## A pandoc filter to process codeblocks into images and/or ascii art
 
-Imagine is a pandoc-filter that will turn codeblocks tagged with certain
+Imagine is a pandoc filter that will turn codeblocks tagged with certain
 classes into images or ascii art. The following classes are currently
 supported:
 
@@ -14,11 +14,12 @@ supported:
 classes
 ```
 
+
 ## Examples
 
 ### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
 
-```{.mscgen imgout="fcb,img"}
+```{.mscgen imgout="fcb,img" width=50%}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -35,10 +36,6 @@ msc {
 }
 ```
 
-
-For more examples see the [sample.pdf](examples/sample.pdf).
-
-
 ### *[Octave](https://www.gnu.org/software/octave)*
 
 ```{.octave imgout="fcb,img"}
@@ -48,7 +45,8 @@ title("peaks");
 print(1, argv(){1});
 ```
 
-### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
+
+### *[Shebang](http://www.google.com/search?q=linux+shebang)* using Python & Pygal
 
 ```{.shebang imgout="fcb,img"}
 #!/usr/bin/env python3
@@ -62,6 +60,7 @@ xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
 xy_chart.render_to_png(sys.argv[-1])
 ```
 
+
 ### *[boxes](http://boxes.thomasjensen.com)*
 
 ```{.shebang imgout="fcb,stdout"}
@@ -70,36 +69,17 @@ xy_chart.render_to_png(sys.argv[-1])
 cat $0 | boxes -d peek -p h4
 ```
 
-## Installation
+See [sample.pdf](examples/sample.pdf) for more examples.
 
-ToDo: `pip install pandoc-imagine`
 
-Alternatively:
+## Documentation
 
-```
-> mkdir -p ~/installs/pandoc-imagine
-> cd ~/installs/pandoc-imagine
-> git clone https://github.com/hertogp/imagine.git .
-> python setup.py
+## Imagine
+
+```imagine
 ```
 
-As a third option, you can also simply save the `imagine.py` file to a
-(sub)directory somewhere along your \$PATH, since that's where pandoc will be
-looking for its filters when you call `pandoc --filter imagine.py ...`.
-
-## Usage
-
-### Pandoc usage
-
-`pandoc --filter imagine.py source.md -o destination.pdf`
-
-or some other type of destination document.
-
-### Markdown usage
-
-todo
-
-## All details
+## Classes
 
 ```{.shebang imgout="stdout"}
 #!/usr/bin/env python
@@ -111,10 +91,9 @@ classes = set(imagine.Handler.workers.values())
 for cls in sorted(classes, key=lambda x: x.__name__):
     print cls.__name__
     print cls.__doc__
+    print '    Runs', cls.image.__doc__
+    print '    Wraps:'
+    for klass,cmd in cls.cmdmap.items():
+        print '    - ', repr(klass), '->', cmd
     print
-
-
-print imagine.Asy.__doc__
 ```
-
-<!-- vim:set ft=pandoc: -->

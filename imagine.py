@@ -12,51 +12,26 @@
 # - fix result() so output can be run through --filter imagine again
 #   + no imagine classes (dot, imagine, stdout, fcb, etc..
 #   + use __stdout__, __fcb__ and/or __img__ only ...?
-# - when outputting to md, & a codeblock is the first thing in the file
-#   it doesnt output an anon codeblock for a requested imgout="..,fcb,.."?
 
 #-- __doc__
 
-'''Imagine
-  A pandoc filter that turns fenced codeblocks into graphics or ascii art by
+'''\
+Imagine
+  A pandoc filter to turn fenced codeblocks into graphics or ascii art by
   wrapping some external command line utilities, such as:
 
     %(cmds)s
 
 Installation
 
-  1. Put `imagine.py` anywhere along $PATH (pandoc's search path for filters).
-  2. %% sudo pip install (mandatory):
-       - pandocfilters
-  3. %% sudo apt-get install (1 or more of):
+  1. %% sudo pip install pandocfilters
+  2. %% sudo pip install pandoc-imagine
 
-       - asymptote,     http://asymptote.sourceforge.net
-       - boxes,         http://boxes.thomasjensen.com
-       - ctioga2,       http://ctioga2.sourceforge.net
-       - ditaa,         http://ditaa.sourceforge.net
-       - figlet,        http://www.figlet.org
-       - flydraw,       http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
-       - gle-graphics,  http://glx.sourceforge.net
-       - gnuplot,       http://www.gnuplot.info
-       - graphviz,      http://graphviz.org
-       - gri,           http://gri.sourceforge.net
-       - imagemagick,   http://www.imagemagick.org (gri needs `convert`)
-       - mscgen,        http://www.mcternan.me.uk/mscgen
-       - octave,        https://www.gnu.org/software/octave
-       - plantuml,      http://plantuml.com
-       - ploticus,      http://ploticus.sourceforge.net/doc/welcome.html
-       - plotutils,     https://www.gnu.org/software/plotutils
-       - pyxplot,       http://pyxplot.org.uk
+     or save `imagine.py` anywhere along $PATH (pandoc's filter search path).
 
-     %% sudo pip install:
-       - blockdiag,     http://blockdiag.com
-       - phantomjs,     http://phantomjs.org/ (for mermaid)
-
-     %% git clone
-       - protocol,      https://github.com/luismartingarcia/protocol.git
-
-     %% npm install:
-       - -g mermaid, https://knsv.github.io/mermaid (and pip install phantomjs)
+  3. optionally:
+     %% sudo pip install phantomjs        (required for mermaid)
+     %% sudo apt-get install imagemagick  (required for gri)
 
 
 Pandoc usage
@@ -66,93 +41,89 @@ Pandoc usage
 
 Markdown usage
 
-  Imagine takes a Fenced Code Block and runs the associated `cmd` on it:
-
-  ```cmd  ||  {.cmd options=".." keep=true prog=<other-cmd>}
+  ```cmd
   code
   ```
-  =>  cmd <fname>.<cmd> [<options>] <fname>.<fmt>
-  <= [ FCB, Para[Image[<fname>.ext]], CodeBlock[stdout]]
 
-  For most of the commands, the FCB's code is stored in <fname>.cmd and it tries
-  to run the command as shown.  Any options are passed on the command line,
-  while an image filename is suggested via <fname>.<fmt>.
+  which will run `cmd` to proces the `code` into a png image and replaces the
+  fenced code block with an Image in a paragraph of its own or any ascii art in
+  its own CodeBlock.
 
-  <fname> is derived from a hash on the entire FCB, so should be specific to
-  each individual FCB. Any changes to the codeblock or its attributes should
-  lead to new files being created.
+  Alternate, longer form:
 
-  - options=".." will be passed onto the command as shown above
-    Defaults to ""
+  ```{.cmd options=".." imgout=".." prog=<other-cmd>}
+  code
+  ```
 
-  - keep=true, will retain the original FCB in an anonymous CodeBlock.
-    Defaults to false.
+  - options="..." will be passed to the command. Defaults to ''
 
-  - prog=<other-cmd>, will set the cmd to use.
-    Only useful if `cmd` itself is not an appropiate class.
+  - imgout="...", csv-list of keywords each specifying a certain output
+    - img     image in a paragraph
+    - fcb     codeblock (class __fcb__) containing the original codeblock
+    - stdout, codeblock (class __stdout__) containing stdout output (if any)
+    - stderr, codeblock (class __stderr__) containing stderr output (if any)
 
-  If the command fails and/or produces no image, the FCB is always retained.
-  Any info on stderr is relayed by Imagine, which might be useful for
-  troubleshooting.
+  - prog=<other-cmd>, overrides class-to-command map.
+    Only useful if `cmd` itself is not an appropiate class in your document.
+
+  If the command fails and/or produces no image, the original fenced code block
+  is retained unchanged.  Any info on stderr is relayed by Imagine, which might
+  be useful for troubleshooting.
+
+  If the command succeeds but produces no image, a line reporting the missing
+  Image is included in the output documentas output.
 
   Notes:
-  - subdir `pd-images` is used to store any input/output files
+  - filenames are based on a hash of the codeblock + its attributes
+  - uses subdir `pd-images` to store any input/output files
+  - there's no clean up of files stored there
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
   - when creating a pdf, images are placed `nearest` to their fenced code block
-  - There's no clean up of files in the temp subdir.
 
   Some commands follow a slightly different pattern:
-  - `figlet` or `boxes` produce no images, just text on stdout.  In these cases,
-     a CodeBlock with stdout is included.
-  - `plot` takes the code as the filename of the image.meta filename to convert
-     to an image.
-
-
-Shebang
-
-  The Imagine filter also features a `shebang` class for fenced code blocks.
-  In this case, (fenced) code is saved to disk, the executable flag is set and
-  the script is run with the target image filename as its sole argument.
-
-  Any output on stdout is added after the image (if any) in a anonymous
-  codeblock. A returncode other than 0 (zero) means the original FCB is
-  retained.
-
-  That means that you can use any interpreter and its plotting libraries to
-  create your images and/or plots or simply generate text.
+  - 'img' directive is ignored by commands that only produce ascii
+  - ascii art should be produced on stdout, which is returned as a codeblock
+  - ctioga2 defaults to pdf instead of png
+  - flydraw produces a gif, not png
+  - gle also creates a pd-images/.gle subdir
+  - gri produces a ps, which is `convert`ed to png
+  - imagine reads its code block and returns a codeblock w/ documentation
+  - plot's `code` = the relative path to the file to convert
+  - pyxplot will have `set terminal` & `set output` prepended to its `code`
+  - shebang runs its codeblock as a #!-script with <fname>.png as its argument.
+    - use {.shebang imgout="stdout"} if you want text instead of an png
 
 
 Security
 
   Imagine just hands the fenced code blocks to system commands or simply runs
-  them as system scripts themselves (shebang class).  Note that a lot of these
-  plotting tools, implement their own 'little' languages which can create
-  beautiful images but can also do *great* harm.
+  them as system scripts themselves.
+
+  Most of the plotting tools, implement their own 'little' languages which can
+  create beautiful images but can also cause *great* harm.
 
   There is no way to check for 'side effects' in advance, so make sure the
-  fenced code blocks don't do something devious to your system when running
-  them through the Imagine filter.
+  fenced code blocks don't do something devious to your system when running them
+  through the Imagine filter.
 
 
-Imagine command
+Imagine class
 
   Finally, a quick way to read this help text again, is to include a fenced
-  codeblock in your markdown document as follows:
-
-    ```imagine
-    ```
-
-  or on one or more of the commands supported by Imagine:
+  codeblock with topics, like so:
 
     ```imagine
     boxes
     asy
     ```
 
+  or imagine as topic will return this modules __doc__ as a codeblock.
+
   That's it!
 '''
 
+__author__ = 'git.hertogp@gmail.com'
 __version__ = '1.0'
 
 import os
@@ -174,8 +145,8 @@ IMG_OUTPUTS = ['fcb', 'img', 'stdout', 'stderr']
 
 class HandlerMeta(type):
     def __init__(cls, name, bases, dct):
-        'register worker classes by codecs handled'
-        for klass in dct.get('codecs', {}):
+        'register worker classes by cmdmap handled'
+        for klass in dct.get('cmdmap', {}):
             cls.workers[klass.lower()] = cls
 
 class Handler(object):
@@ -186,13 +157,13 @@ class Handler(object):
     _output = IMG_OUTPUTS[1]  # i.e. default img
     __metaclass__ = HandlerMeta
 
-    codecs = {}     # worker subclass must override, klass -> cli-program
+    cmdmap = {}     # worker subclass must override, klass -> cli-program
     level = 2       # log severity level, see above
     outfmt = 'png'  # default output format for a worker
 
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
-        # A worker class with codecs={'': cmd} replaces Handler as default
+        # A worker class with cmdmap={'': cmd} replaces Handler as default
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
         self.msg(4, 'Handler __call__ codec', codec[0])
         try:
@@ -248,9 +219,9 @@ class Handler(object):
         self.imgout = imgout.lower().replace(',',' ').split()
 
         # prog=cmd key-value trumps .cmd class attribute
-        self.prog = self.prog if self.prog else self.codecs.get(self.klass, None)
+        self.prog = self.prog if self.prog else self.cmdmap.get(self.klass, None)
         if self.prog is None:
-            self.msg(0, self.klass, 'not listed in', self.codecs)
+            self.msg(0, self.klass, 'not listed in', self.cmdmap)
             raise Exception('worker has no cli command for %s' % self.klass)
 
         self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
@@ -402,40 +373,29 @@ class Handler(object):
 
 class Asy(Handler):
     '''
-    ```asy
-    code
-    ```
-    =>  asy -o <fname>.<fmt> [<options>] <fname>.asy
-    <=  Para(Image)
+    See http://asymptote.sourceforge.net
     '''
-
-    codecs = {'asy': 'asy', 'asymptote': 'asy'}
+    cmdmap = {'asy': 'asy', 'asymptote': 'asy'}
     outfmt = 'png'
 
     def image(self, fmt=None):
+        'asy -o <fname>.png [options] <fname>.asy'
         self.fmt(fmt)
         args = ['-o', self.outfile] + self.options + [self.inpfile]
-        # args.extend([self.inpfile])
-        # args.extend(self.options)
-        # args = self.options + [self.inpfile]
-        if self.cmd(self.prog, *args): #'-o', self.outfile, *args):
+        if self.cmd(self.prog, *args):
             return self.result()
 
 
 class Boxes(Handler):
     '''
-    ```boxes
-    text
-    ```
-    => boxes [options] <fname>.boxed
-    <= CodeBlock(stdout)
+    See http://boxes.thomasjensen.com
     '''
-    codecs = {'boxes': 'boxes'}
+    cmdmap = {'boxes': 'boxes'}
     outfmt = 'boxed'
     _output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
-        'return FCB and/or CodeBlock(stdout)'
+        'boxes [options] <fname>.boxes'
         # silently ignore 'img', default to stdout if needed
         self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options + [self.inpfile]
@@ -450,39 +410,27 @@ class Boxes(Handler):
 
 class BlockDiag(Handler):
     '''
-    ```cmd
-    text
-    ```
-    => cmd -T <fmt> <fname>.txt -o <fname>.ext
-    <= Para(Image)
-
-    where cmd is one of:
-      blockdiag, segdiag, rackdiag, nwdiag, packetdiag or actdiag
-
+    See http://blockdiag.com
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
-    codecs = dict(zip(progs,progs))
+    cmdmap = dict(zip(progs,progs))
 
     def image(self, fmt=None):
-        self.fmt(fmt)
-        if self.cmd(self.prog, '-T', self.outfmt, self.inpfile,
-                    '-o', self.outfile):
+        'cmd -T png <fname>.txt -o <fname>.png'
+        args = ['-T', self.outfmt, self.inpfile, '-o', self.outfile]
+        if self.cmd(self.prog, *args):
             return self.result()
 
 
 class Ctioga2(Handler):
     '''
-    ```ctioga2
-    code
-    ```
-    => ctioga2 [options] -f <fname>.ctioga2
-    -> <fname>.pdf
-    <= Para(Image)
+    See http://ctioga2.sourceforge.net
     '''
-    codecs = {'ctioga2': 'ctioga2'}
+    cmdmap = {'ctioga2': 'ctioga2'}
     outfmt = 'pdf'
 
     def image(self, fmt=None):
+        'ctioga2 [options] -f <fname>.ctioga2'
         self.fmt(fmt)
         args = self.options + ['-f', self.inpfile]
         if self.cmd(self.prog, *args):
@@ -490,22 +438,28 @@ class Ctioga2(Handler):
 
 
 class Ditaa(Handler):
-    codecs = {'ditaa': 'ditaa'}
+    'See http://ditaa.sourceforge.net'
+    cmdmap = {'ditaa': 'ditaa'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'ditaa <fname>.ditaa <fname>.png -T [options]'
         args = [self.inpfile, self.outfile, '-T'] + self.options
         if self.cmd(self.prog, *args):
             return self.result()
 
 
 class Figlet(Handler):
-    'figlet `codetxt` -> CodeBlock(ascii art)'
-    codecs = {'figlet': 'figlet'}
+    '''
+    See http://www.figlet.org
+    '''
+    # - saves code-text to <fname>.figlet
+    # - saves stdout to <fname>.figled
+    cmdmap = {'figlet': 'figlet'}
     outfmt = 'figled'
     _output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
+        'figlet [options] < code-text'
         # silently ignore any request for an 'image'
         self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
@@ -520,21 +474,16 @@ class Figlet(Handler):
 
 class Flydraw(Handler):
     '''
-    ```flydraw
-    code
-    ```
-    => flydraw < code > Image
-    <= Para(Image)
-
-    - flydraw reads its command from stdin
-    - produces output on stdout, which is saved to <fname>.gif
-    - insists on producing GIF files, despite claims in the manual
+    See http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
     '''
-    codecs = {'flydraw': 'flydraw'}
+    # - flydraw reads its commands from stdin & produces output on stdout
+    # - seems to insist on producing GIF files, despite claims in the manual
+    cmdmap = {'flydraw': 'flydraw'}
     outfmt = 'gif'
 
     def image(self, fmt=None):
-        # silently ignore any request for stdout
+        'flydraw [options] < code-text'
+        # ignore any request for img
         self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
         if self.cmd(self.prog, stdin=self.codetxt, *args):
@@ -544,14 +493,15 @@ class Flydraw(Handler):
 
 
 class Gle(Handler):
-    'gle -verbosity 0 -output <fname>.<fmt> <fname>.gle'
-    codecs = {'gle': 'gle'}
+    '''
+    See http://glx.sourceforge.net
+    '''
+    cmdmap = {'gle': 'gle'}
 
     def image(self, fmt=None):
-        self.outfmt = self.fmt(fmt)
-        args = self.options + ['-verbosity', '0',
-                               '-output', self.outfile,
-                               self.inpfile]
+        'gle -verbosity 0 -output <fname>.<fmt> <fname>.gle'
+        args = self.options
+        args += ['-verbosity', '0', '-output', self.outfile, self.inpfile]
         # gle leaves IMG_BASEDIR-images/.gle lying around ...
         if self.cmd(self.prog, *args):
             return self.result()
@@ -559,16 +509,12 @@ class Gle(Handler):
 
 class GnuPlot(Handler):
     '''
-    ```gnuplot
-    code
-    ```
-    => gnuplot [options] <fname>.gnuplot -> image data on stdout
-    -> write(stdout, <fname>.fmt)
-    <= Para(Image)
+    See http://www.gnuplot.info
     '''
-    codecs = {'gnuplot': 'gnuplot'}
+    cmdmap = {'gnuplot': 'gnuplot'}
 
     def image(self, fmt=None):
+        'gnuplot [options] <fname>.gnuplot > <fname>.png'
         self.fmt(fmt)
         # stdout captures the graphic image
         self.imgout = self.disallow(self.imgout, ['stdout'])
@@ -581,17 +527,12 @@ class GnuPlot(Handler):
 
 class Graph(Handler):
     '''
-    ```graph
-    code
-    ```
-    => graph -T fmt [options] <fname>.graph
-    -> write(stdout, <fname>.<fmt>)
-    <= Para(Image(<fname>.<fmt>))
+    See https://www.gnu.org/software/plotutils
     '''
-    codecs = {'graph': 'graph'}
+    cmdmap = {'graph': 'graph'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'graph -T png [options] <fname>.graph'
         # stdout is used to capture graphic image data
         self.imgout = self.disallow(self.imgout, ['stdout'])
         args = ['-T', self.outfmt] + self.options + [self.inpfile]
@@ -602,16 +543,14 @@ class Graph(Handler):
 
 class Graphviz(Handler):
     '''
-    ```graphviz
-    code
-    ```
-    => dot [options] -T<fmt> <fname>.dot <fname>.<fmt>
+    See http://graphviz.org
     '''
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
-    codecs = dict(zip(progs,progs))
-    codecs['graphviz'] = 'dot'
+    cmdmap = dict(zip(progs,progs))
+    cmdmap['graphviz'] = 'dot'
 
     def image(self, fmt=None):
+        'cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>'
         self.fmt(fmt)
         args = self.options
         args += ['-T%s' % self.outfmt, self.inpfile, '-o', self.outfile]
@@ -620,18 +559,19 @@ class Graphviz(Handler):
 
 
 class Gri(Handler):
-    'gri -c 0 -b <x>.gri -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
+    '''
+    See http://gri.sourceforge.net
+    '''
     # cannot convince gri to output intermediate ps in pd-images/..
     # so we move it there.
-    codecs = {'gri': 'gri'}
+    cmdmap = {'gri': 'gri'}
 
     def image(self, fmt=None):
-        # args = self.options # + ['-c','0','-b',self.inpfile]
-        # args.extend(['-c', '0'])
-        # args.extend(['-b', self.inpfile])
+        'gri -c 0 -b <fname>.gri'
+        # -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
         args = self.options + ['-c', '0', '-b', self.inpfile]
         if self.cmd(self.prog, *args):
-            # since gri insists on producing a .ps in current working dir
+            # gri insists on producing a .ps in current working dir
             dstfile = self.inpfile.replace('.gri','.ps')
             srcfile = os.path.split(dstfile)[-1]   # the temp ps in working dir
             if os.path.isfile(srcfile):
@@ -648,56 +588,61 @@ class Gri(Handler):
 
 
 class Imagine(Handler):
-    '''wraps self, yields new codeblock w/ Imagine __doc__ string'''
-    codecs = {'imagine': 'imagine'}
+    '''
+    See https://github.com/hertogp/imagine
+    '''
+    cmdmap = {'imagine': 'imagine'}
 
     def image(self, fmt=None):
+        'return documentation in a CodeBlock'
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if len(self.codetxt) == 0:
-            return pf.CodeBlock(('',['self.__doc__'],[]), __doc__)
+            return pf.CodeBlock(('',['__doc__'],[]), __doc__)
         elif self.codetxt == 'classes':
             classes = wrap(', '.join(sorted(Handler.workers.keys())), 78)
-            return pf.CodeBlock(('',[],[]), '\n'.join(classes))
+            return pf.CodeBlock(('',['__doc__'],[]), '\n'.join(classes))
 
         doc = []
         for name in self.codetxt.splitlines():
             worker = self.workers.get(name, None)
-            doc.append('# %s - %s' % (name, str(worker)))
-
+            doc.append(name)
+            if worker is None:
+                doc.append('No worker found for %s' % name)
+                continue
             if worker.__doc__:
                 doc.append(worker.__doc__)
+                doc.append('    ' + worker.image.__doc__)
             else:
                 doc.append('No help available.')
             doc.append('\n')
 
-        return pf.CodeBlock(('', ['cmd.__doc__'], []), '\n'.join(doc))
+        return pf.CodeBlock(('', ['__doc__'], []), '\n'.join(doc))
 
 
 class Mermaid(Handler):
     '''
-    ```mermaid
-    code
-    ```
-    => mermaid -o <basedir> [options] <fname>.mermaid
-    -> <fname>.mermaid.fmt -> <fname>.fmt
-    <= Para(Image)
+    See https://knsv.github.io/mermaid (needs phantomjs)
     '''
-    codecs = {'mermaid': 'mermaid'}
+    cmdmap = {'mermaid': 'mermaid'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'mermaid -o <basedir> [options] <fname>.mermaid'
         args = ['-o', IMG_BASEDIR+'-images'] + self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
-            # latex chokes on filename.txt.png
-            try: os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
-            except: pass
+            # latex seems to choke on <fname>.mermaid.png
+            tmpfile = self.inpfile + '.' + self.outfmt
+            if os.path.isfile(tmpfile):
+                os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
             return self.result()
 
 class MscGen(Handler):
-    codecs = {'mscgen': 'mscgen'}
+    '''
+    See http://www.mcternan.me.uk/mscgen
+    '''
+    cmdmap = {'mscgen': 'mscgen'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'mscgen -T png -o <fname>.png <fname>.mscgen'
         args = self.options
         args += ['-T', self.outfmt, '-o', self.outfile, self.inpfile]
         if self.cmd(self.prog, *args):
@@ -705,28 +650,26 @@ class MscGen(Handler):
 
 
 class Octave(Handler):
-    codecs = {'octave': 'octave'}
+    '''
+    See https://www.gnu.org/software/octave
+    '''
+    cmdmap = {'octave': 'octave'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'octage --no-gui -q [options] <fname>.octave <fname>.png'
         args = ['--no-gui', '-q'] + self.options + [self.inpfile, self.outfile]
         if self.cmd(self.prog, *args):
-            # if os.path.isfile(self.outfile):
             return self.result()
 
 
 class Pic2Plot(Handler):
     '''
-    ```pic[2plot]
-    code
-    ```
-    => pic2plot -T <fmt> [options] <fname>.pic2plot
-    -> write(stdout, <fname>.<fmt>)
-    <= Para(Image)
+    See https://www.gnu.org/software/plotutils
     '''
-    codecs = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
+    cmdmap = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
 
     def image(self, fmt=None):
+        'pic2plot -T png [options] <fname>.pic2plot'
         self.fmt(fmt)
         args = ['-T', self.outfmt] + self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
@@ -735,10 +678,13 @@ class Pic2Plot(Handler):
 
 
 class PlantUml(Handler):
-    codecs = {'plantuml': 'plantuml'}
+    '''
+    See http://plantuml.com
+    '''
+    cmdmap = {'plantuml': 'plantuml'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'plantuml -t png <fname>.plantuml'
         args = ['-t' + self.outfmt, self.inpfile]
         if self.cmd(self.prog, *args):
             return self.result()
@@ -746,18 +692,14 @@ class PlantUml(Handler):
 
 class Plot(Handler):
     '''
-    ```plot
-    filename
-    ```
-    -> test filename exists (is relative to source.md)
-    => plot -T <fmt> [options] filename
-    -> write(stdout, <fname>.<fmt>)
-    <= Para(Image)
+    See https://www.gnu.org/software/plotutils
     '''
-    codecs = {'plot': 'plot'}
+    # - code text is filename relative to source.md
+    # - write(stdout, <fname>.<fmt>)
+    cmdmap = {'plot': 'plot'}
 
     def image(self, fmt=None):
-        'fcb code is input filename of meta graphics file'
+        'plot -T png [options] <code-text-as-filename>'
         self.fmt(fmt)
         if not os.path.isfile(self.codetxt):
             self.msg(0, 'fail: cannot read file %r' % self.codetxt)
@@ -769,10 +711,13 @@ class Plot(Handler):
 
 
 class Ploticus(Handler):
-    codecs = {'ploticus': 'ploticus'}
+    '''
+    See http://ploticus.sourceforge.net/doc/welcome.html
+    '''
+    cmdmap = {'ploticus': 'ploticus'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        'ploticus -png -o <fname>.png [options] <fname>.ploticus'
         args = ['-'+self.outfmt, '-o', self.outfile] + self.options
         args += [self.inpfile]
         if self.cmd(self.prog, *args):
@@ -780,13 +725,17 @@ class Ploticus(Handler):
 
 
 class Protocol(Handler):
-    'protocol `codetxt` -> CodeBlock(packet format in ascii)'
-    codecs = {'protocol': 'protocol'}
+    '''
+    See https://github.com/luismartingarcia/protocol.git
+    '''
+    cmdmap = {'protocol': 'protocol'}
     outfmt = 'protocold'
     _output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
+        'protocol [options] code-text'
         args = self.options + [self.codetxt]
+        # silently ignore any request for an 'image'
         self.imgout = self.disallow(self.imgout, ['img'])
         if self.cmd(self.prog, *args):
             if len(self.output):
@@ -798,20 +747,18 @@ class Protocol(Handler):
 
 class PyxPlot(Handler):
     '''
-    ```pyxplot
-    code
-    ```
-    .. write('set terminal <fmt>\n' +
-              'set output <fname>.<fmt>\n' +
-              code,
-             <fname>.pyxplot)
-    => pyxplot [options] <fname>.pyxplot
-    <= Para(Image)
+    See http://pyxplot.org.uk
     '''
-    codecs = {'pyxplot': 'pyxplot'}
-
     # need to set output format and output filename in the script...
+    # .. write('set terminal <fmt>\n' +
+    #          'set output <fname>.<fmt>\n' +
+    #           code,
+    #          <fname>.pyxplot)
+    # <= Para(Image)
+    cmdmap = {'pyxplot': 'pyxplot'}
+
     def image(self, fmt=None):
+        'pyxplot [options] <fname>.pyxplot'
         self.fmt(fmt)
         args = self.options + [self.inpfile]
         self.codetxt = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
@@ -824,19 +771,13 @@ class PyxPlot(Handler):
 
 class SheBang(Handler):
     '''
-    ```shebang
-    code
-    ```
-    .. write(code, <fname>.shebang)
-    .. chmod u+x <fname>.shebang
-    => <fname>.shebang <fname>.<fmt>
-    <= Para(Image)
+    See http://www.google.com/search?q=shebang+line
     '''
-    'run fenced code block as a hash-bang system script'
-    codecs = {'shebang': 'shebang'}
+    # runs fenced code block as a hash-bang system script'
+    cmdmap = {'shebang': 'shebang'}
 
     def image(self, fmt=None):
-        self.fmt(fmt)
+        '<fname>.shebang [options] <fname>.png'
         os.chmod(self.inpfile, stat.S_IEXEC | os.stat(self.inpfile).st_mode)
         args = self.options + [self.outfile]
         if self.cmd(self.inpfile, *args):

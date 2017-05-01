@@ -5,7 +5,7 @@ pandoc --filter ./imagine.py README.md -t markdown -o README
 echo "Done!"
 cd ~/dev/imagine/examples
 echo
-echo "updating sample.pdf"j
+echo "updating sample.pdf"
 pandoc --filter ../imagine.py sample.md -o sample.pdf
 echo "Done!"
 cd ~/dev/imagine
