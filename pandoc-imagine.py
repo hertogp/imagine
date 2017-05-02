@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Author: Pieter den Hertog
+# Email: git.hertogp@gmail.com
+#
 #-- Candidates:
 # o grace (ie gracebat, the batchmode variant; indirect mode?)
 #   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
@@ -9,7 +12,7 @@
 # o tizk, needs convert since eps wont go into pdflatex ..
 
 # Notes
-# - fix result() so output can be run through --filter imagine again
+# - fix result() so output can be run through --filter pandoc-imagine again
 #   + no imagine classes (dot, imagine, stdout, fcb, etc..
 #   + use __stdout__, __fcb__ and/or __img__ only ...?
 
@@ -28,7 +31,7 @@ Installation
   1. %% sudo pip install pandocfilters
   2. %% sudo pip install pandoc-imagine
 
-     or save `imagine.py` anywhere along $PATH (pandoc's filter search path).
+     or save `pandoc-imagine.py` anywhere along $PATH
 
 
 Dependencies
@@ -38,7 +41,7 @@ Dependencies
 
 Pandoc usage
 
-    %% pandoc --filter imagine.py document.md -o document.pdf
+    %% pandoc --filter pandoc-imagine.py document.md -o document.pdf
 
 
 Markdown usage
@@ -58,7 +61,7 @@ Markdown usage
     ```
 
   - options="..." will be passed onto the command line.
-    Some classes already provide sane defaults (if required by the command).
+    Some classes already provide some defaults (as required by the command).
 
   - imgout="...", csv-list of keywords each specifying a certain output
     - img     image in a paragraph
@@ -69,9 +72,9 @@ Markdown usage
   - prog=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
 
-  If the command fails and/or produces no image, the original fenced code block
-  is retained unchanged.  Any info on stderr is relayed by Imagine, which might
-  be useful for troubleshooting.
+  If the command fails, the original fenced code block is retained unchanged.
+  Any info on stderr is relayed by Imagine, which might be useful for
+  troubleshooting.
 
   If the command succeeds but produces no image, a line reporting the missing
   Image is included in the output document as output.
@@ -82,13 +85,12 @@ Markdown usage
   - there's no clean up of files stored there
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
-  - when creating a pdf, images are placed `nearest` to their fenced code block
 
   Some commands follow a slightly different pattern:
   - 'img' directive is ignored by commands that only produce ascii
   - ctioga2 defaults to pdf instead of png
   - flydraw produces a gif, not png
-  - gle also creates a pd-images/.gle subdir
+  - gle also creates a .gle subdir inside the images-dir
   - gri produces a ps, which is `convert`ed to png
   - imagine reads its codeblock as help-topics for which a codeblock is returned
   - plot reads its codeblock as the relative path to the file to process
@@ -102,8 +104,9 @@ Security
   Imagine just hands the fenced codeblocks to plotting tools to process or
   simply runs them as system scripts as-is.
 
-  Most of the plotting tools, implement their own 'little' language which can
-  create beautiful images but can also cause harm.
+  Shebang are inherently unsafe and most of the plotting tools implement their
+  own 'little' language which can create beautiful images but can also cause
+  harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
   the fenced codeblocks before running them through the filter.
@@ -117,10 +120,11 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text).
+  Use `imagine` as class to get the module's docstring (ie this text) or one
+  of the commands you're interested in.
 '''
 
-__version__ = '1.0'
+__version__ = '0.1.0'
 
 import os
 import sys
@@ -369,7 +373,8 @@ class Handler(object):
 
 class Asy(Handler):
     '''
-    See http://asymptote.sourceforge.net
+    sudo-apt-get install asymptote
+    http://asymptote.sourceforge.net/
     '''
     cmdmap = {'asy': 'asy', 'asymptote': 'asy'}
     outfmt = 'png'
@@ -384,7 +389,8 @@ class Asy(Handler):
 
 class Boxes(Handler):
     '''
-    See http://boxes.thomasjensen.com
+    sudo apt-get install boxes
+    http://boxes.thomasjensen.com
     '''
     cmdmap = {'boxes': 'boxes'}
     outfmt = 'boxed'
@@ -406,7 +412,8 @@ class Boxes(Handler):
 
 class BlockDiag(Handler):
     '''
-    See http://blockdiag.com
+    sudo pip install blockdiag nwdiag actdiag seqdiag
+    http://blockdiag.com/
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
     cmdmap = dict(zip(progs,progs))
@@ -420,7 +427,8 @@ class BlockDiag(Handler):
 
 class Ctioga2(Handler):
     '''
-    See http://ctioga2.sourceforge.net
+    sudo apt-get install ctioga2
+    http://ctioga2.sourceforge.net
     '''
     cmdmap = {'ctioga2': 'ctioga2'}
     outfmt = 'pdf'
@@ -434,7 +442,10 @@ class Ctioga2(Handler):
 
 
 class Ditaa(Handler):
-    'See http://ditaa.sourceforge.net'
+    '''
+    sudo apt-get install ditaa
+    http://ditaa.sourceforge.net
+    '''
     cmdmap = {'ditaa': 'ditaa'}
 
     def image(self, fmt=None):
@@ -446,7 +457,8 @@ class Ditaa(Handler):
 
 class Figlet(Handler):
     '''
-    See http://www.figlet.org
+    sudo apt-get install figlet
+    http://www.figlet.org
     '''
     # - saves code-text to <fname>.figlet
     # - saves stdout to <fname>.figled
@@ -470,7 +482,8 @@ class Figlet(Handler):
 
 class Flydraw(Handler):
     '''
-    See http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+    sudo apt-get install flydraw
+    http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
     '''
     # - flydraw reads its commands from stdin & produces output on stdout
     # - seems to insist on producing GIF files, despite claims in the manual
@@ -490,7 +503,8 @@ class Flydraw(Handler):
 
 class Gle(Handler):
     '''
-    See http://glx.sourceforge.net
+    sudo apt-get install gle-graphics
+    http://glx.sourceforge.net
     '''
     cmdmap = {'gle': 'gle'}
 
@@ -505,7 +519,8 @@ class Gle(Handler):
 
 class GnuPlot(Handler):
     '''
-    See http://www.gnuplot.info
+    sudo apt-get install gnuplot
+    http://www.gnuplot.info
     '''
     cmdmap = {'gnuplot': 'gnuplot'}
 
@@ -523,7 +538,8 @@ class GnuPlot(Handler):
 
 class Graph(Handler):
     '''
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     '''
     cmdmap = {'graph': 'graph'}
 
@@ -539,7 +555,8 @@ class Graph(Handler):
 
 class Graphviz(Handler):
     '''
-    See http://graphviz.org
+    sudo apt-get install graphviz
+    http://graphviz.org
     '''
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
     cmdmap = dict(zip(progs,progs))
@@ -556,7 +573,8 @@ class Graphviz(Handler):
 
 class Gri(Handler):
     '''
-    See http://gri.sourceforge.net
+    sudo apt-get install gri imagemagick
+    http://gri.sourceforge.net
     - requires `convert` from imagemagick
     '''
     # cannot convince gri to output intermediate ps in pd-images/..
@@ -586,7 +604,8 @@ class Gri(Handler):
 
 class Imagine(Handler):
     '''
-    See https://github.com/hertogp/imagine
+    pip install pandoc-imagine
+    https://github.com/hertogp/imagine
     '''
     cmdmap = {'imagine': 'imagine'}
 
@@ -618,8 +637,8 @@ class Imagine(Handler):
 
 class Mermaid(Handler):
     '''
-    See https://knsv.github.io/mermaid (needs phantomjs)
-    - requires phantomjs.
+    sudo nmp install mermaid
+    https://knsv.github.io/mermaid (needs phantomjs)
     '''
     cmdmap = {'mermaid': 'mermaid'}
 
@@ -635,7 +654,8 @@ class Mermaid(Handler):
 
 class MscGen(Handler):
     '''
-    See http://www.mcternan.me.uk/mscgen
+    sudo apt-get install mscgen
+    http://www.mcternan.me.uk/mscgen
     '''
     cmdmap = {'mscgen': 'mscgen'}
 
@@ -649,7 +669,8 @@ class MscGen(Handler):
 
 class Octave(Handler):
     '''
-    See https://www.gnu.org/software/octave
+    sudo apt-get install octave
+    https://www.gnu.org/software/octave
     '''
     cmdmap = {'octave': 'octave'}
 
@@ -662,7 +683,8 @@ class Octave(Handler):
 
 class Pic2Plot(Handler):
     '''
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     '''
     cmdmap = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
 
@@ -677,7 +699,8 @@ class Pic2Plot(Handler):
 
 class PlantUml(Handler):
     '''
-    See http://plantuml.com
+    sudo apt-get install plantuml
+    http://plantuml.com
     '''
     cmdmap = {'plantuml': 'plantuml'}
 
@@ -690,7 +713,8 @@ class PlantUml(Handler):
 
 class Plot(Handler):
     '''
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     '''
     # - code text is filename relative to source.md
     # - write(stdout, <fname>.<fmt>)
@@ -710,7 +734,8 @@ class Plot(Handler):
 
 class Ploticus(Handler):
     '''
-    See http://ploticus.sourceforge.net/doc/welcome.html
+    sudo apt-get install ploticus
+    http://ploticus.sourceforge.net/doc/welcome.html
     '''
     cmdmap = {'ploticus': 'ploticus'}
 
@@ -724,7 +749,9 @@ class Ploticus(Handler):
 
 class Protocol(Handler):
     '''
-    See https://github.com/luismartingarcia/protocol.git
+    git clone https://github.com/luismartingarcia/protocol.git .
+    python setup install
+    https://github.com/luismartingarcia/protocol.git
     '''
     cmdmap = {'protocol': 'protocol'}
     outfmt = 'protocold'
@@ -745,14 +772,9 @@ class Protocol(Handler):
 
 class PyxPlot(Handler):
     '''
-    See http://pyxplot.org.uk
+    sudo apt-get install pyxplot
+    http://pyxplot.org.uk
     '''
-    # need to set output format and output filename in the script...
-    # .. write('set terminal <fmt>\n' +
-    #          'set output <fname>.<fmt>\n' +
-    #           code,
-    #          <fname>.pyxplot)
-    # <= Para(Image)
     cmdmap = {'pyxplot': 'pyxplot'}
 
     def image(self, fmt=None):
@@ -769,7 +791,7 @@ class PyxPlot(Handler):
 
 class SheBang(Handler):
     '''
-    See http://www.google.com/search?q=shebang+line
+    http://www.google.com/search?q=shebang+line
     '''
     # runs fenced code block as a hash-bang system script'
     cmdmap = {'shebang': 'shebang'}

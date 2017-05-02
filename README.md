@@ -123,7 +123,7 @@ Installation
   1. % sudo pip install pandocfilters
   2. % sudo pip install pandoc-imagine
 
-     or save `imagine.py` anywhere along $PATH (pandoc's filter search path).
+     or save `pandoc-imagine.py` anywhere along $PATH
 
 
 Dependencies
@@ -133,7 +133,7 @@ Dependencies
 
 Pandoc usage
 
-    % pandoc --filter imagine.py document.md -o document.pdf
+    % pandoc --filter pandoc-imagine.py document.md -o document.pdf
 
 
 Markdown usage
@@ -153,7 +153,7 @@ Markdown usage
     ```
 
   - options="..." will be passed onto the command line.
-    Some classes already provide sane defaults (if required by the command).
+    Some classes already provide some defaults (as required by the command).
 
   - imgout="...", csv-list of keywords each specifying a certain output
     - img     image in a paragraph
@@ -164,9 +164,9 @@ Markdown usage
   - prog=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
 
-  If the command fails and/or produces no image, the original fenced code block
-  is retained unchanged.  Any info on stderr is relayed by Imagine, which might
-  be useful for troubleshooting.
+  If the command fails, the original fenced code block is retained unchanged.
+  Any info on stderr is relayed by Imagine, which might be useful for
+  troubleshooting.
 
   If the command succeeds but produces no image, a line reporting the missing
   Image is included in the output document as output.
@@ -177,13 +177,12 @@ Markdown usage
   - there's no clean up of files stored there
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
-  - when creating a pdf, images are placed `nearest` to their fenced code block
 
   Some commands follow a slightly different pattern:
   - 'img' directive is ignored by commands that only produce ascii
   - ctioga2 defaults to pdf instead of png
   - flydraw produces a gif, not png
-  - gle also creates a pd-images/.gle subdir
+  - gle also creates a .gle subdir inside the images-dir
   - gri produces a ps, which is `convert`ed to png
   - imagine reads its codeblock as help-topics for which a codeblock is returned
   - plot reads its codeblock as the relative path to the file to process
@@ -197,8 +196,9 @@ Security
   Imagine just hands the fenced codeblocks to plotting tools to process or
   simply runs them as system scripts as-is.
 
-  Most of the plotting tools, implement their own 'little' language which can
-  create beautiful images but can also cause harm.
+  Shebang are inherently unsafe and most of the plotting tools implement their
+  own 'little' language which can create beautiful images but can also cause
+  harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
   the fenced codeblocks before running them through the filter.
@@ -212,8 +212,8 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  to quickly get some information on a particular class of interest. Use
-  `imagine` to get the module's docstring.
+  Use `imagine` as class to get the module's docstring (ie this text) or one
+  of the commands you're interested in.
 ```
 
 Individual Classes
