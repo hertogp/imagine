@@ -2,6 +2,7 @@
 cd ~/dev/imagine
 echo "updating README .."
 pandoc --filter ./pandoc_imagine.py _readme.md -t markdown -o README.md
+pandoc --filter ./pandoc_imagine.py _readme.md -o README.rst
 echo "Done!"
 cd ~/dev/imagine/examples
 echo
