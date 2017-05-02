@@ -83,9 +83,9 @@ See [sample.pdf](examples/sample.pdf) for more examples.
 #!/usr/bin/env python
 import sys
 sys.path.append('.')
-import imagine
+import pandoc_imagine
 
-classes = set(imagine.Handler.workers.values())
+classes = set(pandoc_imagine.Handler.workers.values())
 for cls in sorted(classes, key=lambda x: x.__name__):
     print cls.__name__
     print cls.__doc__

@@ -222,7 +222,8 @@ Individual Classes
 ``` {.stdout}
 Asy
 
-    See http://asymptote.sourceforge.net
+    sudo-apt-get install asymptote
+    http://asymptote.sourceforge.net/
     
     Runs asy -o <fname>.png [options] <fname>.asy
     Wraps:
@@ -231,7 +232,8 @@ Asy
 
 BlockDiag
 
-    See http://blockdiag.com
+    sudo pip install blockdiag nwdiag actdiag seqdiag
+    http://blockdiag.com/
     
     Runs cmd -T png <fname>.txt -o <fname>.png
     Wraps:
@@ -244,7 +246,8 @@ BlockDiag
 
 Boxes
 
-    See http://boxes.thomasjensen.com
+    sudo apt-get install boxes
+    http://boxes.thomasjensen.com
     
     Runs boxes [options] <fname>.boxes
     Wraps:
@@ -252,21 +255,26 @@ Boxes
 
 Ctioga2
 
-    See http://ctioga2.sourceforge.net
+    sudo apt-get install ctioga2
+    http://ctioga2.sourceforge.net
     
     Runs ctioga2 [options] -f <fname>.ctioga2
     Wraps:
     -  'ctioga2' -> ctioga2
 
 Ditaa
-See http://ditaa.sourceforge.net
+
+    sudo apt-get install ditaa
+    http://ditaa.sourceforge.net
+    
     Runs ditaa <fname>.ditaa <fname>.png -T [options]
     Wraps:
     -  'ditaa' -> ditaa
 
 Figlet
 
-    See http://www.figlet.org
+    sudo apt-get install figlet
+    http://www.figlet.org
     
     Runs figlet [options] < code-text
     Wraps:
@@ -274,7 +282,8 @@ Figlet
 
 Flydraw
 
-    See http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+    sudo apt-get install flydraw
+    http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
     
     Runs flydraw [options] < code-text
     Wraps:
@@ -282,7 +291,8 @@ Flydraw
 
 Gle
 
-    See http://glx.sourceforge.net
+    sudo apt-get install gle-graphics
+    http://glx.sourceforge.net
     
     Runs gle -verbosity 0 -output <fname>.<fmt> <fname>.gle
     Wraps:
@@ -290,7 +300,8 @@ Gle
 
 GnuPlot
 
-    See http://www.gnuplot.info
+    sudo apt-get install gnuplot
+    http://www.gnuplot.info
     
     Runs gnuplot [options] <fname>.gnuplot > <fname>.png
     Wraps:
@@ -298,7 +309,8 @@ GnuPlot
 
 Graph
 
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     
     Runs graph -T png [options] <fname>.graph
     Wraps:
@@ -306,7 +318,8 @@ Graph
 
 Graphviz
 
-    See http://graphviz.org
+    sudo apt-get install graphviz
+    http://graphviz.org
     
     Runs cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>
     Wraps:
@@ -320,7 +333,8 @@ Graphviz
 
 Gri
 
-    See http://gri.sourceforge.net
+    sudo apt-get install gri imagemagick
+    http://gri.sourceforge.net
     - requires `convert` from imagemagick
     
     Runs gri -c 0 -b <fname>.gri
@@ -329,7 +343,8 @@ Gri
 
 Imagine
 
-    See https://github.com/hertogp/imagine
+    pip install pandoc-imagine
+    https://github.com/hertogp/imagine
     
     Runs return documentation in a CodeBlock
     Wraps:
@@ -337,8 +352,8 @@ Imagine
 
 Mermaid
 
-    See https://knsv.github.io/mermaid (needs phantomjs)
-    - requires phantomjs.
+    sudo nmp install mermaid
+    https://knsv.github.io/mermaid (needs phantomjs)
     
     Runs mermaid -o <basedir> [options] <fname>.mermaid
     Wraps:
@@ -346,7 +361,8 @@ Mermaid
 
 MscGen
 
-    See http://www.mcternan.me.uk/mscgen
+    sudo apt-get install mscgen
+    http://www.mcternan.me.uk/mscgen
     
     Runs mscgen -T png -o <fname>.png <fname>.mscgen
     Wraps:
@@ -354,7 +370,8 @@ MscGen
 
 Octave
 
-    See https://www.gnu.org/software/octave
+    sudo apt-get install octave
+    https://www.gnu.org/software/octave
     
     Runs octage --no-gui -q [options] <fname>.octave <fname>.png
     Wraps:
@@ -362,7 +379,8 @@ Octave
 
 Pic2Plot
 
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     
     Runs pic2plot -T png [options] <fname>.pic2plot
     Wraps:
@@ -371,7 +389,8 @@ Pic2Plot
 
 PlantUml
 
-    See http://plantuml.com
+    sudo apt-get install plantuml
+    http://plantuml.com
     
     Runs plantuml -t png <fname>.plantuml
     Wraps:
@@ -379,7 +398,8 @@ PlantUml
 
 Plot
 
-    See https://www.gnu.org/software/plotutils
+    sudo apt-get install plotutils
+    https://www.gnu.org/software/plotutils
     
     Runs plot -T png [options] <code-text-as-filename>
     Wraps:
@@ -387,7 +407,8 @@ Plot
 
 Ploticus
 
-    See http://ploticus.sourceforge.net/doc/welcome.html
+    sudo apt-get install ploticus
+    http://ploticus.sourceforge.net/doc/welcome.html
     
     Runs ploticus -png -o <fname>.png [options] <fname>.ploticus
     Wraps:
@@ -395,7 +416,9 @@ Ploticus
 
 Protocol
 
-    See https://github.com/luismartingarcia/protocol.git
+    git clone https://github.com/luismartingarcia/protocol.git .
+    python setup install
+    https://github.com/luismartingarcia/protocol.git
     
     Runs protocol [options] code-text
     Wraps:
@@ -403,7 +426,8 @@ Protocol
 
 PyxPlot
 
-    See http://pyxplot.org.uk
+    sudo apt-get install pyxplot
+    http://pyxplot.org.uk
     
     Runs pyxplot [options] <fname>.pyxplot
     Wraps:
@@ -411,7 +435,7 @@ PyxPlot
 
 SheBang
 
-    See http://www.google.com/search?q=shebang+line
+    http://www.google.com/search?q=shebang+line
     
     Runs <fname>.shebang [options] <fname>.png
     Wraps:
