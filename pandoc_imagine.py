@@ -124,7 +124,7 @@ The imagine class puts documentation of topics at your fingertips, like so:
   of the commands you're interested in.
 '''
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 import os
 import sys
