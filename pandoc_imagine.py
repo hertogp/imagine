@@ -807,13 +807,15 @@ class SheBang(Handler):
 __doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 
-def walker(key, value, fmt, meta):
-    if key == u'CodeBlock':
-        worker = dispatch(value)
-        return worker.image(fmt)
+def main():
 
+    def walker(key, value, fmt, meta):
+        if key == u'CodeBlock':
+            worker = dispatch(value)
+            return worker.image(fmt)
 
-if __name__ == '__main__':
     dispatch = Handler(None)
     pf.toJSONFilter(walker)
 
+if __name__ == '__main__':
+    main()
