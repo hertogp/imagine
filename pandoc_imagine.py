@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+from six import with_metaclass
+
+import os
+import sys
+import stat
+from textwrap import wrap
+from subprocess import Popen, check_output, CalledProcessError, STDOUT, PIPE
+
+import pandocfilters as pf
 
 # Author: Pieter den Hertog
 # Email: git.hertogp@gmail.com
@@ -18,7 +28,7 @@
 
 #-- __doc__
 
-'''\
+__doc__ = '''\
 Imagine
   A pandoc filter to turn fenced codeblocks into graphics or ascii art by
   wrapping some external command line utilities, such as:
@@ -121,18 +131,13 @@ The imagine class puts documentation of topics at your fingertips, like so:
     ```
 
   Use `imagine` as class to get the module's docstring (ie this text) or one
-  of the commands you're interested in.
+  of the commands yo're interested in.
 '''
+
+#-- version
 
 __version__ = '0.1.2'
 
-import os
-import sys
-import stat
-from textwrap import wrap
-from subprocess import Popen, check_output, CalledProcessError, STDOUT, PIPE
-
-import pandocfilters as pf
 
 #-- globs
 IMG_BASEDIR = 'pd'
@@ -149,13 +154,12 @@ class HandlerMeta(type):
         for klass in dct.get('cmdmap', {}):
             cls.workers[klass.lower()] = cls
 
-class Handler(object):
+class Handler(with_metaclass(HandlerMeta,object)):
     'baseclass for image/ascii art generators'
     severity  = 'error warn note info debug'.split()
     workers = {}    # dispatch mapping for Handler
     klass = None    # assigned when worker is dispatched
     _output = IMG_OUTPUTS[1]  # i.e. default img
-    __metaclass__ = HandlerMeta
 
     cmdmap = {}     # worker subclass must override, klass -> cli-program
     level = 2       # log severity level, see above
@@ -165,7 +169,7 @@ class Handler(object):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # A worker class with cmdmap={'': cmd} replaces Handler as default
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(4, 'Handler __call__ codec', codec[0])
+        self.msg(4,'Handler __call__ codec', codec[0])
         try:
             _, klasses, keyvals = codec[0]
         except Exception as e:
@@ -210,11 +214,11 @@ class Handler(object):
         # `Extract` Imagine keywords/keyvals from codeblock's attributes
         # - also remove any and all Imagine classes
         self.classes = [k for k in self.classes if k not in self.workers]
-        self.options, self.keyvals = pf.get_value(self.keyvals, u'options', '')
+        self.options, self.keyvals = pf.get_value(self.keyvals, 'options', '')
         self.options = self.options.split()
-        self.prog, self.keyvals = pf.get_value(self.keyvals, u'prog', None)
+        self.prog, self.keyvals = pf.get_value(self.keyvals, 'prog', None)
         imgout, self.keyvals = pf.get_value(self.keyvals,
-                                            u'imgout',
+                                            'imgout',
                                             self._output)
         self.imgout = imgout.lower().replace(',',' ').split()
 
@@ -222,15 +226,14 @@ class Handler(object):
         self.prog = self.prog if self.prog else self.cmdmap.get(self.klass, None)
         if self.prog is None:
             self.msg(0, self.klass, 'not listed in', self.cmdmap)
-            raise Exception('worker has no cli command for %s' % self.klass)
+            raise Exception('no workers found for %s' % self.klass)
 
         self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
         self.outfile = self.basename + '.%s' % self.outfmt
         self.inpfile = self.basename + '.%s' % self._name.lower()
 
-        self.codetxt = self.code.encode(sys.getfilesystemencoding())
         if not os.path.isfile(self.inpfile):
-            self.write('w', self.codetxt, self.inpfile)
+            self.write('w', self.code, self.inpfile)
 
     def disallow(self, src, disallow=[]):
         'whilst preserving order, limit list of src elements to those allowed'
@@ -241,9 +244,9 @@ class Handler(object):
             rv.append(elm)
         return rv
 
-    def read(self, src):
+    def read(self, mode, src):
         try:
-            with open(src, 'r') as f:
+            with open(src, mode) as f:
                 return f.read()
         except Exception as e:
             self.msg(0, 'fail: could not read %s' % src)
@@ -272,7 +275,7 @@ class Handler(object):
                                 self._name,
                                 self.severity[level],
                                 ' '.join(str(s) for s in a))
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
         sys.stderr.flush()
 
     def fmt(self, fmt, **specials):
@@ -345,7 +348,11 @@ class Handler(object):
                      'stdout': PIPE,
                      'stderr': PIPE}
             p = Popen(args, **pipes)
-            self.output, self.stderr = p.communicate(stdin)
+            out, err = p.communicate(stdin)
+            encoding = sys.getfilesystemencoding()
+            self.output = out #.decode(encoding)
+            self.stderr = err #.decode(encoding)
+            # self.output, self.stderr = p.communicate(stdin)
 
             # print any complaints on stderr
             if len(self.stderr):
@@ -405,7 +412,7 @@ class Boxes(Handler):
             if len(self.output):
                 self.write('w', self.output, self.outfile)
             else:
-                self.output = self.read(self.outfile)
+                self.output = self.read('r', self.outfile)
             return self.result()
             return self.CodeBlock(self.codec[0], self.output)
 
@@ -471,12 +478,12 @@ class Figlet(Handler):
         # silently ignore any request for an 'image'
         self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
-        if self.cmd(self.prog, stdin=self.codetxt, *args):
+        if self.cmd(self.prog, stdin=self.code, *args):
             if len(self.output):
                 # save figlet's stdout to outfile for next time around
                 self.write('w', self.output, self.outfile)
             else:
-                self.output = self.read(self.outfile)
+                self.output = self.read('r', self.outfile)
             return self.result()
 
 
@@ -495,9 +502,9 @@ class Flydraw(Handler):
         # ignore any request for img
         self.imgout = self.disallow(self.imgout, ['img'])
         args = self.options
-        if self.cmd(self.prog, stdin=self.codetxt, *args):
+        if self.cmd(self.prog, stdin=self.code, *args):
             if len(self.output):
-                self.write('w', self.output, self.outfile)
+                self.write('wb', self.output, self.outfile)
             return self.result()
 
 
@@ -612,14 +619,14 @@ class Imagine(Handler):
     def image(self, fmt=None):
         'return documentation in a CodeBlock'
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
-        if len(self.codetxt) == 0:
+        if len(self.code) == 0:
             return pf.CodeBlock(('',['__doc__'],[]), __doc__)
-        elif self.codetxt == 'classes':
+        elif self.code == 'classes':
             classes = wrap(', '.join(sorted(Handler.workers.keys())), 78)
             return pf.CodeBlock(('',['__doc__'],[]), '\n'.join(classes))
 
         doc = []
-        for name in self.codetxt.splitlines():
+        for name in self.code.splitlines():
             worker = self.workers.get(name, None)
             doc.append(name)
             if worker is None:
@@ -723,10 +730,10 @@ class Plot(Handler):
     def image(self, fmt=None):
         'plot -T png [options] <code-text-as-filename>'
         self.fmt(fmt)
-        if not os.path.isfile(self.codetxt):
-            self.msg(0, 'fail: cannot read file %r' % self.codetxt)
+        if not os.path.isfile(self.code):
+            self.msg(0, 'fail: cannot read file %r' % self.code)
             return
-        args = ['-T', self.outfmt] + self.options + [self.codetxt]
+        args = ['-T', self.outfmt] + self.options + [self.code]
         if self.cmd(self.prog, *args):
             self.write('wb', self.output, self.outfile)
             return self.result()
@@ -759,14 +766,14 @@ class Protocol(Handler):
 
     def image(self, fmt=None):
         'protocol [options] code-text'
-        args = self.options + [self.codetxt]
+        args = self.options + [self.code]
         # silently ignore any request for an 'image'
         self.imgout = self.disallow(self.imgout, ['img'])
         if self.cmd(self.prog, *args):
             if len(self.output):
                 self.write('w', self.output, self.outfile)
             else:
-                self.output = self.read(self.outfile)
+                self.output = self.read('r', self.outfile)
             return self.result()
 
 
@@ -781,10 +788,10 @@ class PyxPlot(Handler):
         'pyxplot [options] <fname>.pyxplot'
         self.fmt(fmt)
         args = self.options + [self.inpfile]
-        self.codetxt = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
+        self.code = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
                                        'set output %s' % self.outfile,
-                                       self.codetxt)
-        self.write('w', self.codetxt, self.inpfile)
+                                       self.code)
+        self.write('w', self.code, self.inpfile)
         if self.cmd(self.prog, *args):
             return self.result()
 
@@ -803,14 +810,14 @@ class SheBang(Handler):
         if self.cmd(self.inpfile, *args):
             return self.result()
 
-
 __doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 
+# for PyPI
 def main():
 
     def walker(key, value, fmt, meta):
-        if key == u'CodeBlock':
+        if key == 'CodeBlock':
             worker = dispatch(value)
             return worker.image(fmt)
 

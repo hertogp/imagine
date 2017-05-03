@@ -254,7 +254,7 @@ none of them suit your needs.
 
 ```{.ctioga2 imgout="fcb,img" caption="Created by ctioga2" width=60%}
 title "Intersection of two parabolas"
-math 
+math
 plot x*x /fill=top /fill-transparency 0.8 /legend '$x^2$'
 plot 50-x*x /fill=bottom /fill-transparency 0.8 /legend '$50 - x^2$'
 ```
