@@ -303,7 +303,9 @@ class Handler(with_metaclass(HandlerMeta,object)):
 
     def result(self):
         'return FCB, Para(Url()) and/or CodeBlock(stdout) as ordered'
+        # str.decode
         rv = []
+        enc = [sys.getfilesystemencoding(), 'ignore'] # result always unicode
         for output_elm in self.imgout:
             if output_elm == 'img':
                 if os.path.isfile(self.outfile):
@@ -319,14 +321,14 @@ class Handler(with_metaclass(HandlerMeta,object)):
             elif output_elm == 'stdout':
                 if len(self.output):
                     attr = ['', self.classes + ['stdout'], self.keyvals]
-                    rv.append(pf.CodeBlock(attr, self.output))
+                    rv.append(pf.CodeBlock(attr, self.output.decode(*enc)))
                 else:
                     self.msg(1, '>>:', 'stdout requested, but saw nothing')
 
             elif output_elm == 'stderr':
                 if len(self.stderr):
                     attr = ['', self.classes + ['stderr'], self.keyvals]
-                    rv.append(pf.CodeBlock(attr, self.stderr))
+                    rv.append(pf.CodeBlock(attr, self.stderr.decode(*enc)))
                 else:
                     self.msg(1, '>>:', 'stderr requested, but saw nothing')
 
