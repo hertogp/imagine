@@ -1,4 +1,4 @@
-.. code:: stdout
+.. code::
 
                                               \\\///
                                              / _  _ \
@@ -22,10 +22,9 @@ A pandoc filter to process codeblocks into images and/or ascii art
 ------------------------------------------------------------------
 
 Imagine is a pandoc filter that will turn codeblocks tagged with certain
-classes into images or ascii art. The following classes are currently
-supported:
+classes into images or ascii art. The following are currently supported:
 
-.. code:: __doc__
+.. code::
 
     actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot, fdp,
     figlet, flydraw, gle, gnuplot, graph, graphviz, gri, imagine, mermaid, mscgen,
@@ -38,7 +37,7 @@ Examples
 `Mscgen <http://www.mcternan.me.uk/mscgen/>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: fcb
+.. code::
 
     ```{.mscgen imgout="fcb,img"}
     msc {
@@ -62,7 +61,7 @@ Examples
 `Octave <https://www.gnu.org/software/octave>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: fcb
+.. code::
 
     ```{.octave imgout="fcb,img"}
     figure(1, 'visible', 'off');
@@ -76,7 +75,7 @@ Examples
 `Shebang <http://www.google.com/search?q=linux+shebang>`__ using Python & Pygal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: fcb
+.. code::
 
     ```{.shebang imgout="fcb,img"}
     #!/usr/bin/env python3
@@ -95,7 +94,7 @@ Examples
 `boxes <http://boxes.thomasjensen.com>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: fcb
+.. code::
 
     ```{.shebang imgout="fcb,stdout"}
     #!/bin/bash
@@ -103,7 +102,7 @@ Examples
     cat $0 | boxes -d peek -p h4
     ```
 
-.. code:: stdout
+.. code::
 
     /*       _\|/_
              (o o)
@@ -113,12 +112,13 @@ Examples
      |    cat $0 | boxes -d peek -p h4             |
      +--------------------------------------------*/
 
-See `sample.pdf <examples/sample.pdf>`__ for more examples.
+See `imagine on github <https://github.com/hertogp/imagine>`__ for more
+examples.
 
 Documentation
 -------------
 
-.. code:: __doc__
+.. code::
 
     Imagine
       A pandoc filter to turn fenced codeblocks into graphics or ascii art by
@@ -232,7 +232,7 @@ Documentation
 Individual Classes
 ------------------
 
-.. code:: stdout
+.. code::
 
     Asy
 
@@ -470,7 +470,7 @@ Individual Classes
         Wraps:
         -  'shebang' -> shebang
 
-.. |image0| image:: pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png
-.. |image1| image:: pd-images/97a5ccef8c2f73c2897bc3f07ebe27fb971d957b.png
-.. |image2| image:: pd-images/8296b8c4e66da192e78d37c805a731fa3374e1c8.png
+.. |image0| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png
+.. |image1| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/97a5ccef8c2f73c2897bc3f07ebe27fb971d957b.png
+.. |image2| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/8296b8c4e66da192e78d37c805a731fa3374e1c8.png
 

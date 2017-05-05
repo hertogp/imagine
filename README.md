@@ -22,8 +22,7 @@ A pandoc filter to process codeblocks into images and/or ascii art
 ------------------------------------------------------------------
 
 Imagine is a pandoc filter that will turn codeblocks tagged with certain
-classes into images or ascii art. The following classes are currently
-supported:
+classes into images or ascii art. The following are currently supported:
 
 ``` {.__doc__}
 actdiag, asy, asymptote, blockdiag, boxes, circo, ctioga2, ditaa, dot, fdp,
@@ -109,7 +108,8 @@ cat $0 | boxes -d peek -p h4
  +--------------------------------------------*/
 ```
 
-See [sample.pdf](examples/sample.pdf) for more examples.
+See [imagine on github](https://github.com/hertogp/imagine) for more
+examples.
 
 Documentation
 -------------
