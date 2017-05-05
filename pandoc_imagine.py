@@ -138,7 +138,7 @@ The imagine class puts documentation of topics at your fingertips, like so:
 
 #-- version
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 
 #-- globs
