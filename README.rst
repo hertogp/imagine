@@ -112,8 +112,8 @@ Examples
      |    cat $0 | boxes -d peek -p h4             |
      +--------------------------------------------*/
 
-See `imagine on github <https://github.com/hertogp/imagine>`__ for more
-examples.
+More `examples <https://github.com/hertogp/imagine/examples>`__ in
+sample.pdf
 
 Documentation
 -------------
