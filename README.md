@@ -35,61 +35,69 @@ protocol, pyxplot, rackdiag, seqdiag, sfdp, shebang, twopi
 Examples
 --------
 
-### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
+### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-    ```{.mscgen imgout="fcb,img"}
-    msc {
-     hscale="1.3", arcgradient = "8";
+```` {.fcb}
+```{.mscgen imgout="fcb,img"}
+msc {
+ hscale="1.3", arcgradient = "8";
 
-     a [label="Client"],b [label="Server"];
+ a [label="Client"],b [label="Server"];
 
-     a=>b [label="data1"];
-     a-xb [label="data2"];
-     a=>b [label="data3"];
-     a<=b [label="ack1, nack2"];
-     a=>b [label="data2", arcskip="1"];
-     |||;
-     a<=b [label="ack3"];
-     |||;
-    }
-    ```
+ a=>b [label="data1"];
+ a-xb [label="data2"];
+ a=>b [label="data3"];
+ a<=b [label="ack1, nack2"];
+ a=>b [label="data2", arcskip="1"];
+ |||;
+ a<=b [label="ack3"];
+ |||;
+}
+```
+````
 
 ![](pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png)
 
-### *[Octave](https://www.gnu.org/software/octave)*
+### [Octave](https://www.gnu.org/software/octave)
 
-    ```{.octave imgout="fcb,img"}
-    figure(1, 'visible', 'off');
-    surf(peaks);
-    title("peaks");
-    print(1, argv(){1});
-    ```
+```` {.fcb}
+```{.octave imgout="fcb,img"}
+figure(1, 'visible', 'off');
+surf(peaks);
+title("peaks");
+print(1, argv(){1});
+```
+````
 
 ![](pd-images/97a5ccef8c2f73c2897bc3f07ebe27fb971d957b.png)
 
-### *[Shebang](http://www.google.com/search?q=linux+shebang)* using Python & Pygal
+### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-    ```{.shebang imgout="fcb,img"}
-    #!/usr/bin/env python3
-    import sys
-    import pygal
-    from math import cos
-    xy_chart = pygal.XY()
-    xy_chart.title = 'XY Cosinus'
-    xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
-    xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
-    xy_chart.render_to_png(sys.argv[-1])
-    ```
+```` {.fcb}
+```{.shebang imgout="fcb,img"}
+#!/usr/bin/env python3
+import sys
+import pygal
+from math import cos
+xy_chart = pygal.XY()
+xy_chart.title = 'XY Cosinus'
+xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+xy_chart.render_to_png(sys.argv[-1])
+```
+````
 
 ![](pd-images/8296b8c4e66da192e78d37c805a731fa3374e1c8.png)
 
-### *[boxes](http://boxes.thomasjensen.com)*
+### [boxes](http://boxes.thomasjensen.com)
 
-    ```{.shebang imgout="fcb,stdout"}
-    #!/bin/bash
-    # I seem to have got myself boxed in!
-    cat $0 | boxes -d peek -p h4
-    ```
+```` {.fcb}
+```{.shebang imgout="fcb,stdout"}
+#!/bin/bash
+# I seem to have got myself boxed in!
+cat $0 | boxes -d peek -p h4
+```
+````
 
 ``` {.stdout}
 /*       _\|/_
@@ -120,15 +128,16 @@ Imagine
 
 Installation
 
-  1. % sudo pip install pandocfilters
-  2. % sudo pip install pandoc-imagine
+    % sudo pip install pandoc-imagine
 
-     or save `pandoc-imagine.py` anywhere along $PATH
+    or simply save `pandoc-imagine.py` anywhere along $PATH
 
 
 Dependencies
 
-  One (or more) of the packages that provide above utilities.
+    % sudo pip install pandocfilters
+
+    and one (or more) of the packages that provide above utilities.
 
 
 Pandoc usage
@@ -142,9 +151,9 @@ Markdown usage
     code
     ```
 
-  which will run `cmd` to proces the `code` into a png image and replaces the
-  fenced code block with an Image in a paragraph of its own or any ascii art in
-  its own CodeBlock.
+  which will run `cmd` (if known) to proces the `code` into a png image and
+  replaces the fenced code block with an Image in a paragraph of its own or any
+  ascii art in its own CodeBlock.
 
   Alternate, longer form:
 
@@ -157,9 +166,9 @@ Markdown usage
 
   - imgout="...", csv-list of keywords each specifying a certain output
     - img     image in a paragraph
-    - fcb     codeblock (class __fcb__) containing the original codeblock
-    - stdout, codeblock (class __stdout__) containing stdout output (if any)
-    - stderr, codeblock (class __stderr__) containing stderr output (if any)
+    - fcb     codeblock (class fcb)    containing the original codeblock
+    - stdout, codeblock (class stdout) containing stdout output (if any)
+    - stderr, codeblock (class stderr) containing stderr output (if any)
 
   - prog=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
@@ -169,7 +178,7 @@ Markdown usage
   troubleshooting.
 
   If the command succeeds but produces no image, a line reporting the missing
-  Image is included in the output document as output.
+  image is included in the output document.
 
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
@@ -194,10 +203,10 @@ Markdown usage
 Security
 
   Imagine just hands the fenced codeblocks to plotting tools to process or
-  simply runs them as system scripts as-is.
+  simply runs them as system scripts, as-is.
 
-  Shebang are inherently unsafe and most of the plotting tools implement their
-  own 'little' language which can create beautiful images but can also cause
+  Shebang's are inherently unsafe and most of the plotting tools implement their
+  own 'little' languages, which can create beautiful images, but can also cause
   harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
@@ -212,8 +221,8 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text) or one
-  of the commands you're interested in.
+  Use `imagine` as class to get the module's docstring (ie this text) and/or one
+  or more of the commands you're interested in, each on a separate line.
 ```
 
 Individual Classes
@@ -284,6 +293,9 @@ Flydraw
 
     sudo apt-get install flydraw
     http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     
     Runs flydraw [options] < code-text
     Wraps:
@@ -302,6 +314,9 @@ GnuPlot
 
     sudo apt-get install gnuplot
     http://www.gnuplot.info
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     
     Runs gnuplot [options] <fname>.gnuplot > <fname>.png
     Wraps:
@@ -311,6 +326,9 @@ Graph
 
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     
     Runs graph -T png [options] <fname>.graph
     Wraps:
@@ -381,6 +399,9 @@ Pic2Plot
 
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     
     Runs pic2plot -T png [options] <fname>.pic2plot
     Wraps:
@@ -400,6 +421,9 @@ Plot
 
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     
     Runs plot -T png [options] <code-text-as-filename>
     Wraps:

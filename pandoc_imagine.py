@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from six import with_metaclass
 
@@ -38,15 +39,16 @@ Imagine
 
 Installation
 
-  1. %% sudo pip install pandocfilters
-  2. %% sudo pip install pandoc-imagine
+    %% sudo pip install pandoc-imagine
 
-     or save `pandoc-imagine.py` anywhere along $PATH
+    or simply save `pandoc-imagine.py` anywhere along $PATH
 
 
 Dependencies
 
-  One (or more) of the packages that provide above utilities.
+    %% sudo pip install pandocfilters
+
+    and one (or more) of the packages that provide above utilities.
 
 
 Pandoc usage
@@ -60,9 +62,9 @@ Markdown usage
     code
     ```
 
-  which will run `cmd` to proces the `code` into a png image and replaces the
-  fenced code block with an Image in a paragraph of its own or any ascii art in
-  its own CodeBlock.
+  which will run `cmd` (if known) to proces the `code` into a png image and
+  replaces the fenced code block with an Image in a paragraph of its own or any
+  ascii art in its own CodeBlock.
 
   Alternate, longer form:
 
@@ -75,9 +77,9 @@ Markdown usage
 
   - imgout="...", csv-list of keywords each specifying a certain output
     - img     image in a paragraph
-    - fcb     codeblock (class __fcb__) containing the original codeblock
-    - stdout, codeblock (class __stdout__) containing stdout output (if any)
-    - stderr, codeblock (class __stderr__) containing stderr output (if any)
+    - fcb     codeblock (class fcb)    containing the original codeblock
+    - stdout, codeblock (class stdout) containing stdout output (if any)
+    - stderr, codeblock (class stderr) containing stderr output (if any)
 
   - prog=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
@@ -87,7 +89,7 @@ Markdown usage
   troubleshooting.
 
   If the command succeeds but produces no image, a line reporting the missing
-  Image is included in the output document as output.
+  image is included in the output document.
 
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
@@ -112,10 +114,10 @@ Markdown usage
 Security
 
   Imagine just hands the fenced codeblocks to plotting tools to process or
-  simply runs them as system scripts as-is.
+  simply runs them as system scripts, as-is.
 
-  Shebang are inherently unsafe and most of the plotting tools implement their
-  own 'little' language which can create beautiful images but can also cause
+  Shebang's are inherently unsafe and most of the plotting tools implement their
+  own 'little' languages, which can create beautiful images, but can also cause
   harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
@@ -130,18 +132,55 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text) or one
-  of the commands yo're interested in.
+  Use `imagine` as class to get the module's docstring (ie this text) and/or one
+  or more of the commands you're interested in, each on a separate line.
 '''
 
 #-- version
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 
 #-- globs
 IMG_BASEDIR = 'pd'
 IMG_OUTPUTS = ['fcb', 'img', 'stdout', 'stderr']
+
+#-- helpers
+def toStr(s, enc='ascii'):
+    'return encoded byte stream for s. PY2->str, PY3->bytes'
+    err = 'replace'
+    if isinstance(s, str):
+        return s
+    if isinstance(s, bytes):
+        return s.decode(enc, err)
+    try:
+        # PY2 unicode object?
+        return s.encode(enc, err)
+    except AttributeError as e:
+        # s is not a string
+        return toStr(str(s))
+
+def toBytes(s, enc='ascii'):
+    'return decoded char sequence for s'
+    # in PY2 isinstance(str(), bytes) == True
+    err = 'replace'
+    if isinstance(s,bytes):
+        try:
+            return s.decode(enc, err).encode(enc, err) # PY2
+        except AttributeError as e:
+            return s.encode(enc, err) # PY3
+
+    if isinstance(s, str):
+        try:
+            return s.encode(enc, err) # PY3
+        except UnicodeDecodeError as e:
+            return s.decode(enc, err).encode(enc, err) #PY2
+
+    try:
+        # sys.getfilesystemencoding()
+        return toBytes(str(s), sys.getdefaultencoding())
+    except UnicodeEncodeError as e:
+        return s.encode(enc, err)
 
 # Notes:
 # - if walker does not return anything, the element is kept
@@ -167,13 +206,12 @@ class Handler(with_metaclass(HandlerMeta,object)):
 
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
-        # A worker class with cmdmap={'': cmd} replaces Handler as default
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
         self.msg(4,'Handler __call__ codec', codec[0])
         try:
             _, klasses, keyvals = codec[0]
         except Exception as e:
-            self.msg(0, 'Invalid codec passed in', codec)
+            self.msg(0, 'Fatal: invalid codec passed in', codec)
             raise e
 
         # try dispatching by class attribute first
@@ -270,11 +308,11 @@ class Handler(with_metaclass(HandlerMeta,object)):
 
     def msg(self, level, *a):
         if level > self.level: return
-        level %= len(self.severity)
+        level %= len(self.severity) # TODO: change to {}: get(level, 'unknown')
         msg = '%s[%9s:%-5s] %s' % ('Imagine',
                                 self._name,
                                 self.severity[level],
-                                ' '.join(str(s) for s in a))
+                                ' '.join(toStr(s) for s in a))
         print(msg, file=sys.stderr)
         sys.stderr.flush()
 
@@ -284,13 +322,13 @@ class Handler(with_metaclass(HandlerMeta,object)):
         self.outfile = self.basename + '.%s' % self.outfmt
 
     def Url(self):
-        'return an Image link for existing/new output image-file'
+        'return an image link for existing/new output image-file'
         # Since pf.Image is an Inline element, its usually wrapped in a pf.Para
         return pf.Image([self.id_, self.classes, self.keyvals],
                         self.caption, [self.outfile, self.typef])
 
 
-    def AnonCodeBlock(self):
+    def AnonCodeBlock(self, klass='fcb'):
         'reproduce the original CodeBlock inside an anonymous CodeBlock'
         (id_, klasses, keyvals), code = self.codec
         id_ = '#' + id_ if id_ else id_
@@ -299,13 +337,13 @@ class Handler(with_metaclass(HandlerMeta,object)):
         attr = '{%s}' % ' '.join(a for a in [id_, klasses, keyvals] if a)
         # prefer ```cmd over ```{.cmd}
         attr = attr if attr.find(' ')>-1 else attr[2:-1]
-        return pf.CodeBlock(['',[],[]], '```%s\n%s\n```'% (attr, self.code))
+        return pf.CodeBlock(['',[klass],[]],'```%s\n%s\n```'% (attr,self.code))
 
     def result(self):
         'return FCB, Para(Url()) and/or CodeBlock(stdout) as ordered'
         # str.decode
         rv = []
-        enc = [sys.getfilesystemencoding(), 'ignore'] # result always unicode
+        enc = sys.getdefaultencoding() # result always unicode
         for output_elm in self.imgout:
             if output_elm == 'img':
                 if os.path.isfile(self.outfile):
@@ -316,19 +354,19 @@ class Handler(with_metaclass(HandlerMeta,object)):
                     rv.append(pf.Para([pf.Str(msg)]))
 
             elif output_elm == 'fcb':
-                rv.append(self.AnonCodeBlock())
+                rv.append(self.AnonCodeBlock('fcb'))
 
             elif output_elm == 'stdout':
                 if len(self.output):
                     attr = ['', self.classes + ['stdout'], self.keyvals]
-                    rv.append(pf.CodeBlock(attr, self.output.decode(*enc)))
+                    rv.append(pf.CodeBlock(attr, toStr(self.output, enc)))
                 else:
                     self.msg(1, '>>:', 'stdout requested, but saw nothing')
 
             elif output_elm == 'stderr':
                 if len(self.stderr):
                     attr = ['', self.classes + ['stderr'], self.keyvals]
-                    rv.append(pf.CodeBlock(attr, self.stderr.decode(*enc)))
+                    rv.append(pf.CodeBlock(attr, toStr(self.stderr, enc)))
                 else:
                     self.msg(1, '>>:', 'stderr requested, but saw nothing')
 
@@ -350,7 +388,7 @@ class Handler(with_metaclass(HandlerMeta,object)):
                      'stdout': PIPE,
                      'stderr': PIPE}
             p = Popen(args, **pipes)
-            out, err = p.communicate(stdin)
+            out, err = p.communicate(toBytes(stdin))
             encoding = sys.getfilesystemencoding()
             self.output = out #.decode(encoding)
             self.stderr = err #.decode(encoding)
@@ -412,7 +450,7 @@ class Boxes(Handler):
         args = self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
             if len(self.output):
-                self.write('w', self.output, self.outfile)
+                self.write('w', toStr(self.output), self.outfile)
             else:
                 self.output = self.read('r', self.outfile)
             return self.result()
@@ -483,7 +521,8 @@ class Figlet(Handler):
         if self.cmd(self.prog, stdin=self.code, *args):
             if len(self.output):
                 # save figlet's stdout to outfile for next time around
-                self.write('w', self.output, self.outfile)
+                # XXX
+                self.write('w', toStr(self.output), self.outfile)
             else:
                 self.output = self.read('r', self.outfile)
             return self.result()
@@ -493,6 +532,9 @@ class Flydraw(Handler):
     '''
     sudo apt-get install flydraw
     http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     '''
     # - flydraw reads its commands from stdin & produces output on stdout
     # - seems to insist on producing GIF files, despite claims in the manual
@@ -501,8 +543,8 @@ class Flydraw(Handler):
 
     def image(self, fmt=None):
         'flydraw [options] < code-text'
-        # ignore any request for img
-        self.imgout = self.disallow(self.imgout, ['img'])
+        # stdout is used to catch graphic output, not readable txt
+        self.imgout = self.disallow(self.imgout, ['stdout'])
         args = self.options
         if self.cmd(self.prog, stdin=self.code, *args):
             if len(self.output):
@@ -530,6 +572,9 @@ class GnuPlot(Handler):
     '''
     sudo apt-get install gnuplot
     http://www.gnuplot.info
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     '''
     cmdmap = {'gnuplot': 'gnuplot'}
 
@@ -549,6 +594,9 @@ class Graph(Handler):
     '''
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     '''
     cmdmap = {'graph': 'graph'}
 
@@ -629,6 +677,7 @@ class Imagine(Handler):
 
         doc = []
         for name in self.code.splitlines():
+            name = name.lower()
             worker = self.workers.get(name, None)
             doc.append(name)
             if worker is None:
@@ -694,6 +743,9 @@ class Pic2Plot(Handler):
     '''
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     '''
     cmdmap = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
 
@@ -724,6 +776,9 @@ class Plot(Handler):
     '''
     sudo apt-get install plotutils
     https://www.gnu.org/software/plotutils
+    notes:
+    - graphic data is printed to stdout
+    - so 'stdout' in imgout option is silently ignored
     '''
     # - code text is filename relative to source.md
     # - write(stdout, <fname>.<fmt>)
@@ -773,7 +828,7 @@ class Protocol(Handler):
         self.imgout = self.disallow(self.imgout, ['img'])
         if self.cmd(self.prog, *args):
             if len(self.output):
-                self.write('w', self.output, self.outfile)
+                self.write('w', toStr(self.output), self.outfile)
             else:
                 self.output = self.read('r', self.outfile)
             return self.result()

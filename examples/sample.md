@@ -235,13 +235,13 @@ draws a box around its input text. It can remove and repair those boxes, too.
 
 ## design 'peek'
 
-```{.boxes options="-d peek -a c -s 40x3" keep="true" caption="boxes"}
+```{.boxes options="-d peek -a c -s 40x3" imgout="fcb,stdout" caption="boxes"}
 boxes
 ```
 
 ## design 'ian_jones'
 
-```{.boxes options="-d ian_jones -a c -s 40x6" imgout="fcb,img" caption="boxes"}
+```{.boxes options="-d ian_jones -a c -s 40x6" imgout="fcb,stdout" caption="boxes"}
 There are about 52 available styles, and you can create your own if
 none of them suit your needs.
 ```
@@ -308,7 +308,7 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## Rounded corners (options="-r")
 
-```{.ditaa options="-r" imgout="fcb,img,stdout" width=70% caption="Created by Ditaa"}
+```{.ditaa options="-r" imgout="fcb,img" width=70% caption="Created by Ditaa"}
 +--------+   +-------+    +-------+
 |        +---+ ditaa +--> |       |
 |  Text  |   +-------+    |diagram|
@@ -367,12 +367,12 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## figlet
 
-```{#FIGLET .figlet options="-f slant" imgout="fcb,img" caption="Figlet"}
+```{#FIGLET .figlet options="-f slant" imgout="fcb,stdout" caption="Figlet"}
 figlet
 ```
 
 ## hello world.
-```{.figlet imgout="fcb,img"}
+```{.figlet imgout="fcb,stdout"}
 hello, world!
 ```
 
@@ -1371,7 +1371,7 @@ GNU implementation, and some sample pic macros contributed by the late W.
 Richard Stevens.
 
 
-```{.pic keep="True" width=80% caption="Created by pic"}
+```{.pic imgout=img width=80% caption="Created by pic"}
 .PS
 box "START"; arrow; circle dashed filled; arrow
 circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
@@ -1395,15 +1395,15 @@ Protocol is a simple command-line tool that serves two purposes:
 
 ## TCP Header
 
-```{.protocol imgout="fcb,img" caption="protocol"}
+```{.protocol imgout="fcb,stdout" caption="protocol"}
 tcp
 ```
 
 and even custom layouts:
 
-## Customer packet
+## Custom packet
 
-```{.protocol options="--no-numbers" imgout="fcb,img" caption="protocol"}
+```{.protocol options="--no-numbers" imgout="fcb,stdout" caption="protocol"}
 Source:16,TTL:8,Reserved:40
 ```
 
@@ -1448,7 +1448,7 @@ echo "and requires boxes to be available"
 echo
 echo "Its (user) executable flag is set:"
 echo
-echo $(ls -lpah $0 | cut -d' ' -f1,9) | boxes -d peek
+echo $(ls -lpah $0 | tr -s ' ' | cut -d' ' -f1,9) | boxes -d peek
 echo
 echo "This script won't produce: $1"
 echo
@@ -1469,7 +1469,7 @@ echo "on stdout is included in its own CodeBlock"
 
 ### Agg
 
-```{.shebang imgout="fcb,img,stdout" caption="Created by Matplotlib"}
+```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 
 import sys

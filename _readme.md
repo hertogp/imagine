@@ -17,7 +17,7 @@ classes
 
 ## Examples
 
-### *[Mscgen](http://www.mcternan.me.uk/mscgen/)*
+### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
 ```{.mscgen imgout="fcb,img"}
 msc {
@@ -36,7 +36,8 @@ msc {
 }
 ```
 
-### *[Octave](https://www.gnu.org/software/octave)*
+
+### [Octave](https://www.gnu.org/software/octave)
 
 ```{.octave imgout="fcb,img"}
 figure(1, 'visible', 'off');
@@ -46,7 +47,7 @@ print(1, argv(){1});
 ```
 
 
-### *[Shebang](http://www.google.com/search?q=linux+shebang)* using Python & Pygal
+### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
 ```{.shebang imgout="fcb,img"}
 #!/usr/bin/env python3
@@ -61,7 +62,7 @@ xy_chart.render_to_png(sys.argv[-1])
 ```
 
 
-### *[boxes](http://boxes.thomasjensen.com)*
+### [boxes](http://boxes.thomasjensen.com)
 
 ```{.shebang imgout="fcb,stdout"}
 #!/bin/bash
