@@ -1464,6 +1464,13 @@ echo "If imgout=".." includes 'stdout' (like in this case), any text"
 echo "on stdout is included in its own CodeBlock"
 ```
 
+## manpage
+
+```{.shebang imgout=fcb,stdout}
+#!/bin/bash
+MANWIDTH=85 man 6 figlist | col -bx | iconv -t ascii//TRANSLIT
+```
+
 
 ## *[Matplotlib](https://matplotlib.org)*
 
