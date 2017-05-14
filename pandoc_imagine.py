@@ -36,14 +36,14 @@ Imagine
 
 Installation
 
-    %% sudo pip install pandoc-imagine
+    %% sudo -H pip install pandoc-imagine
 
     or simply save `pandoc-imagine.py` anywhere along $PATH
 
 
 Dependencies
 
-    %% sudo pip install pandocfilters
+    %% sudo -H pip install pandocfilters
 
     and one (or more) of the packages that provide above utilities.
 
@@ -65,11 +65,11 @@ Markdown usage
 
   Alternate, longer form:
 
-    ```{.cmd options=".." im_out=".." prog=<other-cmd>}
+    ```{.cmd im_opt=".." im_out=".." im_prg=<other-cmd>}
     code
     ```
 
-  - options="..." will be passed onto the command line.
+  - im_opt="..." will be passed onto the command line.
     Some classes already provide some defaults (as required by the command).
 
   - im_out="...", csv-list of keywords each specifying a certain output
@@ -78,7 +78,7 @@ Markdown usage
     - stdout, codeblock (class stdout) containing stdout output (if any)
     - stderr, codeblock (class stderr) containing stderr output (if any)
 
-  - prog=<other-cmd>, overrides class-to-command map.
+  - im_prg=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
 
   If the command fails, the original fenced code block is retained unchanged.
@@ -192,6 +192,7 @@ class HandlerMeta(type):
     'metaclass to register Handler subclasses (aksa workers)'
     def __init__(cls, name, bases, dct):
         'register worker classes by cmdmap handled'
+        super(HandlerMeta, cls).__init__(name, bases, dct)
         for klass in dct.get('cmdmap', {}):
             cls.workers[klass.lower()] = cls
 
@@ -225,12 +226,12 @@ class Handler(with_metaclass(HandlerMeta, object)):
                 self.msg(4, codec[0], 'dispatched by class to', worker)
                 return worker(codec)
 
-        # try dispatching via 'cmd' named by prog=cmd key-value
+        # try dispatching via 'cmd' named by im_prg=cmd key-value
         if not keyvals:  # pf.get_value barks if keyvals == []
             self.msg(4, codec[0], 'dispatched by default', self)
             return self
 
-        prog, _ = pf.get_value(keyvals, 'prog', '')
+        prog, _ = pf.get_value(keyvals, 'im_prg', '')
         worker = self.workers.get(prog.lower(), None)
         if worker is not None:
             self.msg(4, codec[0], 'dispatched by prog to', worker)
@@ -283,7 +284,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
         try:
             with open(src, mode) as f:
                 return f.read()
-        except Exception as e:
+        except (OSError, IOError) as e:
             self.msg(0, 'fail: could not read %si (%s)' % (src, repr(e)))
             return ''
         return ''
@@ -297,7 +298,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             with open(dst, mode) as f:
                 f.write(dta)
             self.msg(3, 'wrote', len(dta), 'bytes to', dst)
-        except Exception as e:
+        except (OSError, IOError) as e:
             self.msg(0, 'fail: could not write', len(dta), 'bytes to', dst)
             self.msg(0, '>>: exception', e)
             return False

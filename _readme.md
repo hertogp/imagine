@@ -1,5 +1,5 @@
 
-```{.shebang imgout="stdout"}
+```{.shebang im_out="stdout"}
 #!/bin/bash
 echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
 ```
@@ -19,7 +19,7 @@ classes
 
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-```{.mscgen imgout="fcb,img"}
+```{.mscgen im_out="fcb,img"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -39,7 +39,7 @@ msc {
 
 ### [Octave](https://www.gnu.org/software/octave)
 
-```{.octave imgout="fcb,img"}
+```{.octave im_out="fcb,img"}
 figure(1, 'visible', 'off');
 surf(peaks);
 title("peaks");
@@ -49,7 +49,7 @@ print(1, argv(){1});
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-```{.shebang imgout="fcb,img"}
+```{.shebang im_out="fcb,img"}
 #!/usr/bin/env python3
 import sys
 import pygal
@@ -64,7 +64,7 @@ xy_chart.render_to_png(sys.argv[-1])
 
 ### [boxes](http://boxes.thomasjensen.com)
 
-```{.shebang imgout="fcb,stdout"}
+```{.shebang im_out="fcb,stdout"}
 #!/bin/bash
 # I seem to have got myself boxed in!
 cat $0 | boxes -d peek -p h4
@@ -80,7 +80,7 @@ More examples in the sample.pdf on [github](https://github.com/hertogp/imagine).
 
 ## Individual Classes
 
-```{.shebang imgout="stdout"}
+```{.shebang im_out="stdout"}
 #!/usr/bin/env python
 import sys
 sys.path.append('.')

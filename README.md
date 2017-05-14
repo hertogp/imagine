@@ -1,4 +1,20 @@
-?? missing pd-images/1df4ae1d911b6f65543516954337a570997abc77.png
+                                              \\\///
+                                             / _  _ \
+                                           (| (.)(.) |)
+                    .--------------------.OOOo--()--oOOO.-------------------.
+                    |                                                       |
+                    |        ____                          _                |
+                    |       /  _/____ ___   ____ _ ____ _ (_)____   ___     |
+                    |       / / / __ `__ \ / __ `// __ `// // __ \ / _ \    |
+                    |     _/ / / / / / / // /_/ // /_/ // // / / //  __/    |
+                    |    /___//_/ /_/ /_/ \__,_/ \__, //_//_/ /_/ \___/     |
+                    |                           /____/                      |
+                    |                                                       |
+                    '-------------------.oooO-------------------------------'
+                                         (   )   Oooo.
+                                          \ (    (   )
+                                           \_)    ) /
+                                                 (_/
 
 A pandoc filter to process codeblocks into images and/or ascii art
 ------------------------------------------------------------------
@@ -16,19 +32,67 @@ Examples
 
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-![](pd-images/48e1334a80a0ac5f5854e139f328920f9e7d67c4.png){imgout="fcb,img"}
+    ```{.mscgen im_out="fcb,img"}
+    msc {
+     hscale="1.3", arcgradient = "8";
+
+     a [label="Client"],b [label="Server"];
+
+     a=>b [label="data1"];
+     a-xb [label="data2"];
+     a=>b [label="data3"];
+     a<=b [label="ack1, nack2"];
+     a=>b [label="data2", arcskip="1"];
+     |||;
+     a<=b [label="ack3"];
+     |||;
+    }
+    ```
+
+![](pd-images/d62d0d7d8810c53dfe749df1427748295b8c4be5.png)
 
 ### [Octave](https://www.gnu.org/software/octave)
 
-![](pd-images/97a5ccef8c2f73c2897bc3f07ebe27fb971d957b.png){imgout="fcb,img"}
+    ```{.octave im_out="fcb,img"}
+    figure(1, 'visible', 'off');
+    surf(peaks);
+    title("peaks");
+    print(1, argv(){1});
+    ```
+
+![](pd-images/33684de9782c072667d6f8903fd7db2e69af0aa3.png)
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-![](pd-images/8296b8c4e66da192e78d37c805a731fa3374e1c8.png){imgout="fcb,img"}
+    ```{.shebang im_out="fcb,img"}
+    #!/usr/bin/env python3
+    import sys
+    import pygal
+    from math import cos
+    xy_chart = pygal.XY()
+    xy_chart.title = 'XY Cosinus'
+    xy_chart.add('x = cos(y)', [(cos(x / 10.), x / 10.) for x in range(-50, 50, 5)])
+    xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
+    xy_chart.render_to_png(sys.argv[-1])
+    ```
+
+![](pd-images/3657c812d9b3b906fbefcda7ef2bee167ada055e.png)
 
 ### [boxes](http://boxes.thomasjensen.com)
 
-?? missing pd-images/def6b187232d420bba6b7afa31c2db0fcf6d3f66.png
+    ```{.shebang im_out="fcb,stdout"}
+    #!/bin/bash
+    # I seem to have got myself boxed in!
+    cat $0 | boxes -d peek -p h4
+    ```
+
+    /*       _\|/_
+             (o o)
+     +----oOO-{_}-OOo------------------------------+
+     |    #!/bin/bash                              |
+     |    # I seem to have got myself boxed in!    |
+     |    cat $0 | boxes -d peek -p h4             |
+     +--------------------------------------------*/
 
 More examples in the sample.pdf on
 [github](https://github.com/hertogp/imagine).
@@ -49,14 +113,14 @@ Documentation
 
     Installation
 
-        % sudo pip install pandoc-imagine
+        % sudo -H pip install pandoc-imagine
 
         or simply save `pandoc-imagine.py` anywhere along $PATH
 
 
     Dependencies
 
-        % sudo pip install pandocfilters
+        % sudo -H pip install pandocfilters
 
         and one (or more) of the packages that provide above utilities.
 
@@ -78,11 +142,11 @@ Documentation
 
       Alternate, longer form:
 
-        ```{.cmd options=".." im_out=".." prog=<other-cmd>}
+        ```{.cmd im_opt=".." im_out=".." im_prg=<other-cmd>}
         code
         ```
 
-      - options="..." will be passed onto the command line.
+      - im_opt="..." will be passed onto the command line.
         Some classes already provide some defaults (as required by the command).
 
       - im_out="...", csv-list of keywords each specifying a certain output
@@ -91,7 +155,7 @@ Documentation
         - stdout, codeblock (class stdout) containing stdout output (if any)
         - stderr, codeblock (class stderr) containing stderr output (if any)
 
-      - prog=<other-cmd>, overrides class-to-command map.
+      - im_prg=<other-cmd>, overrides class-to-command map.
         Only useful if `cmd` itself is not an appropiate class in your document.
 
       If the command fails, the original fenced code block is retained unchanged.
@@ -148,4 +212,240 @@ Documentation
 Individual Classes
 ------------------
 
-?? missing pd-images/27a79df5a7fc06bfd3f424068cde0d8b86643d3c.png
+    Asy
+
+        sudo-apt-get install asymptote
+        http://asymptote.sourceforge.net/
+        
+        Runs asy -o <fname>.png [options] <fname>.asy
+        Wraps:
+        -  'asymptote' -> asy
+        -  'asy' -> asy
+
+    BlockDiag
+
+        sudo pip install blockdiag nwdiag actdiag seqdiag
+        http://blockdiag.com/
+        
+        Runs cmd -T png <fname>.txt -o <fname>.png
+        Wraps:
+        -  'actdiag' -> actdiag
+        -  'blockdiag' -> blockdiag
+        -  'rackdiag' -> rackdiag
+        -  'seqdiag' -> seqdiag
+        -  'packetdiag' -> packetdiag
+        -  'nwdiag' -> nwdiag
+
+    Boxes
+
+        sudo apt-get install boxes
+        http://boxes.thomasjensen.com
+        
+        Runs boxes [options] <fname>.boxes
+        Wraps:
+        -  'boxes' -> boxes
+
+    Ctioga2
+
+        sudo apt-get install ctioga2
+        http://ctioga2.sourceforge.net
+        
+        Runs ctioga2 [options] -f <fname>.ctioga2
+        Wraps:
+        -  'ctioga2' -> ctioga2
+
+    Ditaa
+
+        sudo apt-get install ditaa
+        http://ditaa.sourceforge.net
+        
+        Runs ditaa <fname>.ditaa <fname>.png -T [options]
+        Wraps:
+        -  'ditaa' -> ditaa
+
+    Figlet
+
+        sudo apt-get install figlet
+        http://www.figlet.org
+        
+        Runs figlet [options] < code-text
+        Wraps:
+        -  'figlet' -> figlet
+
+    Flydraw
+
+        sudo apt-get install flydraw
+        http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in im_out option is silently ignored
+        
+        Runs flydraw [options] < code-text
+        Wraps:
+        -  'flydraw' -> flydraw
+
+    Gle
+
+        sudo apt-get install gle-graphics
+        http://glx.sourceforge.net
+        
+        Runs gle -verbosity 0 -output <fname>.<fmt> <fname>.gle
+        Wraps:
+        -  'gle' -> gle
+
+    GnuPlot
+
+        sudo apt-get install gnuplot
+        http://www.gnuplot.info
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in im_out option is silently ignored
+        
+        Runs gnuplot [options] <fname>.gnuplot > <fname>.png
+        Wraps:
+        -  'gnuplot' -> gnuplot
+
+    Graph
+
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in im_out option is silently ignored
+        
+        Runs graph -T png [options] <fname>.graph
+        Wraps:
+        -  'graph' -> graph
+
+    Graphviz
+
+        sudo apt-get install graphviz
+        http://graphviz.org
+        
+        Runs cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>
+        Wraps:
+        -  'twopi' -> twopi
+        -  'graphviz' -> dot
+        -  'fdp' -> fdp
+        -  'circo' -> circo
+        -  'neato' -> neato
+        -  'dot' -> dot
+        -  'sfdp' -> sfdp
+
+    Gri
+
+        sudo apt-get install gri imagemagick
+        http://gri.sourceforge.net
+        - requires `convert` from imagemagick
+        
+        Runs gri -c 0 -b <fname>.gri
+        Wraps:
+        -  'gri' -> gri
+
+    Imagine
+
+        pip install pandoc-imagine
+        https://github.com/hertogp/imagine
+        
+        Runs return documentation in a CodeBlock
+        Wraps:
+        -  'imagine' -> imagine
+
+    Mermaid
+
+        sudo nmp install mermaid
+        https://knsv.github.io/mermaid (needs phantomjs)
+        
+        Runs mermaid -o <basedir> [options] <fname>.mermaid
+        Wraps:
+        -  'mermaid' -> mermaid
+
+    MscGen
+
+        sudo apt-get install mscgen
+        http://www.mcternan.me.uk/mscgen
+        
+        Runs mscgen -T png -o <fname>.png <fname>.mscgen
+        Wraps:
+        -  'mscgen' -> mscgen
+
+    Octave
+
+        sudo apt-get install octave
+        https://www.gnu.org/software/octave
+        
+        Runs octage --no-gui -q [options] <fname>.octave <fname>.png
+        Wraps:
+        -  'octave' -> octave
+
+    Pic2Plot
+
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in im_out option is silently ignored
+        
+        Runs pic2plot -T png [options] <fname>.pic2plot
+        Wraps:
+        -  'pic2plot' -> pic2plot
+        -  'pic' -> pic2plot
+
+    PlantUml
+
+        sudo apt-get install plantuml
+        http://plantuml.com
+        
+        Runs plantuml -t png <fname>.plantuml
+        Wraps:
+        -  'plantuml' -> plantuml
+
+    Plot
+
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in im_out option is silently ignored
+        
+        Runs plot -T png [options] <code-text-as-filename>
+        Wraps:
+        -  'plot' -> plot
+
+    Ploticus
+
+        sudo apt-get install ploticus
+        http://ploticus.sourceforge.net/doc/welcome.html
+        
+        Runs ploticus -png -o <fname>.png [options] <fname>.ploticus
+        Wraps:
+        -  'ploticus' -> ploticus
+
+    Protocol
+
+        git clone https://github.com/luismartingarcia/protocol.git .
+        python setup install
+        https://github.com/luismartingarcia/protocol.git
+        
+        Runs protocol [options] code-text
+        Wraps:
+        -  'protocol' -> protocol
+
+    PyxPlot
+
+        sudo apt-get install pyxplot
+        http://pyxplot.org.uk
+        
+        Runs pyxplot [options] <fname>.pyxplot
+        Wraps:
+        -  'pyxplot' -> pyxplot
+
+    SheBang
+
+        http://www.google.com/search?q=shebang+line
+        
+        Runs <fname>.shebang [options] <fname>.png
+        Wraps:
+        -  'shebang' -> shebang
+
+
