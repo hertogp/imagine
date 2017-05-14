@@ -46,7 +46,7 @@ Notes:
 
 ## a plot
 
-```{.asy imgout="fcb,img" caption="Created by Asymptote"}
+```{.asy im_out="fcb,img" caption="Created by Asymptote"}
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
@@ -62,7 +62,7 @@ draw(shift(circleCenter) * (O -- Y+Z), green, arrow=Arrow3());
 
 ## a sphere
 
-```{.asy imgout="fcb,img" caption="Created by Asymptote"}
+```{.asy im_out="fcb,img" caption="Created by Asymptote"}
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
@@ -80,7 +80,7 @@ draw(O--X, blue+linewidth(1pt));
 
 ## blockdiag command
 
-```{.blockdiag prog=blockdiag imgout="fcb,img" width=100% caption="Created by Blockdiag"}
+```{.blockdiag im_prg=blockdiag im_out="fcb,img" width=100% caption="Created by Blockdiag"}
 blockdiag {
 // standard node shapes
 box [shape = "box"];
@@ -112,7 +112,7 @@ loopin -> loopout;
 
 ## seqdiag
 
-```{.seqdiag imgout="fcb,img" width=80% height=50% caption="Created by seqdiag"}
+```{.seqdiag im_out="fcb,img" width=80% height=50% caption="Created by seqdiag"}
 {
 browser -> webserver [label = "GET /index.html"];
 browser <-- webserver;
@@ -126,7 +126,7 @@ browser <- webserver;
 
 ## nwdiag
 
-```{.nwdiag imgout="fcb,img" caption="Created by nwdiag"}
+```{.nwdiag im_out="fcb,img" caption="Created by nwdiag"}
 {
   network dmz {
       address = "210.x.x.x/24"
@@ -147,7 +147,7 @@ browser <- webserver;
 
 ## actdiag
 
-```{.actdiag imgout="fcb,img" height=60% caption="Created by actdiag"}
+```{.actdiag im_out="fcb,img" height=60% caption="Created by actdiag"}
 {
    A -> B -> C -> D;
 
@@ -163,7 +163,7 @@ browser <- webserver;
 ## rackdiag
 
 
-```{.rackdiag imgout="fcb,img" height=80% caption="Created by rackdiag"}
+```{.rackdiag im_out="fcb,img" height=80% caption="Created by rackdiag"}
 {
   // define 1st rack
   rack {
@@ -203,7 +203,7 @@ Unfortunately, packetdiag doesn't work properly due to a problem with some libra
     Imagine:BlockDiag:  packetdiag -> ERROR: images do not match
 ~~~
 
-```{.packetdiag imgout="fcb,img" caption="Created by packetdiag"}
+```{.packetdiag im_out="fcb,img" caption="Created by packetdiag"}
 {
   colwidth = 32
   node_height = 72
@@ -235,13 +235,13 @@ draws a box around its input text. It can remove and repair those boxes, too.
 
 ## design 'peek'
 
-```{.boxes options="-d peek -a c -s 40x3" imgout="fcb,stdout" caption="boxes"}
+```{.boxes im_opt="-d peek -a c -s 40x3" im_out="fcb,stdout" caption="boxes"}
 boxes
 ```
 
 ## design 'ian_jones'
 
-```{.boxes options="-d ian_jones -a c -s 40x6" imgout="fcb,stdout" caption="boxes"}
+```{.boxes im_opt="-d ian_jones -a c -s 40x6" im_out="fcb,stdout" caption="boxes"}
 There are about 52 available styles, and you can create your own if
 none of them suit your needs.
 ```
@@ -252,7 +252,7 @@ none of them suit your needs.
 
 ## Parabolas, filling & intersection
 
-```{.ctioga2 imgout="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
 title "Intersection of two parabolas"
 math
 plot x*x /fill=top /fill-transparency 0.8 /legend '$x^2$'
@@ -261,7 +261,7 @@ plot 50-x*x /fill=bottom /fill-transparency 0.8 /legend '$50 - x^2$'
 
 ## a grid system
 
-```{.ctioga2 imgout="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
 define-axis-style '.grid-non-left axis.left' /decoration=ticks /axis-label-text=' '
 define-axis-style '.grid-non-bottom axis.bottom' /decoration=ticks /axis-label-text=' '
 define-background-style '.grid-odd-column background' /background-color Blue!15
@@ -291,7 +291,7 @@ end
 The data file's name `../dta/cr2-ex01.dat` is relative to the saved fenced code
 block in pd-images.  Hence the `../dta` part.
 
-```{.ctioga2 imgout="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
 draw-line -15,0 15,0 /style=Dashes /color=Gray
 plot ../dta/ct2-ex01.dat
 plot ../dta/ct2-ex01.dat@1:3
@@ -306,9 +306,9 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 # *[ditaa site:](http://ditaa.sourceforge.net)*
 
-## Rounded corners (options="-r")
+## Rounded corners (im_opt="-r")
 
-```{.ditaa options="-r" imgout="fcb,img" width=70% caption="Created by Ditaa"}
+```{.ditaa im_opt="-r" im_out="fcb,img" width=70% caption="Created by Ditaa"}
 +--------+   +-------+    +-------+
 |        +---+ ditaa +--> |       |
 |  Text  |   +-------+    |diagram|
@@ -323,7 +323,7 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## Ditaa normal
 
-```{.ditaa imgout="fcb,img" caption="Created by Ditaa"}
+```{.ditaa im_out="fcb,img" caption="Created by Ditaa"}
    +---------+   +-------+   +-------+    +--------+      +--------+
    | Document|---+ split +---|       |----|        |----->|        |
    | o  this |   +-------+   |Diagram|    | Storage|      | In/Out |
@@ -341,7 +341,7 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## ditaa reminder
 
-```{.ditaa imgout="fcb,img" height=20% caption="Created by Ditaa"}
+```{.ditaa im_out="fcb,img" height=20% caption="Created by Ditaa"}
 /-----------------\
 | Things to do    |
 | cYEL            |
@@ -354,7 +354,7 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## Ditaa on protocol result
 
-```{.ditaa imgout="fcb,img"}
+```{.ditaa im_out="fcb,img"}
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |             Source            |      TTL      |               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               +
@@ -367,12 +367,12 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 
 ## figlet
 
-```{#FIGLET .figlet options="-f slant" imgout="fcb,stdout" caption="Figlet"}
+```{#FIGLET .figlet im_opt="-f slant" im_out="fcb,stdout" caption="Figlet"}
 figlet
 ```
 
 ## hello world.
-```{.figlet imgout="fcb,stdout"}
+```{.figlet im_out="fcb,stdout"}
 hello, world!
 ```
 
@@ -385,7 +385,7 @@ Notes:
 
 ## frenchman
 
-```{.flydraw imgout="fcb,img"}
+```{.flydraw im_out="fcb,img"}
 comment : from KhanAcademy
 new 200,200
 comment ears
@@ -413,7 +413,7 @@ line 120, 142, 104, 137,black
 
 ## hexagons
 
-```{.flydraw imgout="fcb,img"}
+```{.flydraw im_out="fcb,img"}
 comment x=horizontal, x=0 is left
 comment y=vertical,   y=0 is top
 new 300,300
@@ -431,7 +431,7 @@ plot green,r*0.5*cos(t)+x0,r*0.5*sin(t)+y0
 
 ## plotting a function
 
-```{.flydraw imgout="fcb,img"}
+```{.flydraw im_out="fcb,img"}
 w=360
 h=150
 new w,h
@@ -455,7 +455,7 @@ Notes:
 - ../test.dat is relative to the input file in pd-images ...
 
 
-```{.gle imgout="fcb,img" caption="Created by GLE"}
+```{.gle im_out="fcb,img" caption="Created by GLE"}
 size 18 19
 
 amove 2 1
@@ -484,7 +484,7 @@ end graph
 
 ## simple 2D
 
-```{.gle imgout="fcb,img" caption="Created by GLE"}
+```{.gle im_out="fcb,img" caption="Created by GLE"}
 size 12 10
 
 set font texcmr
@@ -502,7 +502,7 @@ end graph
 
 Needs the `-cairo` option.
 
-```{.gle options="-cairo" imgout="fcb,img" caption="Created by GLE"}
+```{.gle im_opt="-cairo" im_out="fcb,img" caption="Created by GLE"}
 size 10 7
 
 set texlabels 1
@@ -538,7 +538,7 @@ end graph
 The following GLE script creates saddle.dta, which we want to be put in the dta directory
 so the file name is given relative to the pd-images directory.
 
-```{.gle imgout="fcb,img" caption="Created by GLE"}
+```{.gle im_out="fcb,img" caption="Created by GLE"}
 size 10 9
 
 set font texcmr hei 0.5 just tc
@@ -573,7 +573,7 @@ draw "saddle.bc"
 
 ## An electronic circuit
 
-```{.gle imgout="fcb,img" caption="Created by GLE"}
+```{.gle im_out="fcb,img" caption="Created by GLE"}
 ! An H-Bridge
 
 size 13 11
@@ -619,7 +619,7 @@ Note:
 
 ## Line
 
-```{.gnuplot imgout="fcb,img" height=50% caption="Created by GnuPlot"}
+```{.gnuplot im_out="fcb,img" height=50% caption="Created by GnuPlot"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
 set samples 200, 200
@@ -628,7 +628,7 @@ plot [-30:20] besj0(x)*0.12e1 with impulses, (x**besj0(x))-2.5 with points
 
 ## real sine
 
-```{.gnuplot imgout="fcb,img" height=50% caption="Created by GnuPlot"}
+```{.gnuplot im_out="fcb,img" height=50% caption="Created by GnuPlot"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350
 set key inside left top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000
 set samples 400, 400
@@ -637,7 +637,7 @@ plot [-10:10] real(sin(x)**besj0(x))
 
 ## Surface
 
-```{.gnuplot imgout="fcb,img" caption="Another GnuPlot example"}
+```{.gnuplot im_out="fcb,img" caption="Another GnuPlot example"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set border 4095 front linetype -1 linewidth 1.000
 set view 130, 10, 1, 1
@@ -653,7 +653,7 @@ splot sin(sqrt(x**2+y**2))/sqrt(x**2+y**2)
 
 ## Interlocking Tori
 
-```{.gnuplot imgout="fcb,img" caption="Gnuplot's interlocking Tori example"}
+```{.gnuplot im_out="fcb,img" caption="Gnuplot's interlocking Tori example"}
 set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 500, 350 
 set dummy u,v
 set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -672,7 +672,7 @@ splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines,     
 
 ## `Graphviz` defaults to dot
 
-```{prog=dot options="-Gsize=4,1.5" caption="FSM layout by dot" imgout="fcb,img"}
+```{im_prg=dot im_opt="-Gsize=4,1.5" caption="FSM layout by dot" im_out="fcb,img"}
 
 digraph finite_state_machine {
 	rankdir=LR;
@@ -699,7 +699,7 @@ digraph finite_state_machine {
 
 ## `fdp`
 
-```{.graphviz prog=fdp options="-Gsize=2,3" caption="Created by fdp" imgout="fcb,img"}
+```{.graphviz im_prg=fdp im_opt="-Gsize=2,3" caption="Created by fdp" im_out="fcb,img"}
 
 digraph {
  blockcode -> fdp;
@@ -710,7 +710,7 @@ digraph {
 
 ## `sfdp` _(fails)_
 
-```{.graphviz prog=sfdp caption="Not created by sfdp"}
+```{.graphviz im_prg=sfdp caption="Not created by sfdp"}
 graph G {
 size="2,2"
 run -- intr;
@@ -733,7 +733,7 @@ sleep -- runmem;
 
 States in a kernel OS plotted by `neato`:
 
-```{.graphviz prog=neato caption="Created by neato" imgout="fcb,img"}
+```{.graphviz im_prg=neato caption="Created by neato" im_out="fcb,img"}
 graph G {
 size="3,2"
 run -- intr;
@@ -756,7 +756,7 @@ sleep -- runmem;
 
 The same, but by `twopi`:
 
-```{.graphviz prog=twopi caption="Created by twopi" imgout="fcb,img"}
+```{.graphviz im_prg=twopi caption="Created by twopi" im_out="fcb,img"}
 graph G {
 size="3,2"
 run -- intr;
@@ -779,7 +779,7 @@ sleep -- runmem;
 
 Again, the same but by `circo`:
 
-```{.graphviz prog=circo caption="created by circo" imgout="fcb,img"}
+```{.graphviz im_prg=circo caption="created by circo" im_out="fcb,img"}
 
 graph G {
 size="3,2"
@@ -814,7 +814,7 @@ With the following in `gri-01.dat`
 
 plot the first two columns like so:
 
-```{.gri imgout="fcb,img" caption="Created by Gri"}
+```{.gri im_out="fcb,img" caption="Created by Gri"}
 open dta/gri-01.dat
 read columns x y
 draw curve
@@ -824,7 +824,7 @@ draw title "http://gri.sf.net"
 
 ## Multiple curves
 
-```{.gri imgout="fcb,img" caption="Created by Gri"}
+```{.gri im_out="fcb,img" caption="Created by Gri"}
 `draw curves' \xname \y1name ...'`
 Draw multiple y columns versus an x column.  Assumes
 that the datafile is open, and that x is in the first
@@ -877,7 +877,7 @@ draw curves time y1 y2 y3 y4
 
 ## sequence graph
 
-```{.mermaid imgout="fcb,img" width=70% caption="Created by mermaid"}
+```{.mermaid im_out="fcb,img" width=70% caption="Created by mermaid"}
 sequenceDiagram
     participant Alice
     participant Bob
@@ -893,7 +893,7 @@ sequenceDiagram
 
 ## gantt diagram
 
-```{.mermaid imgout="fcb,img" caption="Created by mermaid"}
+```{.mermaid im_out="fcb,img" caption="Created by mermaid"}
 gantt
     title A Gantt Diagram
 
@@ -910,7 +910,7 @@ gantt
 
 ## example w/ boxes
 
-```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
+```{.mscgen im_out="fcb,img" caption="Created by mscgen"}
 msc {
 
    # The entities
@@ -934,7 +934,7 @@ msc {
 
 ## client-server interaction
 
-```{.mscgen imgout="fcb,img" caption="Created by mscgen"}
+```{.mscgen im_out="fcb,img" caption="Created by mscgen"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -961,14 +961,14 @@ Hints for using `Octave` as batch processor:
 - `figure(1, "visibility", "off")` prevents pop-up window
 - `print(1, argv(){1});` prints to intended output filename
 - octave will infer image type from output filename extension
-- `imagine` calls `octave --no-gui -q <options> <inpfile> <outfile>`, where
-    + `<options>` come from options=".." in the fenced code blocks attributes
+- `imagine` calls `octave --no-gui -q <im_opt> <inpfile> <outfile>`, where
+    + `<im_opt>` come from im_opt=".." in the fenced code blocks attributes
     + `<inpfile>` is `pd-images/hashed-name.octave` containing the code text
     + `<outfile>` is `pd-images/hashed-name.png` by default
 
 ## Sinus plot
 
-```{.octave imgout="fcb,img" caption="Created by Octave"}
+```{.octave im_out="fcb,img" caption="Created by Octave"}
 outname = argv(){1}
 figure(1, 'visible', 'off');
 
@@ -986,7 +986,7 @@ print(1, outname, '-dpng');
 
 ## Peaks surface
 
-```{.octave imgout="fcb,img" caption="Created by Octave"}
+```{.octave im_out="fcb,img" caption="Created by Octave"}
 figure(1, 'visible', 'off');
 
 surf(peaks);
@@ -997,7 +997,7 @@ print(1, argv(){1});
 
 ## Peaks contour
 
-```{.octave imgout="fcb,img" caption="Created by Octave"}
+```{.octave im_out="fcb,img" caption="Created by Octave"}
 figure(1, 'visible', 'off');
 
 contourf(peaks);
@@ -1008,7 +1008,7 @@ print(1, argv(){1});
 
 ## 3-D wave
 
-```{.octave imgout="fcb,img" caption="Created by Octave"}
+```{.octave im_out="fcb,img" caption="Created by Octave"}
 outname = argv(){1}
 figure(1, 'visible', 'off');
 
@@ -1028,7 +1028,7 @@ print(1, outname, '-dpng');
 
 ## sequence diagrams
 
-```{.plantuml imgout="fcb,img" width=60% caption="Created by plantuml"}
+```{.plantuml im_out="fcb,img" width=60% caption="Created by plantuml"}
 @startuml
 autonumber "<b>[000]"
 Bob -> Alice : Authentication Request
@@ -1047,7 +1047,7 @@ Bob <- Alice : Yet another authentication Response
 
 ## class diagrams
 
-```{.plantuml imgout="fcb,img" width=60% caption="Created by plantuml"}
+```{.plantuml im_out="fcb,img" width=60% caption="Created by plantuml"}
 @startuml
 Class01 <|-- Class02
 Class03 *-- Class04
@@ -1059,7 +1059,7 @@ Class09 -- Class10
 
 ## larger plantuml
 
-```{.plantuml imgout="fcb,img" caption="Created by plantuml"}
+```{.plantuml im_out="fcb,img" caption="Created by plantuml"}
 @startuml
 scale 580*690
 title Servlet Container
@@ -1115,7 +1115,7 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 ## Curves script
 
-```{.ploticus imgout="fcb,img" caption="Created by Ploticus"}
+```{.ploticus im_out="fcb,img" caption="Created by Ploticus"}
 #proc getdata
   data:
   0 1
@@ -1191,7 +1191,7 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 ## Heatmap (script)
 
-```{.ploticus imgout="fcb,img" caption="Created by Ploticus"}
+```{.ploticus im_out="fcb,img" caption="Created by Ploticus"}
 #set SYM = "radius=0.08 shape=square style=filled"
 #setifnotgiven CGI = "http://ploticus.sourceforge.net/cgi-bin/showcgiargs"
 
@@ -1320,7 +1320,7 @@ standard input, and prepares a plot. There are many command-line options for
 adjusting the visual appearance of the plot. The following sections explain how
 to use the most frequently used options, by giving examples.
 
-```{.graph options="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" imgout="fcb,img"
+```{.graph im_opt="-X x-axis -Y y-axis -f 0.1 --bitmap-size 200x200" im_out="fcb,img"
 caption="PlotUtil's graph"}
 0.0  0.0
 1.0  0.2
@@ -1349,7 +1349,7 @@ metafile produced by graph contains only a single page.
 *`plot`*, like the metafile format itself, is useful if you wish to preserve a
 vector graphics file, and display or edit it with more than one drawing editor.
 
-```{.plot options="--bitmap-size 300x200" imgout="fcb,img" caption="Created by plot"}
+```{.plot im_opt="--bitmap-size 300x200" im_out="fcb,img" caption="Created by plot"}
 dta/input.meta
 ```
 
@@ -1371,7 +1371,7 @@ GNU implementation, and some sample pic macros contributed by the late W.
 Richard Stevens.
 
 
-```{.pic imgout=img width=80% caption="Created by pic"}
+```{.pic im_out=img width=80% caption="Created by pic"}
 .PS
 box "START"; arrow; circle dashed filled; arrow
 circle diam 2 thickness 3 "This is a" "big, thick" "circle" dashed; up
@@ -1395,7 +1395,7 @@ Protocol is a simple command-line tool that serves two purposes:
 
 ## TCP Header
 
-```{.protocol imgout="fcb,stdout" caption="protocol"}
+```{.protocol im_out="fcb,stdout" caption="protocol"}
 tcp
 ```
 
@@ -1403,7 +1403,7 @@ and even custom layouts:
 
 ## Custom packet
 
-```{.protocol options="--no-numbers" imgout="fcb,stdout" caption="protocol"}
+```{.protocol im_opt="--no-numbers" im_out="fcb,stdout" caption="protocol"}
 Source:16,TTL:8,Reserved:40
 ```
 
@@ -1412,7 +1412,7 @@ Source:16,TTL:8,Reserved:40
 
 ## ex01
 
-```{.pyxplot imgout="fcb,img" caption="Created by PyxPlot"}
+```{.pyxplot im_out="fcb,img" caption="Created by PyxPlot"}
 set numerics complex
 set xlabel r"$x$"
 set ylabel r"$y$"
@@ -1441,7 +1441,7 @@ shebang
 
 ## bash
 
-```{.shebang imgout="fcb,stdout,img"}
+```{.shebang im_out="fcb,stdout,img"}
 #!/bin/bash
 echo "This script is saved as :" $0
 echo "and requires boxes to be available"
@@ -1452,7 +1452,7 @@ echo $(ls -lpah $0 | tr -s ' ' | cut -d' ' -f1,9) | boxes -d peek
 echo
 echo "This script won't produce: $1"
 echo
-echo "But since 'impout'-option above includes a request for img,"
+echo "But since 'im_out'-option above includes a request for img,"
 echo "a line is included in the output document, like:"
 echo
 echo "?? missing ${1}"
@@ -1460,13 +1460,13 @@ echo
 echo "If a shebang script returns with an exit code other than 0 (zero)"
 echo "the command fails and the original code block is retained"
 echo
-echo "If imgout=".." includes 'stdout' (like in this case), any text"
+echo "If im_out=".." includes 'stdout' (like in this case), any text"
 echo "on stdout is included in its own CodeBlock"
 ```
 
 ## manpage
 
-```{.shebang imgout=fcb,stdout}
+```{.shebang im_out=fcb,stdout}
 #!/bin/bash
 MANWIDTH=85 man 6 figlist | col -bx | iconv -t ascii//TRANSLIT
 ```
@@ -1476,7 +1476,7 @@ MANWIDTH=85 man 6 figlist | col -bx | iconv -t ascii//TRANSLIT
 
 ### Agg
 
-```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
+```{.shebang im_out="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 
 import sys
@@ -1498,7 +1498,7 @@ plt.savefig(sys.argv[-1])
 
 ### Fill with alpha
 
-```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
+```{.shebang im_out="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 
 import sys
@@ -1516,7 +1516,7 @@ fig.savefig(sys.argv[-1])
 
 ### Axis scale transformations
 
-```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
+```{.shebang im_out="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 
 import sys
@@ -1571,7 +1571,7 @@ fig.savefig(sys.argv[-1])
 
 ### Coherence of two signals
 
-```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
+```{.shebang im_out="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 
 import sys
@@ -1608,7 +1608,7 @@ plt.savefig(sys.argv[-1])
 
 ### 3D image
 
-```{.shebang imgout="fcb,img" caption="Created by Matplotlib"}
+```{.shebang im_out="fcb,img" caption="Created by Matplotlib"}
 #!/usr/bin/env python
 import sys
 from mpl_toolkits.mplot3d import Axes3D
@@ -1647,7 +1647,7 @@ plt.savefig(sys.argv[-1])
 
 ### Solid Gauges
 
-```{.shebang imgout="fcb,img" caption="Created by Pygal"}
+```{.shebang im_out="fcb,img" caption="Created by Pygal"}
 #!/usr/bin/env python3
 
 import sys
@@ -1675,7 +1675,7 @@ gauge.render_to_png(sys.argv[-1])
 
 ### Basic XY line
 
-```{.shebang imgout="fcb,img" caption="Created by Pygal"}
+```{.shebang im_out="fcb,img" caption="Created by Pygal"}
 #!/usr/bin/env python3
 
 import sys
@@ -1697,7 +1697,7 @@ xy_chart.render_to_png(sys.argv[-1])
 
 Earlier example of Octave, but now run as a script.
 
-```{.shebang imgout="fcb,img" caption="Created by Octave"}
+```{.shebang im_out="fcb,img" caption="Created by Octave"}
 #!/usr/bin/env octave
 
 figure(1, 'visible', 'off');
@@ -1721,7 +1721,7 @@ is the demo-version without a license.
 
 ### Line Chart
 
-```{.shebang imgout="fcb,img" caption="Created by ChartDirector"}
+```{.shebang im_out="fcb,img" caption="Created by ChartDirector"}
 #!/usr/bin/python
 import sys
 from pychartdir import *
@@ -1771,7 +1771,7 @@ c.makeChart(sys.argv[-1])
 
 ### Surface
 
-```{.shebang imgout="fcb,img" caption="Created by ChartDirector"}
+```{.shebang im_out="fcb,img" caption="Created by ChartDirector"}
 #!/usr/bin/python
 import sys
 from pychartdir import *
@@ -1811,7 +1811,7 @@ c.makeChart(sys.argv[-1])
 
 ### Gauge
 
-```{.shebang imgout="fcb,img" caption="Created by ChartDirector"}
+```{.shebang im_out="fcb,img" caption="Created by ChartDirector"}
 #!/usr/bin/python
 import sys
 from pychartdir import *
