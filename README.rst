@@ -1,4 +1,4 @@
-.. code::
+::
 
                                               \\\///
                                              / _  _ \
@@ -102,7 +102,7 @@ Examples
     cat $0 | boxes -d peek -p h4
     ```
 
-.. code::
+::
 
     /*       _\|/_
              (o o)
@@ -198,7 +198,7 @@ Documentation
       - flydraw produces a gif, not png
       - gle also creates a .gle subdir inside the images-dir
       - gri produces a ps, which is `convert`ed to png
-      - imagine reads its codeblock as help-topics for which a codeblock is returned
+      - imagine reads its code as help-topics, returns codeblocks with help-info
       - plot reads its codeblock as the relative path to the file to process
       - pyxplot will have `set terminal` & `set output` prepended to its `code`
       - shebang runs its codeblock as a script with <fname>.png as its argument.
@@ -210,9 +210,9 @@ Documentation
       Imagine just hands the fenced codeblocks to plotting tools to process or
       simply runs them as system scripts, as-is.
 
-      Shebang's are inherently unsafe and most of the plotting tools implement their
-      own 'little' languages, which can create beautiful images, but can also cause
-      harm.
+      Shebang's are inherently unsafe and most of the plotting tools implement
+      their own 'little' languages, which can create beautiful images, but can also
+      cause harm.
 
       There is no way to check for 'side effects' in advance, so make sure to check
       the fenced codeblocks before running them through the filter.
@@ -226,13 +226,13 @@ Documentation
         class
         ```
 
-      Use `imagine` as class to get the module's docstring (ie this text) and/or one
-      or more of the commands you're interested in, each on a separate line.
+      Use `imagine` as class to get the module's docstring (ie this text) and/or
+      one or more of the commands you're interested in, each on a separate line.
 
 Individual Classes
 ------------------
 
-.. code::
+::
 
     Asy
 

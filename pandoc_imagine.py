@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from six import with_metaclass
 
 import os
 import sys
 import stat
-from textwrap import wrap
-from subprocess import Popen, check_output, CalledProcessError, STDOUT, PIPE
 
+from textwrap import wrap
+from subprocess import Popen, CalledProcessError, PIPE
+from six import with_metaclass
 import pandocfilters as pf
 
 # Author: Pieter den Hertog
@@ -25,9 +25,7 @@ import pandocfilters as pf
 # Notes
 # - fix result() so output can be run through --filter pandoc-imagine again
 #   + no imagine classes (dot, imagine, stdout, fcb, etc..
-#   + use __stdout__, __fcb__ and/or __img__ only ...?
 
-#-- __doc__
 
 __doc__ = '''\
 Imagine
@@ -104,7 +102,7 @@ Markdown usage
   - flydraw produces a gif, not png
   - gle also creates a .gle subdir inside the images-dir
   - gri produces a ps, which is `convert`ed to png
-  - imagine reads its codeblock as help-topics for which a codeblock is returned
+  - imagine reads its code as help-topics, returns codeblocks with help-info
   - plot reads its codeblock as the relative path to the file to process
   - pyxplot will have `set terminal` & `set output` prepended to its `code`
   - shebang runs its codeblock as a script with <fname>.png as its argument.
@@ -116,9 +114,9 @@ Security
   Imagine just hands the fenced codeblocks to plotting tools to process or
   simply runs them as system scripts, as-is.
 
-  Shebang's are inherently unsafe and most of the plotting tools implement their
-  own 'little' languages, which can create beautiful images, but can also cause
-  harm.
+  Shebang's are inherently unsafe and most of the plotting tools implement
+  their own 'little' languages, which can create beautiful images, but can also
+  cause harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
   the fenced codeblocks before running them through the filter.
@@ -132,18 +130,20 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text) and/or one
-  or more of the commands you're interested in, each on a separate line.
+  Use `imagine` as class to get the module's docstring (ie this text) and/or
+  one or more of the commands you're interested in, each on a separate line.
+
 '''
 
 #-- version
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 
 #-- globs
 IMG_BASEDIR = 'pd'
 IMG_OUTPUTS = ['fcb', 'img', 'stdout', 'stderr']
+
 
 #-- helpers
 def toStr(s, enc='ascii'):
@@ -156,30 +156,31 @@ def toStr(s, enc='ascii'):
     try:
         # PY2 unicode object?
         return s.encode(enc, err)
-    except AttributeError as e:
+    except AttributeError:
         # s is not a string
         return toStr(str(s))
 
-def toBytes(s, enc='ascii'):
+
+def to_bytes(s, enc='ascii'):
     'return decoded char sequence for s'
     # in PY2 isinstance(str(), bytes) == True
     err = 'replace'
-    if isinstance(s,bytes):
+    if isinstance(s, bytes):
         try:
-            return s.decode(enc, err).encode(enc, err) # PY2
-        except AttributeError as e:
-            return s.encode(enc, err) # PY3
+            return s.decode(enc, err).encode(enc, err)  # PY2
+        except AttributeError:
+            return s.encode(enc, err)  # PY3
 
     if isinstance(s, str):
         try:
-            return s.encode(enc, err) # PY3
-        except UnicodeDecodeError as e:
-            return s.decode(enc, err).encode(enc, err) #PY2
+            return s.encode(enc, err)  # PY3
+        except UnicodeDecodeError:
+            return s.decode(enc, err).encode(enc, err)  # PY2
 
     try:
         # sys.getfilesystemencoding()
-        return toBytes(str(s), sys.getdefaultencoding())
-    except UnicodeEncodeError as e:
+        return to_bytes(str(s), sys.getdefaultencoding())
+    except UnicodeEncodeError:
         return s.encode(enc, err)
 
 # Notes:
@@ -187,17 +188,19 @@ def toBytes(s, enc='ascii'):
 # - if walker returns a block element, it'll replace current element
 # - block element = {'c': <value>, 't': <block_type>}
 
+
 class HandlerMeta(type):
     def __init__(cls, name, bases, dct):
         'register worker classes by cmdmap handled'
         for klass in dct.get('cmdmap', {}):
             cls.workers[klass.lower()] = cls
 
-class Handler(with_metaclass(HandlerMeta,object)):
+
+class Handler(with_metaclass(HandlerMeta, object)):
     'baseclass for image/ascii art generators'
-    severity  = 'error warn note info debug'.split()
-    workers = {}    # dispatch mapping for Handler
-    klass = None    # assigned when worker is dispatched
+    severity = 'error warn note info debug'.split()
+    workers = {}              # dispatch mapping for Handler
+    klass = None              # assigned when worker is dispatched
     _output = IMG_OUTPUTS[1]  # i.e. default img
 
     cmdmap = {}     # worker subclass must override, klass -> cli-program
@@ -207,7 +210,7 @@ class Handler(with_metaclass(HandlerMeta,object)):
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(4,'Handler __call__ codec', codec[0])
+        self.msg(4, 'Handler __call__ codec', codec[0])
         try:
             _, klasses, keyvals = codec[0]
         except Exception as e:
@@ -241,10 +244,11 @@ class Handler(with_metaclass(HandlerMeta,object)):
         # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
         self.codec = codec
         self._name = self.__class__.__name__  # the default inpfile extension
-        self.output = '' # catches stdout by self.cmd, if any
-        self.stderr = '' # catches stderr by self.cmd, if any
+        self.output = ''   # catches stdout by self.cmd, if any
+        self.stderr = ''   # catches stderr by self.cmd, if any
 
-        if codec is None: return  # initial dispatch creation
+        if codec is None:
+            return  # initial dispatch creation
 
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
@@ -258,9 +262,11 @@ class Handler(with_metaclass(HandlerMeta,object)):
         imgout, self.keyvals = pf.get_value(self.keyvals,
                                             'imgout',
                                             self._output)
-        self.imgout = imgout.lower().replace(',',' ').split()
+        self.imgout = imgout.lower().replace(',', ' ').split()
 
         # prog=cmd key-value trumps .cmd class attribute
+        # if not self.prog:
+        #     self.prog = self.cmdmap.get(self.klass, None)
         self.prog = self.prog if self.prog else self.cmdmap.get(self.klass, None)
         if self.prog is None:
             self.msg(0, self.klass, 'not listed in', self.cmdmap)
@@ -278,7 +284,8 @@ class Handler(with_metaclass(HandlerMeta,object)):
         # helper for managing imgout lists
         rv = []
         for elm in src:
-            if elm in rv or elm in disallow: continue # no duplicates
+            if elm in rv or elm in disallow:
+                continue  # no duplicates
             rv.append(elm)
         return rv
 
@@ -290,7 +297,6 @@ class Handler(with_metaclass(HandlerMeta,object)):
             self.msg(0, 'fail: could not read %s' % src)
             return ''
         return ''
-
 
     def write(self, mode, dta, dst):
         if len(dta) == 0:
@@ -307,12 +313,13 @@ class Handler(with_metaclass(HandlerMeta,object)):
         return True
 
     def msg(self, level, *a):
-        if level > self.level: return
-        level %= len(self.severity) # TODO: change to {}: get(level, 'unknown')
+        if level > self.level:
+            return
+        level %= len(self.severity)  # TODO: change to {} and do get
         msg = '%s[%9s:%-5s] %s' % ('Imagine',
-                                self._name,
-                                self.severity[level],
-                                ' '.join(toStr(s) for s in a))
+                                   self._name,
+                                   self.severity[level],
+                                   ' '.join(toStr(s) for s in a))
         print(msg, file=sys.stderr)
         sys.stderr.flush()
 
@@ -327,23 +334,22 @@ class Handler(with_metaclass(HandlerMeta,object)):
         return pf.Image([self.id_, self.classes, self.keyvals],
                         self.caption, [self.outfile, self.typef])
 
-
     def AnonCodeBlock(self, klass='fcb'):
         'reproduce the original CodeBlock inside an anonymous CodeBlock'
         (id_, klasses, keyvals), code = self.codec
         id_ = '#' + id_ if id_ else id_
         klasses = ' '.join('.%s' % c for c in klasses)
-        keyvals = ' '.join('%s="%s"' % (k,v) for k,v in keyvals)
+        keyvals = ' '.join('%s="%s"' % (k, v) for k, v in keyvals)
         attr = '{%s}' % ' '.join(a for a in [id_, klasses, keyvals] if a)
         # prefer ```cmd over ```{.cmd}
-        attr = attr if attr.find(' ')>-1 else attr[2:-1]
-        return pf.CodeBlock(['',[klass],[]],'```%s\n%s\n```'% (attr,self.code))
+        attr = attr if attr.find(' ') > -1 else attr[2:-1]
+        return pf.CodeBlock(['', [klass], []],
+                            '```%s\n%s\n```' % (attr, self.code))
 
     def result(self):
         'return FCB, Para(Url()) and/or CodeBlock(stdout) as ordered'
-        # str.decode
         rv = []
-        enc = sys.getdefaultencoding() # result always unicode
+        enc = sys.getdefaultencoding()  # result always unicode
         for output_elm in self.imgout:
             if output_elm == 'img':
                 if os.path.isfile(self.outfile):
@@ -354,29 +360,31 @@ class Handler(with_metaclass(HandlerMeta,object)):
                     rv.append(pf.Para([pf.Str(msg)]))
 
             elif output_elm == 'fcb':
-                rv.append(self.AnonCodeBlock('fcb'))
+                rv.append(self.AnonCodeBlock())
 
             elif output_elm == 'stdout':
                 if len(self.output):
-                    attr = ['', self.classes + ['stdout'], self.keyvals]
+                    attr = ['', self.classes, self.keyvals]
                     rv.append(pf.CodeBlock(attr, toStr(self.output, enc)))
                 else:
                     self.msg(1, '>>:', 'stdout requested, but saw nothing')
 
             elif output_elm == 'stderr':
                 if len(self.stderr):
-                    attr = ['', self.classes + ['stderr'], self.keyvals]
+                    attr = ['', self.classes, self.keyvals]
                     rv.append(pf.CodeBlock(attr, toStr(self.stderr, enc)))
                 else:
                     self.msg(1, '>>:', 'stderr requested, but saw nothing')
 
-        if len(rv) == 0: return None  # no results -> None keeps original FCB
-        if len(rv) > 1: return rv     # multiple results
+        if len(rv) == 0:
+            return None               # no results; None keeps original FCB
+        if len(rv) > 1:
+            return rv                 # multiple results
         return rv[0]                  # just 1 block level element
 
     def cmd(self, *args, **kwargs):
         'run, possibly forced, a cmd and return success indicator'
-        forced = kwargs.get('forced', False) # no need to pop
+        forced = kwargs.get('forced', False)  # no need to pop
         stdin = kwargs.get('stdin', None)
 
         if os.path.isfile(self.outfile) and forced is False:
@@ -388,10 +396,10 @@ class Handler(with_metaclass(HandlerMeta,object)):
                      'stdout': PIPE,
                      'stderr': PIPE}
             p = Popen(args, **pipes)
-            out, err = p.communicate(toBytes(stdin))
-            encoding = sys.getfilesystemencoding()
-            self.output = out #.decode(encoding)
-            self.stderr = err #.decode(encoding)
+            out, err = p.communicate(to_bytes(stdin))
+            # encoding = sys.getfilesystemencoding()
+            self.output = out  # .decode(encoding)
+            self.stderr = err  # .decode(encoding)
             # self.output, self.stderr = p.communicate(stdin)
 
             # print any complaints on stderr
@@ -405,10 +413,12 @@ class Handler(with_metaclass(HandlerMeta,object)):
             return p.returncode == 0
 
         except (OSError, CalledProcessError) as e:
-            try: os.remove(self.outfile)
-            except: pass
+            try:
+                os.remove(self.outfile)
+            except OSError:
+                pass
             self.msg(1, 'fail:', *args)
-            self.msg(0, '>>:', self.prog , str(e))
+            self.msg(0, '>>:', self.prog, str(e))
             return False
 
     def image(self, fmt=None):
@@ -454,7 +464,6 @@ class Boxes(Handler):
             else:
                 self.output = self.read('r', self.outfile)
             return self.result()
-            return self.CodeBlock(self.codec[0], self.output)
 
 
 class BlockDiag(Handler):
@@ -463,7 +472,7 @@ class BlockDiag(Handler):
     http://blockdiag.com/
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
-    cmdmap = dict(zip(progs,progs))
+    cmdmap = dict(zip(progs, progs))
 
     def image(self, fmt=None):
         'cmd -T png <fname>.txt -o <fname>.png'
@@ -616,7 +625,7 @@ class Graphviz(Handler):
     http://graphviz.org
     '''
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
-    cmdmap = dict(zip(progs,progs))
+    cmdmap = dict(zip(progs, progs))
     cmdmap['graphviz'] = 'dot'
 
     def image(self, fmt=None):
@@ -644,7 +653,7 @@ class Gri(Handler):
         args = self.options + ['-c', '0', '-b', self.inpfile]
         if self.cmd(self.prog, *args):
             # gri insists on producing a .ps in current working dir
-            dstfile = self.inpfile.replace('.gri','.ps')
+            dstfile = self.inpfile.replace('.gri', '.ps')
             srcfile = os.path.split(dstfile)[-1]   # the temp ps in working dir
             if os.path.isfile(srcfile):
                 self.msg(3, 'moving', srcfile, dstfile)
@@ -670,10 +679,10 @@ class Imagine(Handler):
         'return documentation in a CodeBlock'
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if len(self.code) == 0:
-            return pf.CodeBlock(('',['__doc__'],[]), __doc__)
+            return pf.CodeBlock(('', ['__doc__'], []), __doc__)
         elif self.code == 'classes':
             classes = wrap(', '.join(sorted(Handler.workers.keys())), 78)
-            return pf.CodeBlock(('',['__doc__'],[]), '\n'.join(classes))
+            return pf.CodeBlock(('', ['__doc__'], []), '\n'.join(classes))
 
         doc = []
         for name in self.code.splitlines():
@@ -709,6 +718,7 @@ class Mermaid(Handler):
             if os.path.isfile(tmpfile):
                 os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
             return self.result()
+
 
 class MscGen(Handler):
     '''
@@ -846,8 +856,8 @@ class PyxPlot(Handler):
         self.fmt(fmt)
         args = self.options + [self.inpfile]
         self.code = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
-                                       'set output %s' % self.outfile,
-                                       self.code)
+                                    'set output %s' % self.outfile,
+                                    self.code)
         self.write('w', self.code, self.inpfile)
         if self.cmd(self.prog, *args):
             return self.result()
@@ -867,13 +877,16 @@ class SheBang(Handler):
         if self.cmd(self.inpfile, *args):
             return self.result()
 
-__doc__ = __doc__ % {'cmds':'\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
+__doc__ = __doc__ % \
+    {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 
 # for PyPI
 def main():
+    'main entry point'
 
     def walker(key, value, fmt, meta):
+        'walk down the pandoc AST and invoke workers for CodeBlocks'
         if key == 'CodeBlock':
             worker = dispatch(value)
             return worker.image(fmt)

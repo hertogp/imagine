@@ -1,22 +1,20 @@
-``` {.stdout}
-                                          \\\///
-                                         / _  _ \
-                                       (| (.)(.) |)
-                .--------------------.OOOo--()--oOOO.-------------------.
-                |                                                       |
-                |        ____                          _                |
-                |       /  _/____ ___   ____ _ ____ _ (_)____   ___     |
-                |       / / / __ `__ \ / __ `// __ `// // __ \ / _ \    |
-                |     _/ / / / / / / // /_/ // /_/ // // / / //  __/    |
-                |    /___//_/ /_/ /_/ \__,_/ \__, //_//_/ /_/ \___/     |
-                |                           /____/                      |
-                |                                                       |
-                '-------------------.oooO-------------------------------'
-                                     (   )   Oooo.
-                                      \ (    (   )
-                                       \_)    ) /
-                                             (_/
-```
+                                              \\\///
+                                             / _  _ \
+                                           (| (.)(.) |)
+                    .--------------------.OOOo--()--oOOO.-------------------.
+                    |                                                       |
+                    |        ____                          _                |
+                    |       /  _/____ ___   ____ _ ____ _ (_)____   ___     |
+                    |       / / / __ `__ \ / __ `// __ `// // __ \ / _ \    |
+                    |     _/ / / / / / / // /_/ // /_/ // // / / //  __/    |
+                    |    /___//_/ /_/ /_/ \__,_/ \__, //_//_/ /_/ \___/     |
+                    |                           /____/                      |
+                    |                                                       |
+                    '-------------------.oooO-------------------------------'
+                                         (   )   Oooo.
+                                          \ (    (   )
+                                           \_)    ) /
+                                                 (_/
 
 A pandoc filter to process codeblocks into images and/or ascii art
 ------------------------------------------------------------------
@@ -98,15 +96,13 @@ cat $0 | boxes -d peek -p h4
 ```
 ````
 
-``` {.stdout}
-/*       _\|/_
-         (o o)
- +----oOO-{_}-OOo------------------------------+
- |    #!/bin/bash                              |
- |    # I seem to have got myself boxed in!    |
- |    cat $0 | boxes -d peek -p h4             |
- +--------------------------------------------*/
-```
+    /*       _\|/_
+             (o o)
+     +----oOO-{_}-OOo------------------------------+
+     |    #!/bin/bash                              |
+     |    # I seem to have got myself boxed in!    |
+     |    cat $0 | boxes -d peek -p h4             |
+     +--------------------------------------------*/
 
 More examples in the sample.pdf on
 [github](https://github.com/hertogp/imagine).
@@ -193,7 +189,7 @@ Markdown usage
   - flydraw produces a gif, not png
   - gle also creates a .gle subdir inside the images-dir
   - gri produces a ps, which is `convert`ed to png
-  - imagine reads its codeblock as help-topics for which a codeblock is returned
+  - imagine reads its code as help-topics, returns codeblocks with help-info
   - plot reads its codeblock as the relative path to the file to process
   - pyxplot will have `set terminal` & `set output` prepended to its `code`
   - shebang runs its codeblock as a script with <fname>.png as its argument.
@@ -205,9 +201,9 @@ Security
   Imagine just hands the fenced codeblocks to plotting tools to process or
   simply runs them as system scripts, as-is.
 
-  Shebang's are inherently unsafe and most of the plotting tools implement their
-  own 'little' languages, which can create beautiful images, but can also cause
-  harm.
+  Shebang's are inherently unsafe and most of the plotting tools implement
+  their own 'little' languages, which can create beautiful images, but can also
+  cause harm.
 
   There is no way to check for 'side effects' in advance, so make sure to check
   the fenced codeblocks before running them through the filter.
@@ -221,248 +217,248 @@ The imagine class puts documentation of topics at your fingertips, like so:
     class
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text) and/or one
-  or more of the commands you're interested in, each on a separate line.
+  Use `imagine` as class to get the module's docstring (ie this text) and/or
+  one or more of the commands you're interested in, each on a separate line.
+
 ```
 
 Individual Classes
 ------------------
 
-``` {.stdout}
-Asy
+    Asy
 
-    sudo-apt-get install asymptote
-    http://asymptote.sourceforge.net/
-    
-    Runs asy -o <fname>.png [options] <fname>.asy
-    Wraps:
-    -  'asymptote' -> asy
-    -  'asy' -> asy
+        sudo-apt-get install asymptote
+        http://asymptote.sourceforge.net/
+        
+        Runs asy -o <fname>.png [options] <fname>.asy
+        Wraps:
+        -  'asymptote' -> asy
+        -  'asy' -> asy
 
-BlockDiag
+    BlockDiag
 
-    sudo pip install blockdiag nwdiag actdiag seqdiag
-    http://blockdiag.com/
-    
-    Runs cmd -T png <fname>.txt -o <fname>.png
-    Wraps:
-    -  'actdiag' -> actdiag
-    -  'blockdiag' -> blockdiag
-    -  'rackdiag' -> rackdiag
-    -  'seqdiag' -> seqdiag
-    -  'packetdiag' -> packetdiag
-    -  'nwdiag' -> nwdiag
+        sudo pip install blockdiag nwdiag actdiag seqdiag
+        http://blockdiag.com/
+        
+        Runs cmd -T png <fname>.txt -o <fname>.png
+        Wraps:
+        -  'actdiag' -> actdiag
+        -  'blockdiag' -> blockdiag
+        -  'rackdiag' -> rackdiag
+        -  'seqdiag' -> seqdiag
+        -  'packetdiag' -> packetdiag
+        -  'nwdiag' -> nwdiag
 
-Boxes
+    Boxes
 
-    sudo apt-get install boxes
-    http://boxes.thomasjensen.com
-    
-    Runs boxes [options] <fname>.boxes
-    Wraps:
-    -  'boxes' -> boxes
+        sudo apt-get install boxes
+        http://boxes.thomasjensen.com
+        
+        Runs boxes [options] <fname>.boxes
+        Wraps:
+        -  'boxes' -> boxes
 
-Ctioga2
+    Ctioga2
 
-    sudo apt-get install ctioga2
-    http://ctioga2.sourceforge.net
-    
-    Runs ctioga2 [options] -f <fname>.ctioga2
-    Wraps:
-    -  'ctioga2' -> ctioga2
+        sudo apt-get install ctioga2
+        http://ctioga2.sourceforge.net
+        
+        Runs ctioga2 [options] -f <fname>.ctioga2
+        Wraps:
+        -  'ctioga2' -> ctioga2
 
-Ditaa
+    Ditaa
 
-    sudo apt-get install ditaa
-    http://ditaa.sourceforge.net
-    
-    Runs ditaa <fname>.ditaa <fname>.png -T [options]
-    Wraps:
-    -  'ditaa' -> ditaa
+        sudo apt-get install ditaa
+        http://ditaa.sourceforge.net
+        
+        Runs ditaa <fname>.ditaa <fname>.png -T [options]
+        Wraps:
+        -  'ditaa' -> ditaa
 
-Figlet
+    Figlet
 
-    sudo apt-get install figlet
-    http://www.figlet.org
-    
-    Runs figlet [options] < code-text
-    Wraps:
-    -  'figlet' -> figlet
+        sudo apt-get install figlet
+        http://www.figlet.org
+        
+        Runs figlet [options] < code-text
+        Wraps:
+        -  'figlet' -> figlet
 
-Flydraw
+    Flydraw
 
-    sudo apt-get install flydraw
-    http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
-    notes:
-    - graphic data is printed to stdout
-    - so 'stdout' in imgout option is silently ignored
-    
-    Runs flydraw [options] < code-text
-    Wraps:
-    -  'flydraw' -> flydraw
+        sudo apt-get install flydraw
+        http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in imgout option is silently ignored
+        
+        Runs flydraw [options] < code-text
+        Wraps:
+        -  'flydraw' -> flydraw
 
-Gle
+    Gle
 
-    sudo apt-get install gle-graphics
-    http://glx.sourceforge.net
-    
-    Runs gle -verbosity 0 -output <fname>.<fmt> <fname>.gle
-    Wraps:
-    -  'gle' -> gle
+        sudo apt-get install gle-graphics
+        http://glx.sourceforge.net
+        
+        Runs gle -verbosity 0 -output <fname>.<fmt> <fname>.gle
+        Wraps:
+        -  'gle' -> gle
 
-GnuPlot
+    GnuPlot
 
-    sudo apt-get install gnuplot
-    http://www.gnuplot.info
-    notes:
-    - graphic data is printed to stdout
-    - so 'stdout' in imgout option is silently ignored
-    
-    Runs gnuplot [options] <fname>.gnuplot > <fname>.png
-    Wraps:
-    -  'gnuplot' -> gnuplot
+        sudo apt-get install gnuplot
+        http://www.gnuplot.info
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in imgout option is silently ignored
+        
+        Runs gnuplot [options] <fname>.gnuplot > <fname>.png
+        Wraps:
+        -  'gnuplot' -> gnuplot
 
-Graph
+    Graph
 
-    sudo apt-get install plotutils
-    https://www.gnu.org/software/plotutils
-    notes:
-    - graphic data is printed to stdout
-    - so 'stdout' in imgout option is silently ignored
-    
-    Runs graph -T png [options] <fname>.graph
-    Wraps:
-    -  'graph' -> graph
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in imgout option is silently ignored
+        
+        Runs graph -T png [options] <fname>.graph
+        Wraps:
+        -  'graph' -> graph
 
-Graphviz
+    Graphviz
 
-    sudo apt-get install graphviz
-    http://graphviz.org
-    
-    Runs cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>
-    Wraps:
-    -  'twopi' -> twopi
-    -  'graphviz' -> dot
-    -  'fdp' -> fdp
-    -  'circo' -> circo
-    -  'neato' -> neato
-    -  'dot' -> dot
-    -  'sfdp' -> sfdp
+        sudo apt-get install graphviz
+        http://graphviz.org
+        
+        Runs cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>
+        Wraps:
+        -  'twopi' -> twopi
+        -  'graphviz' -> dot
+        -  'fdp' -> fdp
+        -  'circo' -> circo
+        -  'neato' -> neato
+        -  'dot' -> dot
+        -  'sfdp' -> sfdp
 
-Gri
+    Gri
 
-    sudo apt-get install gri imagemagick
-    http://gri.sourceforge.net
-    - requires `convert` from imagemagick
-    
-    Runs gri -c 0 -b <fname>.gri
-    Wraps:
-    -  'gri' -> gri
+        sudo apt-get install gri imagemagick
+        http://gri.sourceforge.net
+        - requires `convert` from imagemagick
+        
+        Runs gri -c 0 -b <fname>.gri
+        Wraps:
+        -  'gri' -> gri
 
-Imagine
+    Imagine
 
-    pip install pandoc-imagine
-    https://github.com/hertogp/imagine
-    
-    Runs return documentation in a CodeBlock
-    Wraps:
-    -  'imagine' -> imagine
+        pip install pandoc-imagine
+        https://github.com/hertogp/imagine
+        
+        Runs return documentation in a CodeBlock
+        Wraps:
+        -  'imagine' -> imagine
 
-Mermaid
+    Mermaid
 
-    sudo nmp install mermaid
-    https://knsv.github.io/mermaid (needs phantomjs)
-    
-    Runs mermaid -o <basedir> [options] <fname>.mermaid
-    Wraps:
-    -  'mermaid' -> mermaid
+        sudo nmp install mermaid
+        https://knsv.github.io/mermaid (needs phantomjs)
+        
+        Runs mermaid -o <basedir> [options] <fname>.mermaid
+        Wraps:
+        -  'mermaid' -> mermaid
 
-MscGen
+    MscGen
 
-    sudo apt-get install mscgen
-    http://www.mcternan.me.uk/mscgen
-    
-    Runs mscgen -T png -o <fname>.png <fname>.mscgen
-    Wraps:
-    -  'mscgen' -> mscgen
+        sudo apt-get install mscgen
+        http://www.mcternan.me.uk/mscgen
+        
+        Runs mscgen -T png -o <fname>.png <fname>.mscgen
+        Wraps:
+        -  'mscgen' -> mscgen
 
-Octave
+    Octave
 
-    sudo apt-get install octave
-    https://www.gnu.org/software/octave
-    
-    Runs octage --no-gui -q [options] <fname>.octave <fname>.png
-    Wraps:
-    -  'octave' -> octave
+        sudo apt-get install octave
+        https://www.gnu.org/software/octave
+        
+        Runs octage --no-gui -q [options] <fname>.octave <fname>.png
+        Wraps:
+        -  'octave' -> octave
 
-Pic2Plot
+    Pic2Plot
 
-    sudo apt-get install plotutils
-    https://www.gnu.org/software/plotutils
-    notes:
-    - graphic data is printed to stdout
-    - so 'stdout' in imgout option is silently ignored
-    
-    Runs pic2plot -T png [options] <fname>.pic2plot
-    Wraps:
-    -  'pic2plot' -> pic2plot
-    -  'pic' -> pic2plot
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in imgout option is silently ignored
+        
+        Runs pic2plot -T png [options] <fname>.pic2plot
+        Wraps:
+        -  'pic2plot' -> pic2plot
+        -  'pic' -> pic2plot
 
-PlantUml
+    PlantUml
 
-    sudo apt-get install plantuml
-    http://plantuml.com
-    
-    Runs plantuml -t png <fname>.plantuml
-    Wraps:
-    -  'plantuml' -> plantuml
+        sudo apt-get install plantuml
+        http://plantuml.com
+        
+        Runs plantuml -t png <fname>.plantuml
+        Wraps:
+        -  'plantuml' -> plantuml
 
-Plot
+    Plot
 
-    sudo apt-get install plotutils
-    https://www.gnu.org/software/plotutils
-    notes:
-    - graphic data is printed to stdout
-    - so 'stdout' in imgout option is silently ignored
-    
-    Runs plot -T png [options] <code-text-as-filename>
-    Wraps:
-    -  'plot' -> plot
+        sudo apt-get install plotutils
+        https://www.gnu.org/software/plotutils
+        notes:
+        - graphic data is printed to stdout
+        - so 'stdout' in imgout option is silently ignored
+        
+        Runs plot -T png [options] <code-text-as-filename>
+        Wraps:
+        -  'plot' -> plot
 
-Ploticus
+    Ploticus
 
-    sudo apt-get install ploticus
-    http://ploticus.sourceforge.net/doc/welcome.html
-    
-    Runs ploticus -png -o <fname>.png [options] <fname>.ploticus
-    Wraps:
-    -  'ploticus' -> ploticus
+        sudo apt-get install ploticus
+        http://ploticus.sourceforge.net/doc/welcome.html
+        
+        Runs ploticus -png -o <fname>.png [options] <fname>.ploticus
+        Wraps:
+        -  'ploticus' -> ploticus
 
-Protocol
+    Protocol
 
-    git clone https://github.com/luismartingarcia/protocol.git .
-    python setup install
-    https://github.com/luismartingarcia/protocol.git
-    
-    Runs protocol [options] code-text
-    Wraps:
-    -  'protocol' -> protocol
+        git clone https://github.com/luismartingarcia/protocol.git .
+        python setup install
+        https://github.com/luismartingarcia/protocol.git
+        
+        Runs protocol [options] code-text
+        Wraps:
+        -  'protocol' -> protocol
 
-PyxPlot
+    PyxPlot
 
-    sudo apt-get install pyxplot
-    http://pyxplot.org.uk
-    
-    Runs pyxplot [options] <fname>.pyxplot
-    Wraps:
-    -  'pyxplot' -> pyxplot
+        sudo apt-get install pyxplot
+        http://pyxplot.org.uk
+        
+        Runs pyxplot [options] <fname>.pyxplot
+        Wraps:
+        -  'pyxplot' -> pyxplot
 
-SheBang
+    SheBang
 
-    http://www.google.com/search?q=shebang+line
-    
-    Runs <fname>.shebang [options] <fname>.png
-    Wraps:
-    -  'shebang' -> shebang
+        http://www.google.com/search?q=shebang+line
+        
+        Runs <fname>.shebang [options] <fname>.png
+        Wraps:
+        -  'shebang' -> shebang
 
-```
+
