@@ -1,32 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-
-import os
-import sys
-import stat
-
-from textwrap import wrap
-from subprocess import Popen, CalledProcessError, PIPE
-from six import with_metaclass
-import pandocfilters as pf
-
-# Author: Pieter den Hertog
-# Email: git.hertogp@gmail.com
-#
-#-- Candidates:
-# o grace (ie gracebat, the batchmode variant; indirect mode?)
-#   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
-#   via `gracebat`, which symlinks to the real binary executable.
-#
-# o tizk, needs convert since eps wont go into pdflatex ..
-
-# Notes
-# - fix result() so output can be run through --filter pandoc-imagine again
-#   + no imagine classes (dot, imagine, stdout, fcb, etc..
-
-__doc__ = '''\
+'''\
 Imagine
   A pandoc filter to turn fenced codeblocks into graphics or ascii art by
   wrapping some external command line utilities, such as:
@@ -133,6 +108,32 @@ The imagine class puts documentation of topics at your fingertips, like so:
   one or more of the commands you're interested in, each on a separate line.
 
 '''
+
+from __future__ import print_function
+
+import os
+import sys
+import stat
+
+from textwrap import wrap
+from subprocess import Popen, CalledProcessError, PIPE
+from six import with_metaclass
+import pandocfilters as pf
+
+# Author: Pieter den Hertog
+# Email: git.hertogp@gmail.com
+#
+#-- Candidates:
+# o grace (ie gracebat, the batchmode variant; indirect mode?)
+#   script files are pretty big.  Perhaps indirectly.  It supports a batch mode
+#   via `gracebat`, which symlinks to the real binary executable.
+#
+# o tizk, needs convert since eps wont go into pdflatex ..
+
+# Notes
+# - fix result() so output can be run through --filter pandoc-imagine again
+#   + no imagine classes (dot, imagine, stdout, fcb, etc..
+
 
 #-- version
 
@@ -308,7 +309,8 @@ class Handler(with_metaclass(HandlerMeta, object)):
         'possibly print a message to stderr'
         if level > self.level:
             return
-        level %= len(self.severity)  # XXX: change to {} and do get
+        # o perhaps change severity to dict and do get(level,'too-high')
+        level %= len(self.severity)
         msg = '%s[%9s:%-5s] %s' % ('Imagine',
                                    self._name,
                                    self.severity[level],
