@@ -49,9 +49,9 @@ Markdown usage
 
   - im_out="...", csv-list of keywords each specifying a certain output
     - img     image in a paragraph
-    - fcb     codeblock (class fcb)    containing the original codeblock
-    - stdout, codeblock (class stdout) containing stdout output (if any)
-    - stderr, codeblock (class stderr) containing stderr output (if any)
+    - fcb     codeblock containing the original codeblock
+    - stdout, codeblock containing stdout output (if any)
+    - stderr, codeblock containing stderr output (if any)
 
   - im_prg=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
