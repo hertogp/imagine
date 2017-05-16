@@ -222,7 +222,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             self.msg(0, 'Fatal: invalid codeblock passed in', codec)
             raise e
 
-        # try dispatching by class attribute first
+        # try dispatching by class attribute
         for klass in klasses:
             worker = self.workers.get(klass.lower(), None)
             if worker is not None:
@@ -231,15 +231,12 @@ class Handler(with_metaclass(HandlerMeta, object)):
                 return worker(codec)
 
         # try dispatching via 'cmd' named by 'im_prg=cmd' key-value-pair
-        if not keyvals:  # pf.get_value barks if keyvals == []
-            self.msg(4, codec[0], 'dispatched by default', self)
-            return self
-
-        prog, _ = pf.get_value(keyvals, 'im_prg', '')
-        worker = self.workers.get(prog.lower(), None)
-        if worker is not None:
-            self.msg(4, codec[0], 'dispatched by prog to', worker)
-            return worker(codec)
+        if keyvals:  # pf.get_value barks if keyvals == []
+            prog, _ = pf.get_value(keyvals, 'im_prg', '')
+            worker = self.workers.get(prog.lower(), None)
+            if worker is not None:
+                self.msg(4, codec[0], 'dispatched by prog to', worker)
+                return worker(codec)
 
         self.msg(4, codec[0], 'dispatched by default to', self)
         return self
@@ -431,9 +428,12 @@ class Handler(with_metaclass(HandlerMeta, object)):
 
     def image(self, fmt=None):
         'return an Image url or None to keep CodeBlock'
-        # workers must override this method
-        self.msg(0, 'format {}, but no image method?'.format(repr(fmt)))
-        return None  # returning None keeps original CodeBlock in JSON AST
+        # For cases where no handler could be associated with a fenced
+        # codeblock, Handler itself will be the 'worker' who returns None
+        # preserving the original codeblock as-is in the json AST.
+        # Real workers (subclassing Handler) must override this method
+        self.msg(4, 'format', repr(fmt), 'CodeBlock ignored, keeping as-is')
+        return None  # returning None to keep original CodeBlock
 
 
 class Asy(Handler):
@@ -887,7 +887,7 @@ class SheBang(Handler):
 
 # use sys.modules[__name__].__doc__ instead of __doc__ directly
 # to avoid pylint'rs complaints.
-sys.modules[__name__].__doc__ = __doc__ % \
+sys.modules[__name__].__doc__ %= \
     {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
 # for PyPI
