@@ -201,8 +201,8 @@ class HandlerMeta(type):
 class Handler(with_metaclass(HandlerMeta, object)):
     'baseclass for image/ascii art generators'
     severity = 'error warn note info debug'.split()
-    workers = {}              # dispatch mapping for Handler
-    klass = None              # assigned when worker is dispatched
+    workers = {}              # dispatch map for Handler, filled by HandlerMeta
+    klass = None              # gets assigned when worker is dispatched
     _output = IMG_OUTPUTS[1]  # i.e. default img
 
     cmdmap = {}     # worker subclass must override, klass -> cli-program
@@ -246,7 +246,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
         # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
         self.codec = codec
         self._name = self.__class__.__name__  # the default inpfile extension
-        self.output = ''   # catches stdout by self.cmd, if any
+        self.stdout = ''   # catches stdout by self.cmd, if any
         self.stderr = ''   # catches stderr by self.cmd, if any
 
         if codec is None:
@@ -358,9 +358,9 @@ class Handler(with_metaclass(HandlerMeta, object)):
                 rv.append(self.anon_codeblock())
 
             elif output_elm == 'stdout':
-                if self.output:
+                if self.stdout:
                     attr = ['', self.classes, self.keyvals]
-                    rv.append(pf.CodeBlock(attr, to_str(self.output, enc)))
+                    rv.append(pf.CodeBlock(attr, to_str(self.stdout, enc)))
                 else:
                     self.msg(1, '>>:', 'stdout requested, but saw nothing')
 
@@ -393,9 +393,9 @@ class Handler(with_metaclass(HandlerMeta, object)):
             p = Popen(args, **pipes)
             out, err = p.communicate(to_bytes(stdin))
             # encoding = sys.getfilesystemencoding()
-            self.output = out  # .decode(encoding)
+            self.stdout = out  # .decode(encoding)
             self.stderr = err  # .decode(encoding)
-            # self.output, self.stderr = p.communicate(stdin)
+            # self.stdout, self.stderr = p.communicate(stdin)
 
             # print any complaints on stderr
             if self.stderr:
@@ -454,10 +454,10 @@ class Boxes(Handler):
         self.im_out = [x for x in self.im_out if x not in ['img']]
         args = self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
-            if self.output:
-                self.write('w', to_str(self.output), self.outfile)
+            if self.stdout:
+                self.write('w', to_str(self.stdout), self.outfile)
             else:
-                self.output = self.read('r', self.outfile)
+                self.stdout = self.read('r', self.outfile)
             return self.result()
 
 
@@ -524,11 +524,11 @@ class Figlet(Handler):
 
         args = self.options
         if self.cmd(self.prog, stdin=self.code, *args):
-            if self.output:
+            if self.stdout:
                 # save figlet's stdout to outfile for next time around
-                self.write('w', to_str(self.output), self.outfile)
+                self.write('w', to_str(self.stdout), self.outfile)
             else:
-                self.output = self.read('r', self.outfile)
+                self.stdout = self.read('r', self.outfile)
             return self.result()
 
 
@@ -551,8 +551,8 @@ class Flydraw(Handler):
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = self.options
         if self.cmd(self.prog, stdin=self.code, *args):
-            if self.output:
-                self.write('wb', self.output, self.outfile)
+            if self.stdout:
+                self.write('wb', self.stdout, self.outfile)
             return self.result()
 
 
@@ -589,8 +589,8 @@ class GnuPlot(Handler):
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
-            if self.output:
-                self.write('wb', self.output, self.outfile)
+            if self.stdout:
+                self.write('wb', self.stdout, self.outfile)
             return self.result()
 
 
@@ -610,7 +610,7 @@ class Graph(Handler):
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = ['-T', self.outfmt] + self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
-            self.write('wb', self.output, self.outfile)
+            self.write('wb', self.stdout, self.outfile)
             return self.result()
 
 
@@ -659,7 +659,7 @@ class Gri(Handler):
                 self.msg(2, "could not convert gri's ps to", self.outfmt)
         else:
             # relay gri's complaints on stdout to stderr.
-            for line in self.output.splitlines():
+            for line in self.stdout.splitlines():
                 self.msg(1, '>>:', line)
 
 
@@ -759,7 +759,7 @@ class Pic2Plot(Handler):
         self.fmt(fmt)
         args = ['-T', self.outfmt] + self.options + [self.inpfile]
         if self.cmd(self.prog, *args):
-            self.write('wb', self.output, self.outfile)
+            self.write('wb', self.stdout, self.outfile)
             return self.result()
 
 
@@ -797,7 +797,7 @@ class Plot(Handler):
             return
         args = ['-T', self.outfmt] + self.options + [self.code]
         if self.cmd(self.prog, *args):
-            self.write('wb', self.output, self.outfile)
+            self.write('wb', self.stdout, self.outfile)
             return self.result()
 
 
@@ -832,10 +832,10 @@ class Protocol(Handler):
         # silently ignore any request for an 'image'
         self.im_out = [x for x in self.im_out if x not in ['img']]
         if self.cmd(self.prog, *args):
-            if self.output:
-                self.write('w', to_str(self.output), self.outfile)
+            if self.stdout:
+                self.write('w', to_str(self.stdout), self.outfile)
             else:
-                self.output = self.read('r', self.outfile)
+                self.stdout = self.read('r', self.outfile)
             return self.result()
 
 
