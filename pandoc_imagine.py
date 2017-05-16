@@ -872,9 +872,10 @@ class SheBang(Handler):
         if self.cmd(self.inpfile, *args):
             return self.result()
 
-__doc__ = __doc__ % \
+# use sys.modules[__name__].__doc__ instead of __doc__ directly
+# to avoid pylint'rs complaints.
+sys.modules[__name__].__doc__ = __doc__ % \
     {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
-
 
 # for PyPI
 def main():
