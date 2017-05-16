@@ -190,9 +190,9 @@ def to_bytes(s, enc='ascii'):
 
 
 class HandlerMeta(type):
-    'metaclass to register Handler subclasses (aksa workers)'
+    'metaclass to register Handler subclasses (aka workers)'
     def __init__(cls, name, bases, dct):
-        'register worker classes by cmdmap handled'
+        'register worker classes by cmdmap keys'
         super(HandlerMeta, cls).__init__(name, bases, dct)
         for klass in dct.get('cmdmap', {}):
             cls.workers[klass.lower()] = cls
@@ -202,8 +202,9 @@ class Handler(with_metaclass(HandlerMeta, object)):
     'baseclass for image/ascii art generators'
     severity = 'error warn note info debug'.split()
     workers = {}              # dispatch map for Handler, filled by HandlerMeta
-    klass = None              # gets assigned when worker is dispatched
-    _output = IMG_OUTPUTS[1]  # i.e. default img
+    klass = None              # __call__ dispatches a worker & sets this
+    _output = IMG_OUTPUTS[1]  # output an img by default, some workers should
+                              #  override this with stdout (eg Boxes, Figlet..)
 
     cmdmap = {}     # worker subclass must override, klass -> cli-program
     level = 2       # log severity level, see above
@@ -212,11 +213,13 @@ class Handler(with_metaclass(HandlerMeta, object)):
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(4, 'Handler __call__ codec', codec[0])
+        self.msg(4, 'Handler dispatch request for', codec[0])
+
+        # get classes and keyvals from codeblock attributes
         try:
             _, klasses, keyvals = codec[0]
         except Exception as e:
-            self.msg(0, 'Fatal: invalid codec passed in', codec)
+            self.msg(0, 'Fatal: invalid codeblock passed in', codec)
             raise e
 
         # try dispatching by class attribute first
@@ -227,7 +230,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
                 self.msg(4, codec[0], 'dispatched by class to', worker)
                 return worker(codec)
 
-        # try dispatching via 'cmd' named by im_prg=cmd key-value
+        # try dispatching via 'cmd' named by 'im_prg=cmd' key-value-pair
         if not keyvals:  # pf.get_value barks if keyvals == []
             self.msg(4, codec[0], 'dispatched by default', self)
             return self
@@ -244,13 +247,12 @@ class Handler(with_metaclass(HandlerMeta, object)):
     def __init__(self, codec):
         'init by decoding the CodeBlock-s value'
         # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
-        self.codec = codec
-        self._name = self.__class__.__name__  # the default inpfile extension
+        self.codec = codec # save original codeblock for later
         self.stdout = ''   # catches stdout by self.cmd, if any
         self.stderr = ''   # catches stderr by self.cmd, if any
 
         if codec is None:
-            return  # initial dispatch creation
+            return         # initial dispatch creation
 
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
@@ -275,10 +277,21 @@ class Handler(with_metaclass(HandlerMeta, object)):
 
         self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
         self.outfile = self.basename + '.%s' % self.outfmt
-        self.inpfile = self.basename + '.%s' % self._name.lower()
+        self.inpfile = self.basename + '.%s' % self.klass # _name.lower()
 
         if not os.path.isfile(self.inpfile):
             self.write('w', self.code, self.inpfile)
+
+    def get_prefs(self, meta):
+        'pickup user preferences from meta block'
+        if meta is None or not meta:
+            return self
+        # pickup some document wide preferences
+        # pandoc_imagine:
+        #     loglevel: 2
+        #     img_subdir: pd-images
+        #     remove_img_subdir: false, true
+        return self
 
     def read(self, mode, src):
         'read a file with given mode or return empty string'
@@ -312,7 +325,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
         # o perhaps change severity to dict and do get(level,'too-high')
         level %= len(self.severity)
         msg = '%s[%9s:%-5s] %s' % ('Imagine',
-                                   self._name,
+                                   self.__class__.__name__,
                                    self.severity[level],
                                    ' '.join(to_str(s) for s in a))
         print(msg, file=sys.stderr)
@@ -419,8 +432,8 @@ class Handler(with_metaclass(HandlerMeta, object)):
     def image(self, fmt=None):
         'return an Image url or None to keep CodeBlock'
         # workers must override this method
-        self.msg(4, self._name, repr(fmt), 'worker has no image method')
-        return None
+        self.msg(0, 'format {}, but no image method?'.format(repr(fmt)))
+        return None  # returning None keeps original CodeBlock in JSON AST
 
 
 class Asy(Handler):
@@ -884,7 +897,7 @@ def main():
     def walker(key, value, fmt, meta):
         'walk down the pandoc AST and invoke workers for CodeBlocks'
         if key == 'CodeBlock':
-            worker = dispatch(value)
+            worker = dispatch(value).get_prefs(meta)
             return worker.image(fmt)
 
     dispatch = Handler(None)
