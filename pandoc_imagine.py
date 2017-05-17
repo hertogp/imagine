@@ -203,7 +203,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
     severity = 'error warn note info debug'.split()
     workers = {}              # dispatch map for Handler, filled by HandlerMeta
     klass = None              # __call__ dispatches a worker & sets this
-    _output = IMG_OUTPUTS[1]  # output an img by default, some workers should
+    output = IMG_OUTPUTS[1]  # output an img by default, some workers should
                               #  override this with stdout (eg Boxes, Figlet..)
 
     cmdmap = {}     # worker subclass must override, klass -> cli-program
@@ -213,7 +213,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(4, 'Handler dispatch request for', codec[0])
+        self.msg(0, 'Handler dispatch request for', codec[0])
 
         # get classes and keyvals from codeblock attributes
         try:
@@ -262,7 +262,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
         self.prog, self.keyvals = pf.get_value(self.keyvals, 'im_prg', None)
         im_out, self.keyvals = pf.get_value(self.keyvals,
                                             'im_out',
-                                            self._output)
+                                            self.output)
         self.im_out = im_out.lower().replace(',', ' ').split()
 
         # im_prg=cmd key-value trumps .cmd class attribute
@@ -459,7 +459,7 @@ class Boxes(Handler):
     '''
     cmdmap = {'boxes': 'boxes'}
     outfmt = 'boxed'
-    _output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
         'boxes [options] <fname>.boxes'
@@ -528,7 +528,7 @@ class Figlet(Handler):
     # - saves stdout to <fname>.figled
     cmdmap = {'figlet': 'figlet'}
     outfmt = 'figled'
-    _output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
         'figlet [options] < code-text'
@@ -837,7 +837,7 @@ class Protocol(Handler):
     '''
     cmdmap = {'protocol': 'protocol'}
     outfmt = 'protocold'
-    _output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
         'protocol [options] code-text'
