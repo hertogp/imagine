@@ -375,7 +375,7 @@ Individual Classes
 
     Mermaid
 
-        sudo nmp install mermaid
+        sudo npm install -g mermaid@7.0.6
         https://knsv.github.io/mermaid (needs phantomjs)
         
         Runs mermaid -o <basedir> [options] <fname>.mermaid
