@@ -56,6 +56,9 @@ Markdown usage
   - im_prg=<other-cmd>, overrides class-to-command map.
     Only useful if `cmd` itself is not an appropiate class in your document.
 
+  - im_fmt="..." for replacing the default output format (The list of available
+    formats depends of the class)
+
   If the command fails, the original fenced code block is retained unchanged.
   Any info on stderr is relayed by Imagine, which might be useful for
   troubleshooting.
@@ -203,17 +206,18 @@ class Handler(with_metaclass(HandlerMeta, object)):
     severity = 'error warn note info debug'.split()
     workers = {}              # dispatch map for Handler, filled by HandlerMeta
     klass = None              # __call__ dispatches a worker & sets this
-    output = IMG_OUTPUTS[1]  # output an img by default, some workers should
+    output = IMG_OUTPUTS[1]   # output an img by default, some workers should
                               #  override this with stdout (eg Boxes, Figlet..)
 
-    cmdmap = {}     # worker subclass must override, klass -> cli-program
-    level = 2       # log severity level, see above
-    outfmt = 'png'  # default output format for a worker
+    cmdmap = {}               # worker subclass must override, klass -> cli-program
+    level = 2                 # log severity level, see above
+    outfmt = 'png'            # default output format for a worker
+    available_fmts = ['png']  # default available formats for a worker
 
     def __call__(self, codec):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(0, 'Handler dispatch request for', codec[0])
+        self.msg(4, 'Handler dispatch request for', codec[0])
 
         # get classes and keyvals from codeblock attributes
         try:
@@ -264,6 +268,9 @@ class Handler(with_metaclass(HandlerMeta, object)):
                                             'im_out',
                                             self.output)
         self.im_out = im_out.lower().replace(',', ' ').split()
+        outfmt, self.keyvals  = pf.get_value(self.keyvals, 'im_fmt', self.outfmt)
+        if outfmt in self.available_fmts:
+            self.outfmt = outfmt
 
         # im_prg=cmd key-value trumps .cmd class attribute
         if not self.prog:
@@ -459,6 +466,7 @@ class Boxes(Handler):
     '''
     cmdmap = {'boxes': 'boxes'}
     outfmt = 'boxed'
+    available_fmts = ['boxed']
     output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
@@ -481,6 +489,7 @@ class BlockDiag(Handler):
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
     cmdmap = dict(zip(progs, progs))
+    available_fmts = ['png', 'pdf']
 
     def image(self, fmt=None):
         'cmd -T png <fname>.txt -o <fname>.png'
@@ -496,6 +505,7 @@ class Ctioga2(Handler):
     '''
     cmdmap = {'ctioga2': 'ctioga2'}
     outfmt = 'pdf'
+    available_fmts = ['pdf']
 
     def image(self, fmt=None):
         'ctioga2 [options] -f <fname>.ctioga2'
@@ -528,6 +538,7 @@ class Figlet(Handler):
     # - saves stdout to <fname>.figled
     cmdmap = {'figlet': 'figlet'}
     outfmt = 'figled'
+    available_fmts = ['figled']
     output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
@@ -557,6 +568,7 @@ class Flydraw(Handler):
     # - seems to insist on producing GIF files, despite claims in the manual
     cmdmap = {'flydraw': 'flydraw'}
     outfmt = 'gif'
+    available_fmts = ['gif']
 
     def image(self, fmt=None):
         'flydraw [options] < code-text'
@@ -635,6 +647,7 @@ class Graphviz(Handler):
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
     cmdmap = dict(zip(progs, progs))
     cmdmap['graphviz'] = 'dot'
+    available_fmts = ['png', 'pdf']
 
     def image(self, fmt=None):
         'cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>'
@@ -837,6 +850,7 @@ class Protocol(Handler):
     '''
     cmdmap = {'protocol': 'protocol'}
     outfmt = 'protocold'
+    available_fmts = ['protocold']
     output = IMG_OUTPUTS[2]  # i.e. default to stdout
 
     def image(self, fmt=None):
