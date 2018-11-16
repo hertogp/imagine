@@ -725,19 +725,15 @@ class Imagine(Handler):
 
 class Mermaid(Handler):
     '''
-    sudo nmp install mermaid
-    https://knsv.github.io/mermaid (needs phantomjs)
+    sudo npm install mermaid.cli
+    https://github.com/mermaidjs/mermaid.cli
     '''
-    cmdmap = {'mermaid': 'mermaid'}
+    cmdmap = {'mermaid': 'mmdc'}
 
     def image(self, fmt=None):
-        'mermaid -o <basedir> [options] <fname>.mermaid'
-        args = ['-o', IMG_BASEDIR+'-images'] + self.options + [self.inpfile]
+        'mmdc -i <fname>.mermaid -o <fname>.<fmt> [options]'
+        args = ['-i', self.inpfile, '-o', self.outfile] + self.options
         if self.cmd(self.prog, *args):
-            # latex seems to choke on <fname>.mermaid.png
-            tmpfile = self.inpfile + '.' + self.outfmt
-            if os.path.isfile(tmpfile):
-                os.rename(self.inpfile+'.'+self.outfmt, self.outfile)
             return self.result()
 
 
