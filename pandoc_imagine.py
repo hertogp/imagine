@@ -489,7 +489,7 @@ class BlockDiag(Handler):
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
     cmdmap = dict(zip(progs, progs))
-    available_fmts = ['png', 'pdf']
+    available_fmts = ['png', 'pdf', 'svg']
 
     def image(self, fmt=None):
         'cmd -T png <fname>.txt -o <fname>.png'
