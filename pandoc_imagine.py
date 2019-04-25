@@ -791,6 +791,7 @@ class PlantUml(Handler):
     http://plantuml.com
     '''
     cmdmap = {'plantuml': 'plantuml'}
+    available_fmts = ["png", "svg"]
 
     def image(self, fmt=None):
         'plantuml -t png <fname>.plantuml'
