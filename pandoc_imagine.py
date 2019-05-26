@@ -647,7 +647,7 @@ class Graphviz(Handler):
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
     cmdmap = dict(zip(progs, progs))
     cmdmap['graphviz'] = 'dot'
-    available_fmts = ['png', 'pdf']
+    available_fmts = ['png', 'pdf', 'svg']
 
     def image(self, fmt=None):
         'cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>'
@@ -791,6 +791,7 @@ class PlantUml(Handler):
     http://plantuml.com
     '''
     cmdmap = {'plantuml': 'plantuml'}
+    available_fmts = ["png", "svg"]
 
     def image(self, fmt=None):
         'plantuml -t png <fname>.plantuml'
