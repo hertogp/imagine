@@ -92,6 +92,8 @@ set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
 splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, 1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
 ```
 
+\newpage
+
 # Documentation
 
 ## Imagine

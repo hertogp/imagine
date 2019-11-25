@@ -28,17 +28,47 @@ draw(shift(circleCenter) * (O -- Y+Z), green, arrow=Arrow3());
 
 ## a sphere
 
-```{.asy im_out="fcb,img" caption="Sphere created by Asymptote"}
+```{.asy im_out="fcb,img" caption="2D example by Asymptote"}
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
-import graph3;
-size(8cm,0);
-path3 myarc = rotate(18,Z) * Arc(c=O, normal=X, v1=-Z, v2=Z, n=10);
-surface backHemisphere = surface(myarc, angle1=0, angle2=180, c=O, axis=Z, n=10);
-surface frontHemisphere = surface(myarc, angle1=180, angle2=360, c=O, axis=Z, n=10);
-draw(backHemisphere, surfacepen=material(white+opacity(0.8), ambientpen=white), meshpen=gray(0.4));
-draw(O--X, blue+linewidth(1pt));
+import graph;
+
+size(200,100,IgnoreAspect);
+
+markroutine marks() {
+  return new void(picture pic=currentpicture, frame f, path g) {
+    path p=scale(1mm)*unitcircle;
+    for(int i=0; i <= length(g); ++i) {
+      pair z=point(g,i);
+      frame f;
+      if(i % 4 == 0) {
+        fill(f,p);
+        add(pic,f,z);
+      } else {
+        if(z.y > 50) {
+          pic.add(new void(frame F, transform t) {
+              path q=shift(t*z)*p;
+              unfill(F,q);
+              draw(F,q);
+            });
+        } else {
+          draw(f,p);
+          add(pic,f,z);
+        }
+      }
+    }
+  };
+}
+
+pair[] f={(5,5),(40,20),(55,51),(90,30)};
+
+draw(graph(f),marker(marks()));
+
+scale(true);
+
+xaxis("$x$",BottomTop,LeftTicks);
+yaxis("$y$",LeftRight,RightTicks);
 ```
 
 ## elevation
@@ -47,23 +77,19 @@ draw(O--X, blue+linewidth(1pt));
 settings.outformat="png";
 settings.prc=false;
 settings.render=0;
+
 import graph3;
 import grid3;
 import palette;
 
-currentprojection=orthographic(0.8,1,2);
+currentprojection=orthographic(0.8,1,1);
 size(400,300,IgnoreAspect);
-
+defaultrender.merge=true;
 real f(pair z) {return cos(2*pi*z.x)*sin(2*pi*z.y);}
-
 surface s=surface(f,(-1/2,-1/2),(1/2,1/2),50,Spline);
-
-surface S=planeproject(unitsquare3)*s;
-S.colors(palette(s.map(zpart),Rainbow()));
-draw(S,nolight);
-draw(s,lightgray+opacity(0.7));
-
+draw(s,mean(palette(s.map(zpart),Rainbow(40))),black);
 grid3(XYZgrid);
+
 ```
 
 # Documentation

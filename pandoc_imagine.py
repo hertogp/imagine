@@ -677,6 +677,16 @@ class Gri(Handler):
     '''
     # cannot convince gri to output intermediate ps in pd-images/..
     # so we move it there.
+    # Repair ImageMagick's ability to manipulate ps files:
+    # vim /etc/ImageMagick-6/policy.xml
+    # -> find the line <!-- disable ghostscript format types -->
+    #  <policy domain="coder" rights="read|write" pattern="PS" />
+    #  <policy domain="coder" rights="read|write" pattern="PS2" />
+    #  <policy domain="coder" rights="read|write" pattern="PS3" />
+    #  <policy domain="coder" rights="read|write" pattern="EPS" />
+    #  <policy domain="coder" rights="read|write" pattern="PDF" />
+    #  <policy domain="coder" rights="read|write" pattern="XPS" />
+
     cmdmap = {'gri': 'gri'}
 
     def image(self, fmt=None):
