@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 '''\
@@ -117,9 +117,10 @@ from __future__ import print_function
 import os
 import sys
 import stat
-
 from textwrap import wrap
 from subprocess import Popen, CalledProcessError, PIPE
+
+# non-standard libraries
 from six import with_metaclass
 import pandocfilters as pf
 
@@ -135,7 +136,10 @@ import pandocfilters as pf
 
 # Notes
 # - fix result() so output can be run through --filter pandoc-imagine again
-#   + no imagine classes (dot, imagine, stdout, fcb, etc..
+#   + no imagine classes (dot, imagine, stdout, fcb, etc..)
+# - using svg requires rsvg-convert which pandoc uses to convert the svg to
+#   png before including in pdf
+#   + sudo apt-get install librsvg2-bin
 
 
 #-- version
@@ -606,6 +610,7 @@ class GnuPlot(Handler):
     - so 'stdout' in im_out option is silently ignored
     '''
     cmdmap = {'gnuplot': 'gnuplot'}
+    available_fmts = ['png', 'svg', 'gif', 'jpeg']
 
     def image(self, fmt=None):
         'gnuplot [options] <fname>.gnuplot > <fname>.png'
@@ -729,6 +734,7 @@ class Mermaid(Handler):
     https://github.com/mermaidjs/mermaid.cli
     '''
     cmdmap = {'mermaid': 'mmdc'}
+    available_fmts = ['png', 'svg', 'pdf']
 
     def image(self, fmt=None):
         'mmdc -i <fname>.mermaid -o <fname>.<fmt> [options]'
@@ -840,7 +846,8 @@ class Ploticus(Handler):
 
 class Protocol(Handler):
     '''
-    git clone https://github.com/luismartingarcia/protocol.git .
+    cd ~/installs/git-repos
+    git clone https://github.com/luismartingarcia/protocol.git
     python setup install
     https://github.com/luismartingarcia/protocol.git
     '''

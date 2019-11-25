@@ -11,13 +11,18 @@ _notes.md
 .tox
 nosetests.xml
 
-# directories
+# directories and files
 scr/
 tmp/
 venv/
 pd-images/*
 !pd-images/*.png
 */pd-images/
+
+# ignore example pdf's, except for sample.pdf
+examples/*.pdf
+!examples/sample.pdf
+
 
 # Packages
 *.egg

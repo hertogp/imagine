@@ -1,0 +1,14 @@
+#!/bin/bash
+
+FILE=$1
+
+if [ -z "${FILE}" ]
+then
+    echo "Usage: md2pdf file.md"
+    exit 1
+fi
+
+echo "converting ${FILE} -> ${FILE%.md}.pdf"
+pandoc --filter ../pandoc_imagine.py ${FILE} -o ${FILE%.md}.pdf
+
+echo "Done!"
