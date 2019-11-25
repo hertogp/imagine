@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 '''\
@@ -18,7 +18,7 @@ Installation
 
 Dependencies
 
-    %% sudo -H pip install pandocfilters
+    %% sudo -H pip install pandocfilters six
 
     and one (or more) of the packages that provide above utilities.
 
@@ -110,6 +110,14 @@ The imagine class puts documentation of topics at your fingertips, like so:
   Use `imagine` as class to get the module's docstring (ie this text) and/or
   one or more of the commands you're interested in, each on a separate line.
 
+
+Thanks for helping out:
+
+- amietn
+- chdemko
+- heyrict
+- priiduonu
+
 '''
 
 from __future__ import print_function
@@ -135,8 +143,6 @@ import pandocfilters as pf
 # o tizk, needs convert since eps wont go into pdflatex ..
 
 # Notes
-# - fix result() so output can be run through --filter pandoc-imagine again
-#   + no imagine classes (dot, imagine, stdout, fcb, etc..)
 # - using svg requires rsvg-convert which pandoc uses to convert the svg to
 #   png before including in pdf
 #   + sudo apt-get install librsvg2-bin
