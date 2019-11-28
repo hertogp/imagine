@@ -155,7 +155,6 @@ __version__ = '0.1.5'
 
 #-- globs
 IMG_BASEDIR = 'pd'
-IMG_OUTPUTS = ['fcb', 'img', 'stdout', 'stderr']
 
 
 #-- helpers
@@ -216,15 +215,16 @@ class Handler(with_metaclass(HandlerMeta, object)):
     severity = 'error warn note info debug'.split()
     workers = {}              # dispatch map for Handler, filled by HandlerMeta
     klass = None              # __call__ dispatches a worker & sets this
-    output = IMG_OUTPUTS[1]   # output an img by default, some workers should
+    output = 'img'            # output an img by default, some workers should
                               #  override this with stdout (eg Boxes, Figlet..)
 
+    meta = {}                 # stores user prefs in doc's meta yaml block
     cmdmap = {}               # worker subclass must override, klass -> cli-program
     level = 2                 # log severity level, see above
     outfmt = 'png'            # default output format for a worker
     available_fmts = ['png']  # default available formats for a worker
 
-    def __call__(self, codec):
+    def __call__(self, codec, meta):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
         self.msg(4, 'Handler dispatch request for', codec[0])
@@ -242,7 +242,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             if worker is not None:
                 worker.klass = klass.lower()
                 self.msg(4, codec[0], 'dispatched by class to', worker)
-                return worker(codec)
+                return worker(codec, meta)
 
         # try dispatching via 'cmd' named by 'im_prg=cmd' key-value-pair
         if keyvals:  # pf.get_value barks if keyvals == []
@@ -250,14 +250,13 @@ class Handler(with_metaclass(HandlerMeta, object)):
             worker = self.workers.get(prog.lower(), None)
             if worker is not None:
                 self.msg(4, codec[0], 'dispatched by prog to', worker)
-                return worker(codec)
+                return worker(codec, meta)
 
         self.msg(4, codec[0], 'dispatched by default to', self)
         return self
 
-    def __init__(self, codec):
+    def __init__(self, codec, meta):
         'init by decoding the CodeBlock-s value'
-        # codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
         self.codec = codec # save original codeblock for later
         self.stdout = ''   # catches stdout by self.cmd, if any
         self.stderr = ''   # catches stderr by self.cmd, if any
@@ -265,24 +264,41 @@ class Handler(with_metaclass(HandlerMeta, object)):
         if codec is None:
             return         # initial dispatch creation
 
+        # Options from to meta data or application values
+        self.meta = self.get_prefs(meta)  # usr prefs from doc's meta data
+        im_opt = self.meta.get('im_opt', '')
+        im_prg = self.meta.get('im_prg', None)
+        im_out = self.meta.get('im_out', self.output)
+
+        # Options by CodeBlock attributes (trump meta data or app defaults)
+        # - codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
+        # - `Get & remove` Imagine keywords/keyvals from codeblock attributes
         (self.id_, self.classes, self.keyvals), self.code = codec
         self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
 
-        # `Extract` Imagine keywords/keyvals from codeblock's attributes
-        # - also remove any and all Imagine classes
+        # - remove any and all Imagine classes from codeblock attributes
         self.classes = [k for k in self.classes if k not in self.workers]
-        self.options, self.keyvals = pf.get_value(self.keyvals, 'im_opt', '')
-        self.options = self.options.split()
-        self.prog, self.keyvals = pf.get_value(self.keyvals, 'im_prg', None)
+
+        # - get/remove im_opt="..": options to pass onto the command line
+        im_opt, self.keyvals = pf.get_value(self.keyvals, 'im_opt', im_opt)
+        self.options = im_opt.split() # self.options.split()
+
+        # - get/remove im_prg: actual program to call to create the image
+        self.prog, self.keyvals = pf.get_value(self.keyvals, 'im_prg', im_prg)
         im_out, self.keyvals = pf.get_value(self.keyvals,
-                                            'im_out',
-                                            self.output)
+                                            'im_out', im_out) #self.output)
+
+        # - how to handle the output: csv-list fcb,img,stdout,stderr
+        #   - fcb keeps original codeblockj
+        #   - img link to an image in a paragraph
+        #   - stdout captured and included in a (new) codeblock
+        #   - stderr captured and included in a (new) codeblock
         self.im_out = im_out.lower().replace(',', ' ').split()
         outfmt, self.keyvals  = pf.get_value(self.keyvals, 'im_fmt', self.outfmt)
         if outfmt in self.available_fmts:
             self.outfmt = outfmt
 
-        # im_prg=cmd key-value trumps .cmd class attribute
+        # - im_prg=cmd key-value trumps .cmd class attribute
         if not self.prog:
             self.prog = self.cmdmap.get(self.klass, None)
         if self.prog is None:
@@ -298,14 +314,20 @@ class Handler(with_metaclass(HandlerMeta, object)):
 
     def get_prefs(self, meta):
         'pickup user preferences from meta block'
-        if meta is None or not meta:
-            return self
-        # pickup some document wide preferences
+        # Pickup imagine options from meta data that looks like:
         # pandoc_imagine:
-        #     loglevel: 2
-        #     img_subdir: pd-images
-        #     remove_img_subdir: false, true
-        return self
+        #   option: value       -> always get options without a dot
+        #   klass.option: value -> get option only if klass == self.klass
+        dct = {}
+        try:
+            for k,v in meta.get('pandoc_imagine', {}).get('c', {}).items():
+                if k.startswith(self.klass):
+                    k = k[len(self.klass)+1:]
+                if k.find(".") < 0:
+                    dct[k] = pf.stringify(v)
+        except AttributeError:
+            pass
+        return dct
 
     def read(self, mode, src):
         'read a file with given mode or return empty string'
@@ -477,10 +499,14 @@ class Boxes(Handler):
     cmdmap = {'boxes': 'boxes'}
     outfmt = 'boxed'
     available_fmts = ['boxed']
-    output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = 'stdout'  # i.e. default to stdout
 
     def image(self, fmt=None):
         'boxes [options] <fname>.boxes'
+        # tmp
+        for k,v in self.meta.items():
+            self.msg(0, k, v)
+
         # silently ignore 'img', default to stdout if needed
         self.im_out = [x for x in self.im_out if x not in ['img']]
         args = self.options + [self.inpfile]
@@ -549,7 +575,7 @@ class Figlet(Handler):
     cmdmap = {'figlet': 'figlet'}
     outfmt = 'figled'
     available_fmts = ['figled']
-    output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = 'stdout'  # i.e. default to stdout
 
     def image(self, fmt=None):
         'figlet [options] < code-text'
@@ -871,7 +897,7 @@ class Protocol(Handler):
     cmdmap = {'protocol': 'protocol'}
     outfmt = 'protocold'
     available_fmts = ['protocold']
-    output = IMG_OUTPUTS[2]  # i.e. default to stdout
+    output = 'stdout'  # i.e. default to stdout
 
     def image(self, fmt=None):
         'protocol [options] code-text'
@@ -927,15 +953,16 @@ sys.modules[__name__].__doc__ %= \
 # for PyPI
 def main():
     'main entry point'
-
     def walker(key, value, fmt, meta):
         'walk down the pandoc AST and invoke workers for CodeBlocks'
+
         if key == 'CodeBlock':
-            worker = dispatch(value).get_prefs(meta)
+            worker = dispatch(value, meta) # .get_prefs(meta)
             return worker.image(fmt)
 
-    dispatch = Handler(None)
+    dispatch = Handler(None, None)
     pf.toJSONFilter(walker)
 
 if __name__ == '__main__':
+    print("xxx argv", sys.argv, file=sys.stderr)
     main()

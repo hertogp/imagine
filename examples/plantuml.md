@@ -1,4 +1,11 @@
-```{.shebang im_out="stdout"}
+---
+pandoc_imagine:
+    plantuml.im_out: img,fcb
+    plantuml.im_opt: "width=60%"
+    shebang.im_out: stdout
+...
+
+```shebang
 #!/bin/bash
 figlet -c -w 60 plantuml | boxes -d ian_jones -ph4v1 -i box
 ```
@@ -7,7 +14,7 @@ figlet -c -w 60 plantuml | boxes -d ian_jones -ph4v1 -i box
 
 ## sequence diagrams
 
-```{.plantuml im_out="fcb,img" width=60% caption="Created by plantuml"}
+```{.plantuml width=60% caption="Created by plantuml code:"}
 @startuml
 autonumber "<b>[000]"
 Bob -> Alice : Authentication Request
@@ -26,7 +33,7 @@ Bob <- Alice : Yet another authentication Response
 
 ## class diagrams
 
-```{.plantuml im_out="fcb,img" width=60% caption="Created by plantuml"}
+```{.plantuml width=60% caption="Created by plantuml"}
 @startuml
 Class01 <|-- Class02
 Class03 *-- Class04
