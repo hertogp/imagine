@@ -3,6 +3,12 @@
 figlet -c -w 60 gri | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+gri
+```
+
+\newpage
+
 # [*GRI*](http://gri.sf.net)
 
 ## Single plot
@@ -18,16 +24,18 @@ With the following in `gri-01.dat`
 
 plot the first two columns like so:
 
-```{.gri im_out="fcb,img" caption="Created by Gri"}
+```gri
 open dta/gri-01.dat
 read columns x y
 draw curve
 draw title "http://gri.sf.net"
 ```
 
+\newpage
+
 ## Multiple curves
 
-```{.gri im_out="fcb,img" caption="Created by Gri"}
+```gri
 `draw curves' \xname \y1name ...'`
 Draw multiple y columns versus an x column.  Assumes
 that the datafile is open, and that x is in the first
@@ -73,18 +81,11 @@ used on each of the y curves.
 
 open dta/gri-01.dat
 draw curves time y1 y2 y3 y4
-
 ```
 
 \newpage
 
 # Documentation
-
-## Imagine
-
-```imagine
-gri
-```
 
 ## gri -h
 
@@ -92,6 +93,8 @@ gri
 #!/bin/bash
 gri -h
 ```
+
+\newpage
 
 ## man page
 

@@ -3,24 +3,26 @@
 figlet -c -w 60 octave | boxes -d ian_jones -ph4v1 -i box
 ```
 
-# [*Octave*](https://www.gnu.org/software/octave)
+```imagine
+octave
+```
 
-**Octave seems to suffer from a bug in libosmesa6**
-
-Hints for using `Octave` as batch processor:
+Notes
 
 - `;` makes statements silent
 - `figure(1, "visibility", "off")` prevents pop-up window
 - `print(1, argv(){1});` prints to intended output filename
 - octave will infer image type from output filename extension
 - `imagine` calls `octave --no-gui -q <im_opt> <inpfile> <outfile>`, where
-    + `<im_opt>` come from im_opt=".." in the fenced code blocks attributes
-    + `<inpfile>` is `pd-images/hashed-name.octave` containing the code text
-    + `<outfile>` is `pd-images/hashed-name.png` by default
+- *Octave seems to suffer from a bug in localhost's libosmesa6*
+
+\newpage
+
+# [*Octave*](https://www.gnu.org/software/octave)
 
 ## Sinus plot
 
-```{.octave im_out="fcb,img" caption="Created by Octave"}
+```octave
 outname = argv(){1}
 figure(1, 'visible', 'off');
 
@@ -50,7 +52,7 @@ print(1, outname, '-dpng');
 
 ## Peaks surface
 
-```{.octave im_out="fcb,img" caption="Created by Octave"}
+```octave
 figure('visible', 'off');
 
 surf(peaks);
@@ -61,7 +63,7 @@ print(1, argv(){1});
 
 ## Peaks contour
 
-```{.octave im_out="fcb,img" caption="Created by Octave"}
+```octave
 figure(1, 'visible', 'off');
 
 contourf(peaks);
@@ -72,7 +74,7 @@ print(1, argv(){1});
 
 ## 3-D wave
 
-```{.octave im_out="fcb,img" caption="Created by Octave"}
+```octave
 outname = argv(){1}
 figure(1, 'visible', 'off');
 
@@ -91,12 +93,6 @@ print(1, outname, '-dpng');
 \newpage
 
 # Documentation
-
-## Imagine
-
-```imagine
-octave
-```
 
 ## octave -h
 

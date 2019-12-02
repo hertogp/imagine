@@ -1,24 +1,36 @@
+---
+imagine.protocol.im_out: stdout,fcb
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 protocol | boxes -d ian_jones -ph4v1 -i box
 ```
 
-# [*Protocol*](https://github.com/luismartingarcia/protocol)
-
-Protocol is a handy command-line tool that serves two purposes:
-
-- Provide a simple way for engineers to have a look at standard network
-  protocol headers, directly from the command-line, without having to
-  google for the relevant RFC or for ugly header image diagrams.
-
-- Provide a way for researchers and engineers to quickly generate ASCII
-  RFC-like header diagrams for their own custom protocols.
+```imagine
+protocol
+```
 
 \newpage
 
+# Local installation
+
+```{.shebang im_out="stdout"}
+#!/bin/bash
+uname -o
+uname -rv
+echo "cat ~/installs/protocol/setup.py"
+echo ""
+cat ~/installs/protocol/setup.py
+```
+
+\newpage
+
+# [*Protocol*](https://github.com/luismartingarcia/protocol)
+
 ## ip
 
-```{.protocol im_out="fcb,stdout" caption="protocol"}
+```protocol
 ip
 ```
 
@@ -26,12 +38,15 @@ ip
 
 ## tcp
 
-```{.protocol im_out="fcb,stdout" caption="protocol"}
+```protocol
 tcp
 ```
+
+\newpage
+
 ## udp
 
-```{.protocol im_out="fcb,stdout" caption="protocol"}
+```protocol
 udp
 ```
 
@@ -41,20 +56,13 @@ udp
 
 and even custom layouts:
 
-```{.protocol im_opt="--no-numbers" im_out="fcb,stdout" caption="protocol"}
+```{.protocol im_opt="--no-numbers"}
 Source:16,TTL:8,Reserved:40
 ```
-
 
 \newpage
 
 # Documentation
-
-## Imagine
-
-```imagine
-protocol
-```
 
 ## protocol -h
 

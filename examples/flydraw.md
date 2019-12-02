@@ -3,18 +3,23 @@
 figlet -c -w 60 flydraw | boxes -d ian_jones -ph4v1 -i box
 ```
 
-
-# [*Flydraw*](http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html)
+```imagine
+flydraw
+```
 
 Notes:
 
-- seems to only want to produce GIF, despite the manual's mention of PNG.
-- only reads from stdin
+- only reads from stdin and there's no way to pass in a filename
+- without an `output [filename]` it seems intent on producing GIF's
+- no command line flag to specify a desired output format
+
+\newpage
+
+# [*Flydraw*](http://manpages.ubuntu.com/manpages/precise/man1/flydraw.1.html)
 
 ## frenchman
 
-```{.flydraw im_out="fcb,img"}
-comment : from KhanAcademy
+```flydraw
 new 200,200
 comment ears
 fellipse 24, 100, 30, 40,255, 211, 178
@@ -39,9 +44,11 @@ line 80, 142, 96, 137, black
 line 120, 142, 104, 137,black
 ```
 
+\newpage
+
 ## hexagons
 
-```{.flydraw im_out="fcb,img"}
+```flydraw
 comment x=horizontal, x=0 is left
 comment y=vertical,   y=0 is top
 new 300,300
@@ -57,9 +64,11 @@ plot red,r*cos(t)+x0,r*sin(t)+y0
 plot green,r*0.5*cos(t)+x0,r*0.5*sin(t)+y0
 ```
 
-## plotting a function
+\newpage
 
-```{.flydraw im_out="fcb,img"}
+## a function
+
+```flydraw
 w=360
 h=150
 new w,h
@@ -74,20 +83,9 @@ line 0,y0,w,y0, black
 text green,3,h-16,normal,"flydraw"
 ```
 
+\newpage
+
 # Documentation
-
-## Imagine
-
-```imagine
-flydraw
-```
-
-## flydraw -h
-
-```{.shebang im_out="stdout"}
-#!/bin/bash
-flydraw -h
-```
 
 ## man page
 

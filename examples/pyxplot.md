@@ -7,7 +7,7 @@ figlet -c -w 60 pyxplot | boxes -d ian_jones -ph4v1 -i box
 
 Note:
 - sudo apt-get install pyxplot fails on Ubuntu 18.03 bionic
-
+- appears that installing pyxplot from source, requires python2 ... alas!
 
 ## ex01
 

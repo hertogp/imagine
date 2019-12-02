@@ -1,19 +1,29 @@
+---
+imagine.ploticus.im_fmt: svg
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 ploticus | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+ploticus
+```
+
+Notes:
+
+- metadata sets ploticus' default output format to `svg`
+
+\newpage
+
 # [*Ploticus*](http://ploticus.sourceforge.net/doc/welcome.html)
 
 ## prefab
 
-Ploticus scripts are pretty verbose, it also has a `prefab` method of quickly
-creating a graphic from a data-file, but that is not supported at the moment.
-
-
 ## Curves script
 
-```{.ploticus im_out="fcb,img" caption="Created by Ploticus"}
+```ploticus
 #proc getdata
   data:
   0 1
@@ -84,15 +94,15 @@ creating a graphic from a data-file, but that is not supported at the moment.
 
 #proc legend
   location: max+0.5 max
-
 ```
+
+\newpage
 
 ## Heatmap (script)
 
-```{.ploticus im_out="fcb,img" caption="Created by Ploticus"}
+```ploticus
 #set SYM = "radius=0.08 shape=square style=filled"
 #setifnotgiven CGI = "http://ploticus.sourceforge.net/cgi-bin/showcgiargs"
-
 
 // read in the SNP map data file..
 #proc getdata
@@ -188,12 +198,6 @@ textdetails: size=6
 \newpage
 
 # Documentation
-
-## Imagine
-
-```imagine
-ploticus
-```
 
 ## ploticus usage
 

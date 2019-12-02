@@ -3,11 +3,17 @@
 figlet -c -w 60 ditaa | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+ditaa
+```
+
+\newpage
+
 # [*ditaa*](http://ditaa.sourceforge.net)
 
-## Rounded corners (im_opt="-r")
+## Rounded corners
 
-```{.ditaa im_opt="-r" im_out="fcb,img" width=70% caption="Created by Ditaa"}
+```{.ditaa im_opt="-r" width=70% caption="Created by Ditaa"}
 +--------+   +-------+    +-------+
 |        +---+ ditaa +--> |       |
 |  Text  |   +-------+    |diagram|
@@ -23,7 +29,7 @@ figlet -c -w 60 ditaa | boxes -d ian_jones -ph4v1 -i box
 
 ## Ditaa normal
 
-```{.ditaa im_out="fcb,img" caption="Created by Ditaa"}
+```{.ditaa caption="Created by Ditaa"}
    +---------+   +-------+   +-------+    +--------+      +--------+
    | Document|---+ split +---|       |----|        |----->|        |
    | o  this |   +-------+   |Diagram|    | Storage|      | In/Out |
@@ -43,7 +49,7 @@ figlet -c -w 60 ditaa | boxes -d ian_jones -ph4v1 -i box
 
 ## ditaa reminder
 
-```{.ditaa im_out="fcb,img" height=20% caption="Created by Ditaa"}
+```{.ditaa height=40% caption="Created by Ditaa"}
 /-----------------\
 | Things to do    |
 | cYEL            |
@@ -56,10 +62,9 @@ figlet -c -w 60 ditaa | boxes -d ian_jones -ph4v1 -i box
 
 \newpage
 
+## protocol tcp (pdf)
 
-## protocol tcp
-
-```ditaa
+```{.ditaa im_fmt="pdf"}
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |          Source Port          |        Destination Port       |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -75,20 +80,18 @@ figlet -c -w 60 ditaa | boxes -d ian_jones -ph4v1 -i box
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+\newpage
+
 # Documentation
 
-## Imagine
-
-```imagine
-ditaa
-```
-
-## gnuplot -h
+## ditaa -h
 
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 ditaa --help
 ```
+
+\newpage
 
 ## man page
 

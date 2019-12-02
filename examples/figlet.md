@@ -1,27 +1,39 @@
+---
+imagine.figlet.im_out: stdout,fcb
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 figlet | boxes -d ian_jones -ph4v1 -i box
 ```
 
-# [*Figlet*](http://www.figlet.org)
-
-## figlet
-
-```{#FIGLET .figlet im_opt="-f slant" im_out="fcb,stdout" caption="Figlet"}
+```imagine
 figlet
 ```
 
 \newpage
 
-## hello world.
+# [*Figlet*](http://www.figlet.org)
 
-```{.figlet im_out="fcb,stdout"}
+## figlet
+
+```{.figlet im_opt="-f slant" caption="Figlet"}
+figlet
+```
+
+\newpage
+
+## hello, world!
+
+```figlet
 hello, world!
 ```
 
+\newpage
+
 ## Figlet again.
 
-```{.figlet im_opt="-f bubble" im_out="fcb,stdout"}
+```{.figlet im_opt="-f bubble"}
 Figlet again
 ```
 
@@ -29,18 +41,14 @@ Figlet again
 
 # Documentation
 
-## Imagine
-
-```imagine
-figlet
-```
-
 ## figlet -h
 
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -h 2>&1 | grep -iv invalid
 ```
+
+\newpage
 
 ## man page
 

@@ -1,14 +1,29 @@
+---
+imagine.actdiag.im_fmt: svg
+imagine.blockdiag.im_fmt: svg
+imagine.nwdiag.im_fmt: svg
+imagine.packetdiag.im_fmt: svg
+imagine.rackdiag.im_fmt: svg
+imagine.seqdiag.im_fmt: svg
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 blockdiag | boxes -d ian_jones -ph4v1 -i box
 ```
 
-# [*blockdiag*](http://blockdiag.com)
+```imagine
+blockdiag
+nwdiag
+```
 
+\newpage
 
-## blockdiag command
+# [*blockdiag*](http://blockdiag.com) examples
 
-```{.blockdiag im_prg=blockdiag im_out="fcb,img" width=100% caption="Created by Blockdiag"}
+## blockdiag
+
+```{.blockdiag width=100% caption="Created by Blockdiag"}
 blockdiag {
 // standard node shapes
 box [shape = "box"];
@@ -38,10 +53,11 @@ loopin -> loopout;
 }
 ```
 
+\newpage
 
 ## seqdiag
 
-```{.seqdiag im_out="fcb,img" width=80% height=50% caption="Created by seqdiag"}
+```{.seqdiag width=80% height=50% caption="Created by seqdiag"}
 {
 browser -> webserver [label = "GET /index.html"];
 browser <-- webserver;
@@ -53,9 +69,11 @@ browser <- webserver;
 
 ```
 
+\newpage
+
 ## nwdiag
 
-```{.nwdiag im_out="fcb,img" caption="Created by nwdiag"}
+```{.nwdiag caption="Created by nwdiag"}
 {
   network dmz {
       address = "210.x.x.x/24"
@@ -74,9 +92,11 @@ browser <- webserver;
 }
 ```
 
+\newpage
+
 ## actdiag
 
-```{.actdiag im_out="fcb,img" height=60% caption="Created by actdiag"}
+```{.actdiag height=60% caption="Created by actdiag"}
 {
    A -> B -> C -> D;
 
@@ -89,10 +109,11 @@ browser <- webserver;
 }
 ```
 
+\newpage
+
 ## rackdiag
 
-
-```{.rackdiag im_out="fcb,img" height=80% caption="Created by rackdiag"}
+```{.rackdiag height=70% caption="Created by rackdiag"}
 {
   // define 1st rack
   rack {
@@ -124,11 +145,15 @@ browser <- webserver;
 }
 ```
 
+\newpage
 
 # Documentation
 
-```imagine
-blockdiag
+## actdiag -h
+
+```{.shebang im_out="stdout"}
+#!/bin/bash
+actdiag -h
 ```
 
 ## blockdiag -h
@@ -138,6 +163,12 @@ blockdiag
 blockdiag -h
 ```
 
+## nwdiag -h
+```{.shebang im_out="stdout"}
+#!/bin/bash
+nwdiag -h
+```
+
 ## seqdiag -h
 
 ```{.shebang im_out="stdout"}
@@ -145,14 +176,7 @@ blockdiag -h
 seqdiag -h
 ```
 
-## actdiag -h
-
-```{.shebang im_out="stdout"}
-#!/bin/bash
-actiag -h
-```
-
-## rackdiag
+## rackdiag -h
 
 ```{.shebang im_out="stdout"}
 #!/bin/bash

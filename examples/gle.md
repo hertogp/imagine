@@ -1,18 +1,28 @@
+---
+imagine.gle.im_fmt: svg
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 gle | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+gle
+```
+
+Notes:
+
+- dat-files are relative to the input file in `im_dir`-images subdir
+- metadata used sets gle's default output format to "svg"
+
+\newpage
+
 # [*GLE*](http://gle.sf.net)
 
 ## Baudrate
 
-Notes:
-
-- ../test.dat is relative to the input file in pd-images ...
-
-
-```{.gle im_out="fcb,img" caption="Created by GLE"}
+```gle
 size 18 19
 
 amove 2 1
@@ -38,10 +48,11 @@ end graph
 
 ```
 
+\newpage
 
 ## simple 2D
 
-```{.gle im_out="fcb,img" caption="Created by GLE"}
+```gle
 size 12 10
 
 set font texcmr
@@ -55,11 +66,13 @@ begin graph
 end graph
 ```
 
+\newpage
+
 ## Semi-transparant fills
 
-Needs the `-cairo` option.
+Needs the `-cairo` option and cannot be in svg-format.
 
-```{.gle im_opt="-cairo" im_out="fcb,img" caption="Created by GLE"}
+```{.gle im_opt="-cairo" im_fmt="png"}
 size 10 7
 
 set texlabels 1
@@ -90,12 +103,14 @@ begin graph
 end graph
 ```
 
+\newpage
+
 ## saddle up
 
-The following GLE script creates saddle.dta, which we want to be put in the dta directory
-so the file name is given relative to the pd-images directory.
+The following GLE script creates saddle.dta, which we want to be put in the dta
+directory so the file name is given relative to the pd-images directory.
 
-```{.gle im_out="fcb,img" caption="Created by GLE"}
+```gle
 size 10 9
 
 set font texcmr hei 0.5 just tc
@@ -128,9 +143,11 @@ amove pagewidth()/2 0.2
 draw "saddle.bc"
 ```
 
+\newpage
+
 ## An electronic circuit
 
-```{.gle im_out="fcb,img" caption="Created by GLE"}
+```{.gle im_fmt="png"}
 ! An H-Bridge
 
 size 13 11
@@ -159,7 +176,6 @@ gsave
 rresistor_v R_2
 cell_v "E_2"
 grestore
-
 rline 5 0
 rresistor_v R_3
 rline 0 -4
@@ -167,15 +183,7 @@ rline 0 -4
 
 \newpage
 
-\newpage
-
 # Documentation
-
-## Imagine
-
-```imagine
-gle
-```
 
 ## gle --help
 
@@ -184,6 +192,7 @@ gle
 gle --help 2>&1
 ```
 
+\newpage
 
 ## man page
 

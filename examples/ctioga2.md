@@ -3,11 +3,17 @@
 figlet -c -w 60 ctioga2 | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+ctioga2
+```
+
+\newpage
+
 # [*ctioga2*](http://ctioga2.sourceforge.net)
 
 ## Parabolas, filling & intersection
 
-```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 caption="Created by ctioga2" width=60%}
 title "Intersection of two parabolas"
 math
 plot x*x /fill=top /fill-transparency 0.8 /legend '$x^2$'
@@ -16,7 +22,7 @@ plot 50-x*x /fill=bottom /fill-transparency 0.8 /legend '$50 - x^2$'
 
 ## a grid system
 
-```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 caption="Created by ctioga2" width=60%}
 define-axis-style '.grid-non-left axis.left' /decoration=ticks /axis-label-text=' '
 define-axis-style '.grid-non-bottom axis.bottom' /decoration=ticks /axis-label-text=' '
 define-background-style '.grid-odd-column background' /background-color Blue!15
@@ -43,10 +49,11 @@ end
 
 ## plotting data
 
-The data file's name `../dta/cr2-ex01.dat` is relative to the saved fenced code
-block in pd-images.  Hence the `../dta` part.
+The data file's name `../dta/cr2-ex01.dat` is relative to where the fenced code
+block contents was saved, usually in ./pd-images although you can change that
+via the `im_dir` option.
 
-```{.ctioga2 im_out="fcb,img" caption="Created by ctioga2" width=60%}
+```{.ctioga2 caption="Created by ctioga2" width=60%}
 draw-line -15,0 15,0 /style=Dashes /color=Gray
 plot ../dta/ct2-ex01.dat
 plot ../dta/ct2-ex01.dat@1:3
@@ -61,12 +68,6 @@ plot ../dta/ct2-ex01.dat@'$1:0.5*($2-$3)'
 \newpage
 
 # Documentation
-
-## Imagine
-
-```imagine
-ctioga2
-```
 
 ## ctioga2 -h
 

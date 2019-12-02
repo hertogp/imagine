@@ -82,7 +82,7 @@ Markdown usage
   - imagine reads its code as help-topics, returns codeblocks with help-info
   - plot reads its codeblock as the relative path to the file to process
   - pyxplot will have `set terminal` & `set output` prepended to its `code`
-  - shebang runs its codeblock as a script with <fname>.png as its argument.
+  - shebang runs its codeblock as a script with <fname>.{im_fmt} as its argument.
     - use {.shebang im_out="stdout"} for text instead of an png
 
 
@@ -142,7 +142,7 @@ import pandocfilters as pf
 #
 # o tizk, needs convert since eps wont go into pdflatex ..
 
-# Notes
+# Notes:
 # - using svg requires rsvg-convert which pandoc uses to convert the svg to
 #   png before including in pdf
 #   + sudo apt-get install librsvg2-bin
@@ -151,11 +151,6 @@ import pandocfilters as pf
 #-- version
 
 __version__ = '0.1.5'
-
-
-#-- globs
-IMG_BASEDIR = 'pd'
-
 
 #-- helpers
 def to_str(s, enc='ascii'):
@@ -215,25 +210,37 @@ class Handler(with_metaclass(HandlerMeta, object)):
     severity = 'error warn note info debug'.split()
     workers = {}              # dispatch map for Handler, filled by HandlerMeta
     klass = None              # __call__ dispatches a worker & sets this
+    meta = {}                 # stores user prefs in doc's meta yaml block
+    cmdmap = {}               # worker subclass overrides, klass->cli-program
+    # FIXME: output became im_out
     output = 'img'            # output an img by default, some workers should
                               #  override this with stdout (eg Boxes, Figlet..)
 
-    meta = {}                 # stores user prefs in doc's meta yaml block
-    cmdmap = {}               # worker subclass must override, klass -> cli-program
-    level = 2                 # log severity level, see above
-    outfmt = 'png'            # default output format for a worker
-    available_fmts = ['png']  # default available formats for a worker
+    # Imagine defaults for worker options
+    im_dir = 'pd'             # dir for images (absolute or relative to cwd)
+    im_fmt = 'png'            # default format for image creation
+    im_log = 3                # log on notification level
+    im_opt = ''               # options to pass in to cli-program
+    im_out = 'img'            # what to output: csv-list img,fcb,stdout,stderr
+    im_prg = None             # cli program to use to create graphic output
 
-    def __call__(self, codec, meta):
+    # im_out is an ordered csv-list of what to produce:
+    # - 'img'    outputs a link to an image (if any was produced)
+    # - 'fcb'    outputs an anonymous codeblock showing the original codeblock
+    # - 'stdout' outputs an anonymous codeblock showing a capture of stdout
+    # - 'stderr' outputs an anonymous codeblock showing a capture of stderr
+
+
+    def __call__(self, codec, fmt, meta):
         'Return worker class or self (Handler keeps CodeBlock unaltered)'
         # CodeBlock's value = [(Identity, [classes], [(key, val)]), code]
-        self.msg(4, 'Handler dispatch request for', codec[0])
+        self.msg(4, 'dispatch request for', codec[0])
 
         # get classes and keyvals from codeblock attributes
         try:
             _, klasses, keyvals = codec[0]
         except Exception as e:
-            self.msg(0, 'Fatal: invalid codeblock passed in', codec)
+            self.msg(0, 'Fatal:  invalid codeblock passed in', codec)
             raise e
 
         # try dispatching by class attribute
@@ -241,8 +248,8 @@ class Handler(with_metaclass(HandlerMeta, object)):
             worker = self.workers.get(klass.lower(), None)
             if worker is not None:
                 worker.klass = klass.lower()
-                self.msg(4, codec[0], 'dispatched by class to', worker)
-                return worker(codec, meta)
+                self.msg(4, '- dispatched by class to', worker)
+                return worker(codec, fmt, meta)
 
         # try dispatching via 'cmd' named by 'im_prg=cmd' key-value-pair
         if keyvals:  # pf.get_value barks if keyvals == []
@@ -250,84 +257,100 @@ class Handler(with_metaclass(HandlerMeta, object)):
             worker = self.workers.get(prog.lower(), None)
             if worker is not None:
                 self.msg(4, codec[0], 'dispatched by prog to', worker)
-                return worker(codec, meta)
+                return worker(codec, fmt,  meta)
 
         self.msg(4, codec[0], 'dispatched by default to', self)
         return self
 
-    def __init__(self, codec, meta):
+    def __init__(self, codec, fmt, meta):
         'init by decoding the CodeBlock-s value'
         self.codec = codec # save original codeblock for later
+        self.fmt = fmt     # some workers (flydraw) need access to this
+
         self.stdout = ''   # catches stdout by self.cmd, if any
         self.stderr = ''   # catches stderr by self.cmd, if any
 
         if codec is None:
             return         # initial dispatch creation
 
-        # Options from to meta data or application values
-        self.meta = self.get_prefs(meta)  # usr prefs from doc's meta data
-        im_opt = self.meta.get('im_opt', '')
-        im_prg = self.meta.get('im_prg', None)
-        im_out = self.meta.get('im_out', self.output)
+        # Options from to codeblock, meta data or imagine defaults
+        cb = self.get_cb_opts(codec)                     # codeblock attrs
+        kd = self.get_md_opts(meta).get(self.klass, {})  # metadata.klass
+        md = self.md_opts                                # metadata (toplevel)
+        opts = [x for x in dir(self) if x.startswith('im_')]
+        for opt in opts:
+            val = cb.get(opt,                      # 1 codeblock.opt
+                    kd.get(opt,                    # 2 imagine.klass.opt (meta)
+                        md.get(opt,                # 3 imagine.opt (meta)
+                            getattr(self, opt))))  # 4 class.opt (class's code)
+            setattr(self, opt, val)
 
-        # Options by CodeBlock attributes (trump meta data or app defaults)
-        # - codeblock attributes: {#Identity .class1 .class2 k1=val1 k2=val2}
-        # - `Get & remove` Imagine keywords/keyvals from codeblock attributes
-        (self.id_, self.classes, self.keyvals), self.code = codec
-        self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
+        # post-process options
+        self.im_opt = self.im_opt.split()
+        self.im_out = self.im_out.lower().replace(',', ' ').split()
+        self.im_log = int(self.im_log)
+        self.im_fmt = pf.get_extension(fmt, self.im_fmt)
 
-        # - remove any and all Imagine classes from codeblock attributes
-        self.classes = [k for k in self.classes if k not in self.workers]
+        if not self.im_prg:
+            # if no im_prg was found, fallback to klass's cmdmap
+            self.im_prg = self.cmdmap.get(self.klass, None)
 
-        # - get/remove im_opt="..": options to pass onto the command line
-        im_opt, self.keyvals = pf.get_value(self.keyvals, 'im_opt', im_opt)
-        self.options = im_opt.split() # self.options.split()
-
-        # - get/remove im_prg: actual program to call to create the image
-        self.prog, self.keyvals = pf.get_value(self.keyvals, 'im_prg', im_prg)
-        im_out, self.keyvals = pf.get_value(self.keyvals,
-                                            'im_out', im_out) #self.output)
-
-        # - how to handle the output: csv-list fcb,img,stdout,stderr
-        #   - fcb keeps original codeblockj
-        #   - img link to an image in a paragraph
-        #   - stdout captured and included in a (new) codeblock
-        #   - stderr captured and included in a (new) codeblock
-        self.im_out = im_out.lower().replace(',', ' ').split()
-        outfmt, self.keyvals  = pf.get_value(self.keyvals, 'im_fmt', self.outfmt)
-        if outfmt in self.available_fmts:
-            self.outfmt = outfmt
-
-        # - im_prg=cmd key-value trumps .cmd class attribute
-        if not self.prog:
-            self.prog = self.cmdmap.get(self.klass, None)
-        if self.prog is None:
+        if self.im_prg is None:
             self.msg(0, self.klass, 'not listed in', self.cmdmap)
-            raise Exception('no workers found for %s' % self.klass)
+            raise Exception('no worker found for %s' % self.klass)
 
-        self.basename = pf.get_filename4code(IMG_BASEDIR, str(codec))
-        self.outfile = self.basename + '.%s' % self.outfmt
+        self.basename = pf.get_filename4code(self.im_dir, str(codec))
+        self.outfile = self.basename + '.%s' % self.im_fmt
         self.inpfile = self.basename + '.%s' % self.klass # _name.lower()
 
         if not os.path.isfile(self.inpfile):
             self.write('w', self.code, self.inpfile)
 
-    def get_prefs(self, meta):
+    def get_md_opts(self, meta):
         'pickup user preferences from meta block'
-        # Pickup imagine options from meta data that looks like:
-        # pandoc_imagine:
-        #   option: value       -> always get options without a dot
-        #   klass.option: value -> get option only if klass == self.klass
         dct = {}
         try:
-            for k,v in meta.get('pandoc_imagine', {}).get('c', {}).items():
-                if k.startswith(self.klass):
-                    k = k[len(self.klass)+1:]
-                if k.find(".") < 0:
-                    dct[k] = pf.stringify(v)
+            sep = "."
+            for k,v in meta.items():
+                if not k.lower().startswith("imagine."): continue
+                if k.count(sep) == 1:
+                    _, opt = k.split(sep)         # imagine.option: value
+                    dct[opt] = pf.stringify(v)
+                elif k.count(sep) == 2:
+                    _, klass, opt = k.split(sep)  # imagine.klass.option: val
+                    # klass = klass.lower()
+                    if not dct.get(klass): dct[klass] = {}
+                    dct[klass][opt] = pf.stringify(v)
+
         except AttributeError:
             pass
+
+        self.msg(4, "meta-data:", dct)
+        self.md_opts = dct
         return dct
+
+    def get_cb_opts(self, codec):
+        'pickup user preferences from code block'
+        # also removes imagine class/attributes from code block, by
+        # retaining only non-Imagine stuff in self.classes and self.keyvals
+        dct = {}
+        opts = [x for x in dir(self) if x.startswith('im_')]
+
+        (self.id_, self.classes, self.keyvals), self.code = codec
+        self.caption, self.typef, self.keyvals = pf.get_caption(self.keyvals)
+
+        # - remove all Imagine-related classes from codeblock attributes
+        self.classes = [k for k in self.classes if k not in self.workers]
+
+        for opt in opts:
+            val, self.keyvals = pf.get_value(self.keyvals, opt, None)
+            if val: dct[opt] = val
+
+        self.cb_opts = dct
+        self.msg(4, "codeblock:", dct)
+        return dct
+
+
 
     def read(self, mode, src):
         'read a file with given mode or return empty string'
@@ -347,7 +370,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
         try:
             with open(dst, mode) as f:
                 f.write(dta)
-            self.msg(3, 'wrote', len(dta), 'bytes to', dst)
+            self.msg(3, 'wrote:', len(dta), 'bytes to', dst)
         except (OSError, IOError) as e:
             self.msg(0, 'fail: could not write', len(dta), 'bytes to', dst)
             self.msg(0, '>>: exception', e)
@@ -356,25 +379,18 @@ class Handler(with_metaclass(HandlerMeta, object)):
 
     def msg(self, level, *a):
         'possibly print a message to stderr'
-        if level > self.level:
-            return
-        # o perhaps change severity to dict and do get(level,'too-high')
+        if level > self.im_log: return
         level %= len(self.severity)
-        msg = '%s[%9s:%-5s] %s' % ('Imagine',
+        msg = '%s[%-9s:%5s] %s' % ('Imagine',
                                    self.__class__.__name__,
                                    self.severity[level],
                                    ' '.join(to_str(s) for s in a))
         print(msg, file=sys.stderr)
         sys.stderr.flush()
 
-    def fmt(self, fmt, **specials):
-        '(re)set image file extension based on output document format'
-        self.outfmt = pf.get_extension(fmt, self.outfmt, **specials)
-        self.outfile = self.basename + '.%s' % self.outfmt
-
     def url(self):
         'return an image link for existing/new output image-file'
-        # Since pf.Image is an Inline element, its usually wrapped in a pf.Para
+        # pf.Image is an Inline element. Callers usually wrap it in a pf.Para
         return pf.Image([self.id_, self.classes, self.keyvals],
                         self.caption, [self.outfile, self.typef])
 
@@ -432,27 +448,43 @@ class Handler(with_metaclass(HandlerMeta, object)):
         stdin = kwargs.get('stdin', None)
 
         if os.path.isfile(self.outfile) and forced is False:
-            self.msg(3, 'exists:', *args)
+            self.msg(4, 're-use: {!r}'.format(self.outfile))
             return True
 
         try:
+            self.msg(4, 'exec: ', *args)
             pipes = {'stdin': None if stdin is None else PIPE,
                      'stdout': PIPE,
                      'stderr': PIPE}
             p = Popen(args, **pipes)
-            out, err = p.communicate(to_bytes(stdin))
-            # encoding = sys.getfilesystemencoding()
-            self.stdout = out  # .decode(encoding)
-            self.stderr = err  # .decode(encoding)
-            # self.stdout, self.stderr = p.communicate(stdin)
 
-            # print any complaints on stderr
-            if self.stderr:
-                self.msg(1, 'ok?', *args)
+            out, err = p.communicate(to_bytes(stdin))
+            self.stdout = out
+            self.stderr = err
+
+            # STDERR
+            if self.stderr and not 'stderr' in self.im_out:
+                # not meant to capture, so simply print
                 for line in self.stderr.splitlines():
-                    self.msg(1, '>>:', line)
+                    self.msg(1, '<stderr>', line)
+            elif self.stderr:
+                self.msg(4, '<stderr>',
+                         'captured {} bytes'.format(len(self.stderr)))
             else:
-                self.msg(2, 'ok:', *args)
+                self.msg(4, '<stderr>', 'no output seen')
+
+            # STDOUT
+            if self.stdout:
+                self.msg(4, '<stdout>',
+                    'saw {} bytes'.format(len(self.stdout)))
+            else:
+                self.msg(4, '<stdout>', 'no output seen')
+
+            if os.path.isfile(self.outfile):
+                # Note: not every worker actually produces an output file
+                # e.g. because it captures stdout into a fenced codeblock
+                # which is added to the document's AST
+                self.msg(4, 'created: {!r}'.format(self.outfile))
 
             return p.returncode == 0
 
@@ -462,32 +494,32 @@ class Handler(with_metaclass(HandlerMeta, object)):
             except OSError:
                 pass
             self.msg(1, 'fail:', *args)
-            self.msg(0, '>>:', self.prog, str(e))
+            self.msg(1, 'msg:', self.im_prg, str(e))
             return False
 
-    def image(self, fmt=None):
+    def image(self):
         'return an Image url or None to keep CodeBlock'
         # For cases where no handler could be associated with a fenced
         # codeblock, Handler itself will be the 'worker' who returns None
         # preserving the original codeblock as-is in the json AST.
         # Real workers (subclassing Handler) must override this method
-        self.msg(4, 'format', repr(fmt), 'CodeBlock ignored, keeping as-is')
-        return None  # returning None to keep original CodeBlock
+        self.msg(2, 'CodeBlock ignored, keeping as-is')
+        return None
 
 
 class Asy(Handler):
     '''
     sudo-apt-get install asymptote
-    http://asymptote.sourceforge.net/
+
+    See http://asymptote.sourceforge.net/
     '''
     cmdmap = {'asy': 'asy', 'asymptote': 'asy'}
-    outfmt = 'png'
+    im_fmt = 'png'
 
-    def image(self, fmt=None):
-        'asy -o <fname>.png [options] <fname>.asy'
-        self.fmt(fmt)
-        args = ['-o', self.outfile] + self.options + [self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'asy -o <fname>.{im_fmt} {im_opt} <fname>.asy'
+        args = ['-o', self.outfile] + self.im_opt + [self.inpfile]
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -497,20 +529,16 @@ class Boxes(Handler):
     http://boxes.thomasjensen.com
     '''
     cmdmap = {'boxes': 'boxes'}
-    outfmt = 'boxed'
-    available_fmts = ['boxed']
+    im_fmt = 'boxed'
     output = 'stdout'  # i.e. default to stdout
 
-    def image(self, fmt=None):
-        'boxes [options] <fname>.boxes'
-        # tmp
-        for k,v in self.meta.items():
-            self.msg(0, k, v)
+    def image(self):
+        'boxes {im_opt} <fname>.boxes'
 
-        # silently ignore 'img', default to stdout if needed
+        # boxes produces text only, so silently ignore 'img'
         self.im_out = [x for x in self.im_out if x not in ['img']]
-        args = self.options + [self.inpfile]
-        if self.cmd(self.prog, *args):
+        args = self.im_opt + [self.inpfile]
+        if self.cmd(self.im_prg, *args):
             if self.stdout:
                 self.write('w', to_str(self.stdout), self.outfile)
             else:
@@ -525,12 +553,11 @@ class BlockDiag(Handler):
     '''
     progs = 'blockdiag seqdiag rackdiag nwdiag packetdiag actdiag'.split()
     cmdmap = dict(zip(progs, progs))
-    available_fmts = ['png', 'pdf', 'svg']
 
-    def image(self, fmt=None):
-        'cmd -T png <fname>.txt -o <fname>.png'
-        args = ['-T', self.outfmt, self.inpfile, '-o', self.outfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        '{im_prg} {im_opt} -T {im_fmt} <fname>.{im_fmt} -o <fname>.{im_prg}'
+        args = self.im_opt + ['-T', self.im_fmt, self.inpfile, '-o', self.outfile]
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -540,14 +567,12 @@ class Ctioga2(Handler):
     http://ctioga2.sourceforge.net
     '''
     cmdmap = {'ctioga2': 'ctioga2'}
-    outfmt = 'pdf'
-    available_fmts = ['pdf']
+    im_fmt = 'pdf'
 
-    def image(self, fmt=None):
-        'ctioga2 [options] -f <fname>.ctioga2'
-        self.fmt(fmt)
-        args = self.options + ['-f', self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'ctioga2 {im_opt} -f <fname>.ctioga2'
+        args = self.im_opt + ['-f', self.inpfile]
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -558,10 +583,10 @@ class Ditaa(Handler):
     '''
     cmdmap = {'ditaa': 'ditaa'}
 
-    def image(self, fmt=None):
-        'ditaa <fname>.ditaa <fname>.png -T [options]'
-        args = [self.inpfile, self.outfile, '-T'] + self.options
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'ditaa <fname>.ditaa <fname>.{im_fmt} {im_opt}'
+        args = [self.inpfile, self.outfile] + self.im_opt
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -573,17 +598,15 @@ class Figlet(Handler):
     # - saves code-text to <fname>.figlet
     # - saves stdout to <fname>.figled
     cmdmap = {'figlet': 'figlet'}
-    outfmt = 'figled'
-    available_fmts = ['figled']
-    output = 'stdout'  # i.e. default to stdout
+    im_fmt = 'figled'
 
-    def image(self, fmt=None):
-        'figlet [options] < code-text'
+    def image(self):
+        'figlet {im_opt} < code-text'
         # silently ignore any request for an 'image'
         self.im_out = [x for x in self.im_out if x not in ['img']]
 
-        args = self.options
-        if self.cmd(self.prog, stdin=self.code, *args):
+        args = self.im_opt
+        if self.cmd(self.im_prg, stdin=self.code, *args):
             if self.stdout:
                 # save figlet's stdout to outfile for next time around
                 self.write('w', to_str(self.stdout), self.outfile)
@@ -601,17 +624,19 @@ class Flydraw(Handler):
     - so 'stdout' in im_out option is silently ignored
     '''
     # - flydraw reads its commands from stdin & produces output on stdout
-    # - seems to insist on producing GIF files, despite claims in the manual
     cmdmap = {'flydraw': 'flydraw'}
-    outfmt = 'gif'
-    available_fmts = ['gif']
 
-    def image(self, fmt=None):
-        'flydraw [options] < code-text'
-        # stdout is used to catch graphic output, not readable txt
+    def image(self):
+        'flydraw {im_opt} < code-text'
+        # override im_fmt/outfile since, despite the manual, it insists on gif
+        self.im_fmt = 'gif'
+        self.outfile = self.basename + '.%s' % self.im_fmt
+        self.msg(4, "im_fmt", self.im_fmt)
+        self.msg(4, "im_opt", self.im_opt)
+        # remove stdout from im_out, it contains graphic output, not text
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
-        args = self.options
-        if self.cmd(self.prog, stdin=self.code, *args):
+        args = self.im_opt
+        if self.cmd(self.im_prg, stdin=self.code, *args):
             if self.stdout:
                 self.write('wb', self.stdout, self.outfile)
             return self.result()
@@ -624,12 +649,12 @@ class Gle(Handler):
     '''
     cmdmap = {'gle': 'gle'}
 
-    def image(self, fmt=None):
-        'gle -verbosity 0 -output <fname>.<fmt> <fname>.gle'
-        args = self.options
+    def image(self):
+        'gle {im_opt} -verbosity 0 -output <fname>.{im_fmt} <fname>.gle'
+        args = self.im_opt
         args += ['-verbosity', '0', '-output', self.outfile, self.inpfile]
-        # gle leaves IMG_BASEDIR-images/.gle lying around ...
-        if self.cmd(self.prog, *args):
+        # gle leaves im_dir-images/.gle lying around ...
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -642,15 +667,13 @@ class GnuPlot(Handler):
     - so 'stdout' in im_out option is silently ignored
     '''
     cmdmap = {'gnuplot': 'gnuplot'}
-    available_fmts = ['png', 'svg', 'gif', 'jpeg']
 
-    def image(self, fmt=None):
-        'gnuplot [options] <fname>.gnuplot > <fname>.png'
-        self.fmt(fmt)
+    def image(self):
+        'gnuplot {im_opt} <fname>.gnuplot > <fname>.{im_fmt}'
         # stdout captures the graphic image
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
-        args = self.options + [self.inpfile]
-        if self.cmd(self.prog, *args):
+        args = self.im_opt + [self.inpfile]
+        if self.cmd(self.im_prg, *args):
             if self.stdout:
                 self.write('wb', self.stdout, self.outfile)
             return self.result()
@@ -666,12 +689,12 @@ class Graph(Handler):
     '''
     cmdmap = {'graph': 'graph'}
 
-    def image(self, fmt=None):
-        'graph -T png [options] <fname>.graph'
+    def image(self):
+        'graph -T png {im_opt} <fname>.graph'
         # stdout is used to capture graphic image data
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
-        args = ['-T', self.outfmt] + self.options + [self.inpfile]
-        if self.cmd(self.prog, *args):
+        args = ['-T', self.im_fmt] + self.im_opt + [self.inpfile]
+        if self.cmd(self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -684,14 +707,14 @@ class Graphviz(Handler):
     progs = ['dot', 'neato', 'twopi', 'circo', 'fdp', 'sfdp']
     cmdmap = dict(zip(progs, progs))
     cmdmap['graphviz'] = 'dot'
-    available_fmts = ['png', 'pdf', 'svg']
+    im_fmt = 'svg'  # override Handler's png default
 
-    def image(self, fmt=None):
-        'cmd [options] -T<fmt> <fname>.dot <fname>.<fmt>'
-        self.fmt(fmt)
-        args = self.options
-        args += ['-T%s' % self.outfmt, self.inpfile, '-o', self.outfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        '{im_prg} {im_opt} -T{im_fmt} <fname>.{im_prg} <fname>.{im_fmt}'
+        args = self.im_opt + ['-T%s' % self.im_fmt, self.inpfile, 
+                '-o', self.outfile]
+
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -699,13 +722,15 @@ class Gri(Handler):
     '''
     sudo apt-get install gri imagemagick
     http://gri.sourceforge.net
+    Notes
+    - insists on creating a <fname>.ps in current working directory
     - requires `convert` from imagemagick
+    - ImageMagick's security policy might need massaging
     '''
     # cannot convince gri to output intermediate ps in pd-images/..
     # so we move it there.
     # Repair ImageMagick's ability to manipulate ps files:
-    # vim /etc/ImageMagick-6/policy.xml
-    # -> find the line <!-- disable ghostscript format types -->
+    # nvim /etc/ImageMagick-6/policy.xml
     #  <policy domain="coder" rights="read|write" pattern="PS" />
     #  <policy domain="coder" rights="read|write" pattern="PS2" />
     #  <policy domain="coder" rights="read|write" pattern="PS3" />
@@ -715,11 +740,11 @@ class Gri(Handler):
 
     cmdmap = {'gri': 'gri'}
 
-    def image(self, fmt=None):
-        'gri -c 0 -b <fname>.gri'
-        # -> <x>.ps -> <x>.png -> Para(Img(<x>.png))'
-        args = self.options + ['-c', '0', '-b', self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'gri {im_opt} -c 0 -b <fname>.gri'
+        # -> <x>.ps -> <x>.{im_fmt} -> Para(Img(<x>.{im_fmt}))'
+        args = self.im_opt + ['-c', '0', '-b', self.inpfile]
+        if self.cmd(self.im_prg, *args):
             # gri insists on producing a .ps in current working dir
             dstfile = self.inpfile.replace('.gri', '.ps')
             srcfile = os.path.split(dstfile)[-1]   # the temp ps in working dir
@@ -729,7 +754,7 @@ class Gri(Handler):
             if self.cmd('convert', dstfile, self.outfile):
                 return self.result()
             else:
-                self.msg(2, "could not convert gri's ps to", self.outfmt)
+                self.msg(2, "could not convert gri's ps to", self.im_fmt)
         else:
             # relay gri's complaints on stdout to stderr.
             for line in self.stdout.splitlines():
@@ -743,7 +768,7 @@ class Imagine(Handler):
     '''
     cmdmap = {'imagine': 'imagine'}
 
-    def image(self, fmt=None):
+    def image(self):
         'return documentation in a CodeBlock'
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if not self.code:
@@ -756,15 +781,36 @@ class Imagine(Handler):
         for name in self.code.splitlines():
             name = name.lower()
             worker = self.workers.get(name, None)
-            doc.append(name)
+            doc.append("Codeblock class: " + name)
             if worker is None:
                 doc.append('No worker found for %s' % name)
                 continue
             if worker.__doc__:
                 doc.append(worker.__doc__)
-                doc.append('    ' + worker.image.__doc__)
+                doc.append("    runs:")
+                doc.append('    > ' + worker.image.__doc__)
             else:
                 doc.append('No help available.')
+
+            doc.append("\n    class->cmd")
+            for k,v in worker.cmdmap.items():
+                doc.append("      {} -> {}".format(k,v))
+
+            # -- document class metadata options
+            klass_opts, glob_opts = [], []
+            for k,v in self.md_opts.items():
+                if k not in self.workers:
+                    glob_opts.append("    imagine.{}: {}".format(k,v))
+                else: # elif k == name:
+                    for kk,vv in self.md_opts.get(name, {}).items():
+                        klass_opts.append("    imagine.{}.{}: {}".format(k,
+                            kk,vv))
+            if klass_opts or glob_opts:
+                doc.append("\nMetadata options")
+                # doc.append("    ---")
+                doc.extend(glob_opts + klass_opts)
+                # doc.append("    ...")
+
             doc.append('\n')
 
         return pf.CodeBlock(('', [], []), '\n'.join(doc))
@@ -776,12 +822,11 @@ class Mermaid(Handler):
     https://github.com/mermaidjs/mermaid.cli
     '''
     cmdmap = {'mermaid': 'mmdc'}
-    available_fmts = ['png', 'svg', 'pdf']
 
-    def image(self, fmt=None):
-        'mmdc -i <fname>.mermaid -o <fname>.<fmt> [options]'
-        args = ['-i', self.inpfile, '-o', self.outfile] + self.options
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'mmdc -i <fname>.mermaid -o <fname>.<fmt> {im_opt}'
+        args = ['-i', self.inpfile, '-o', self.outfile] + self.im_opt
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -792,11 +837,11 @@ class MscGen(Handler):
     '''
     cmdmap = {'mscgen': 'mscgen'}
 
-    def image(self, fmt=None):
-        'mscgen -T png -o <fname>.png <fname>.mscgen'
-        args = self.options
-        args += ['-T', self.outfmt, '-o', self.outfile, self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'mscgen -T {im_fmt} -o <fname>.{im_fmt} <fname>.mscgen'
+        args = self.im_opt
+        args += ['-T', self.im_fmt, '-o', self.outfile, self.inpfile]
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -807,10 +852,10 @@ class Octave(Handler):
     '''
     cmdmap = {'octave': 'octave'}
 
-    def image(self, fmt=None):
-        'octage --no-gui -q [options] <fname>.octave <fname>.png'
-        args = ['--no-gui', '-q'] + self.options + [self.inpfile, self.outfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'octage --no-gui -q {im_opt} <fname>.octave <fname>.{im_fmt}'
+        args = ['--no-gui', '-q'] + self.im_opt + [self.inpfile, self.outfile]
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -824,11 +869,10 @@ class Pic2Plot(Handler):
     '''
     cmdmap = {'pic2plot': 'pic2plot', 'pic': 'pic2plot'}
 
-    def image(self, fmt=None):
-        'pic2plot -T png [options] <fname>.pic2plot'
-        self.fmt(fmt)
-        args = ['-T', self.outfmt] + self.options + [self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'pic2plot -T png {im_opt} <fname>.pic2plot'
+        args = ['-T', self.im_fmt] + self.im_opt + [self.inpfile]
+        if self.cmd(self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -839,12 +883,11 @@ class PlantUml(Handler):
     http://plantuml.com
     '''
     cmdmap = {'plantuml': 'plantuml'}
-    available_fmts = ["png", "svg"]
 
-    def image(self, fmt=None):
-        'plantuml -t png <fname>.plantuml'
-        args = ['-t' + self.outfmt, self.inpfile]
-        if self.cmd(self.prog, *args):
+    def image(self):
+        'plantuml -t{im_fmt} <fname>.plantuml {im_opt}'
+        args = ['-t' + self.im_fmt, self.inpfile] + self.im_opt
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -860,14 +903,13 @@ class Plot(Handler):
     # - write(stdout, <fname>.<fmt>)
     cmdmap = {'plot': 'plot'}
 
-    def image(self, fmt=None):
-        'plot -T png [options] <code-text-as-filename>'
-        self.fmt(fmt)
+    def image(self):
+        'plot -T {im_fmt} {im_opt} <code-text-as-filename>'
         if not os.path.isfile(self.code):
             self.msg(0, 'fail: cannot read file %r' % self.code)
             return
-        args = ['-T', self.outfmt] + self.options + [self.code]
-        if self.cmd(self.prog, *args):
+        args = ['-T', self.im_fmt] + self.im_opt + [self.code]
+        if self.cmd(self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -879,11 +921,11 @@ class Ploticus(Handler):
     '''
     cmdmap = {'ploticus': 'ploticus'}
 
-    def image(self, fmt=None):
-        'ploticus -png -o <fname>.png [options] <fname>.ploticus'
-        args = ['-'+self.outfmt, '-o', self.outfile] + self.options
+    def image(self):
+        'ploticus -{im_fmt} -o <fname>.{im_fmt} {im_opt} <fname>.ploticus'
+        args = ['-'+self.im_fmt, '-o', self.outfile] + self.im_opt
         args += [self.inpfile]
-        if self.cmd(self.prog, *args):
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -895,16 +937,15 @@ class Protocol(Handler):
     https://github.com/luismartingarcia/protocol.git
     '''
     cmdmap = {'protocol': 'protocol'}
-    outfmt = 'protocold'
-    available_fmts = ['protocold']
+    im_fmt = 'protocold'
     output = 'stdout'  # i.e. default to stdout
 
-    def image(self, fmt=None):
-        'protocol [options] code-text'
-        args = self.options + [self.code]
+    def image(self):
+        'protocol {im_opt} code-text'
+        args = self.im_opt + [self.code]
         # silently ignore any request for an 'image'
         self.im_out = [x for x in self.im_out if x not in ['img']]
-        if self.cmd(self.prog, *args):
+        if self.cmd(self.im_prg, *args):
             if self.stdout:
                 self.write('w', to_str(self.stdout), self.outfile)
             else:
@@ -919,15 +960,14 @@ class PyxPlot(Handler):
     '''
     cmdmap = {'pyxplot': 'pyxplot'}
 
-    def image(self, fmt=None):
-        'pyxplot [options] <fname>.pyxplot'
-        self.fmt(fmt)
-        args = self.options + [self.inpfile]
-        self.code = '%s\n%s\n%s' % ('set terminal %s' % self.outfmt,
+    def image(self):
+        'pyxplot {im_opt} <fname>.pyxplot'
+        args = self.im_opt + [self.inpfile]
+        self.code = '%s\n%s\n%s' % ('set terminal %s' % self.im_fmt,
                                     'set output %s' % self.outfile,
                                     self.code)
         self.write('w', self.code, self.inpfile)
-        if self.cmd(self.prog, *args):
+        if self.cmd(self.im_prg, *args):
             return self.result()
 
 
@@ -938,10 +978,10 @@ class SheBang(Handler):
     # runs fenced code block as a hash-bang system script'
     cmdmap = {'shebang': 'shebang'}
 
-    def image(self, fmt=None):
-        '<fname>.shebang [options] <fname>.png'
+    def image(self):
+        '<fname>.shebang {im_opt} <fname>.{im_fmt}'
         os.chmod(self.inpfile, stat.S_IEXEC | os.stat(self.inpfile).st_mode)
-        args = self.options + [self.outfile]
+        args = self.im_opt + [self.outfile]
         if self.cmd(self.inpfile, *args):
             return self.result()
 
@@ -957,12 +997,10 @@ def main():
         'walk down the pandoc AST and invoke workers for CodeBlocks'
 
         if key == 'CodeBlock':
-            worker = dispatch(value, meta) # .get_prefs(meta)
-            return worker.image(fmt)
+            return dispatch(value, fmt, meta).image()
 
-    dispatch = Handler(None, None)
+    dispatch = Handler(None, None, None)
     pf.toJSONFilter(walker)
 
 if __name__ == '__main__':
-    print("xxx argv", sys.argv, file=sys.stderr)
     main()

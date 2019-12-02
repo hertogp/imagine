@@ -1,14 +1,39 @@
+---
+imagine.mscgen.im_fmt: svg
+...
+
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 figlet -c -w 60 mscgen | boxes -d ian_jones -ph4v1 -i box
 ```
 
+```imagine
+mscgen
+```
 
-# [*Mscgen*](http://www.mcternan.me.uk/mscgen/)
+Notes:
 
-## example w/ boxes
+- metadata sets mscgen's default output format to `svg`
 
-```{.mscgen im_out="fcb,img" caption="Created by mscgen"}
+\newpage
+
+# Local installation
+
+```{.shebang im_out="stdout"}
+#!/bin/bash
+uname -o
+uname -rv
+echo
+apt show mscgen
+```
+
+\newpage
+
+# Examples
+
+## Boxes
+
+```mscgen
 msc {
 
    # The entities
@@ -30,9 +55,11 @@ msc {
 }
 ```
 
-## client-server interaction
+\newpage
 
-```{.mscgen im_out="fcb,img" caption="Created by mscgen"}
+## Client - Server
+
+```mscgen
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -53,18 +80,14 @@ msc {
 
 # Documentation
 
-## Imagine
-
-```imagine
-mscgen
-```
-
 ## mscgen -h
 
 ```{.shebang im_out="stdout"}
 #!/bin/bash
 mscgen 2>&1 | grep -vE "^-T"
 ```
+
+\newpage
 
 ## man page
 
