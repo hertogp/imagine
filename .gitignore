@@ -19,10 +19,6 @@ pd-images/*
 !pd-images/*.png
 */pd-images/
 
-# ignore example pdf's, except for sample.pdf
-examples/*.pdf
-!examples/sample.pdf
-
 
 # Packages
 *.egg
