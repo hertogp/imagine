@@ -52,7 +52,6 @@ sequenceDiagram
 
 ### [Gnuplot](http://www.gnuplot.info)
 
-
 ```{.gnuplot im_fmt="svg" im_out="img,fcb"}
 set terminal svg
 set dummy u,v
@@ -73,7 +72,7 @@ with lines, 1+cos(u)+.5*cos(u)*cos(v),\
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-```{.shebang im_out="img,fcb"}
+```{.shebang im_out="img,fcb" im_fmt="png"}
 #!/usr/bin/env python3
 import sys
 import pygal

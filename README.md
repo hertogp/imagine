@@ -90,9 +90,9 @@ Examples
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/ae15673c9f992da1234822c17e336cda03614e66.png)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/09c7b88b451b8ce8bd939d49f2f3cf2f26349736.png)
 
-    ```{.shebang im_out="img,fcb"}
+    ```{.shebang im_out="img,fcb" im_fmt="png"}
     #!/usr/bin/env python3
     import sys
     import pygal
