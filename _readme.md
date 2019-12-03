@@ -15,11 +15,6 @@ classes
 
 ## Examples
 
-All examples are in `png` format since that seems to work best with pypi but
-imagine can handle any output format you throw at it, since the external
-utilities actually do all the hard work.  Imagine is just a wrapper that feeds
-the fenced code blocks to the external tools.
-
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
 ```{.mscgen im_out="img,fcb" im_fmt="png"}
@@ -56,7 +51,7 @@ sequenceDiagram
 ### [Gnuplot](http://www.gnuplot.info)
 
 ```{.gnuplot im_fmt="png" im_out="img,fcb"}
-set terminal svg
+set terminal png
 set dummy u,v
 set key bmargin center horizontal Right noreverse enhanced autotitles nobox
 set parametric
@@ -95,7 +90,8 @@ xy_chart.render_to_png(sys.argv[-1])
 cat $0 | boxes -d peek -p h4
 ```
 
-More examples on [github](https://github.com/hertogp/imagine/examples).
+More examples on [github](https://github.com/hertogp/imagine/examples), which
+include better formats than `png`.
 
 ## Documentation
 

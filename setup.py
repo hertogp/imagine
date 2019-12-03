@@ -8,7 +8,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name = 'pandoc-imagine',
-    version = '0.1.6rc0',
+    version = '0.1.6rc2',
 
     # packages = ['pandoc-imagine'],
 

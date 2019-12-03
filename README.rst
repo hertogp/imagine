@@ -34,11 +34,6 @@ classes into images or ascii art. The following are currently supported:
 Examples
 --------
 
-All examples are in ``png`` format since that seems to work best with
-pypi but imagine can handle any output format you throw at it, since the
-external utilities actually do all the hard work. Imagine is just a
-wrapper that feeds the fenced code blocks to the external tools.
-
 `Mscgen <http://www.mcternan.me.uk/mscgen/>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -90,7 +85,7 @@ wrapper that feeds the fenced code blocks to the external tools.
 ::
 
    ```{.gnuplot im_fmt="png" im_out="img,fcb"}
-   set terminal svg
+   set terminal png
    set dummy u,v
    set key bmargin center horizontal Right noreverse enhanced autotitles nobox
    set parametric
@@ -147,7 +142,8 @@ wrapper that feeds the fenced code blocks to the external tools.
    ```
 
 More examples on
-`github <https://github.com/hertogp/imagine/examples>`__.
+`github <https://github.com/hertogp/imagine/examples>`__, which include
+better formats than ``png``.
 
 Documentation
 -------------
@@ -555,6 +551,6 @@ Individual Classes
 
 .. |image0| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/3472ea8b47f0b7d2d2f30565851e320f39b5e3a9.png
 .. |image1| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/cc321a3330d39327fcaffac5dc39397e6166edc7.png
-.. |image2| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/b555209db2984012c3800df68960135200229589.png
+.. |image2| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/c9ff1cfd87447211346b2a2b31b3f7e054e13b6c.png
 .. |image3| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/4d647b61c07fe8c3935def2b57796c0780ff38bd.png
 
