@@ -1,3 +1,27 @@
+# 0.1.6 - hertogp
+
+- options resolved in this order (using gle and im_fmt as an example):
+    + by codeblock attributes     {.gle im_fmt="svg"}
+    + by klass specific metadata  imagine.gle.im_fm: svg
+    + by imagine metadata         imagine.gle.im_fmt: svg
+    + by imagine code             im_fmt = 'png' (on Handler parent class)
+
+- added options:
+    + `im_dir` to set path to store input/output files
+    + `im_log` to set level of verbosity during processing
+
+- removed output format limitations/checks (mostly)
+    + `im_fmt` is whatever you want it to be, beware.
+    + now, its possible to whatever output format a cli-tool produces
+
+- broke large sample.md into examples per utility
+    + allows for easier testing
+    + see examples/Makefile
+    + could not test octave due to bug in libosmesa6
+    + pyxplot was not tested
+      (not an apt-get pkg under bionic, manual install is required)
+
+
 # 0.1.5 - hertogp
 
 - renamed options to `im_<xxx>` to reduce possibility for namespace conflicts:
