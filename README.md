@@ -30,11 +30,16 @@ classes into images or ascii art. The following are currently supported:
 Examples
 --------
 
+All examples are in `png` format since that seems to work best with pypi
+but imagine can handle any output format you throw at it, since the
+external utilities actually do all the hard work. Imagine is just a
+wrapper that feeds the fenced code blocks to the external tools.
+
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/6776b747ee7d989ff43620e8831703e4ba54b5e1.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/3472ea8b47f0b7d2d2f30565851e320f39b5e3a9.png)
 
-    ```{.mscgen im_out="img,fcb" im_fmt="svg"}
+    ```{.mscgen im_out="img,fcb" im_fmt="png"}
     msc {
      hscale="1.3", arcgradient = "8";
 
@@ -53,9 +58,9 @@ Examples
 
 ### [Mermaid](https://github.com/mermaidjs/mermaid.cli)
 
-![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/262c358ee3587d79636168b325547ccdc7166845.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/cc321a3330d39327fcaffac5dc39397e6166edc7.png)
 
-    ```{.mermaid im_opt="-H 300" im_fmt="svg" im_out="img,fcb"}
+    ```{.mermaid im_opt="-H 300" im_fmt="png" im_out="img,fcb"}
     sequenceDiagram
         Alice ->> Bob: Hello Bob, how are you?
         Bob-->>John: How about you John?
@@ -69,9 +74,9 @@ Examples
 
 ### [Gnuplot](http://www.gnuplot.info)
 
-![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/aee8b418b266abfc0d6c2741f0c963dd0637700d.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/b555209db2984012c3800df68960135200229589.png)
 
-    ```{.gnuplot im_fmt="svg" im_out="img,fcb"}
+    ```{.gnuplot im_fmt="png" im_out="img,fcb"}
     set terminal svg
     set dummy u,v
     set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -90,9 +95,9 @@ Examples
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/09c7b88b451b8ce8bd939d49f2f3cf2f26349736.png)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/4d647b61c07fe8c3935def2b57796c0780ff38bd.png)
 
-    ```{.shebang im_out="img,fcb" im_fmt="png"}
+    ```{.shebang im_fmt="png" im_out="img,fcb"}
     #!/usr/bin/env python3
     import sys
     import pygal

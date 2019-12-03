@@ -4,7 +4,6 @@
 echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4v1
 ```
 
-
 ## A pandoc filter to process codeblocks into images and/or ascii art
 
 Imagine is a pandoc filter that will turn codeblocks tagged with certain
@@ -14,12 +13,16 @@ classes into images or ascii art. The following are currently supported:
 classes
 ```
 
-
 ## Examples
+
+All examples are in `png` format since that seems to work best with pypi but
+imagine can handle any output format you throw at it, since the external
+utilities actually do all the hard work.  Imagine is just a wrapper that feeds
+the fenced code blocks to the external tools.
 
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-```{.mscgen im_out="img,fcb" im_fmt="svg"}
+```{.mscgen im_out="img,fcb" im_fmt="png"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -38,7 +41,7 @@ msc {
 
 ### [Mermaid](https://github.com/mermaidjs/mermaid.cli)
 
-```{.mermaid im_opt="-H 300" im_fmt="svg" im_out="img,fcb"}
+```{.mermaid im_opt="-H 300" im_fmt="png" im_out="img,fcb"}
 sequenceDiagram
     Alice ->> Bob: Hello Bob, how are you?
     Bob-->>John: How about you John?
@@ -52,7 +55,7 @@ sequenceDiagram
 
 ### [Gnuplot](http://www.gnuplot.info)
 
-```{.gnuplot im_fmt="svg" im_out="img,fcb"}
+```{.gnuplot im_fmt="png" im_out="img,fcb"}
 set terminal svg
 set dummy u,v
 set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -72,7 +75,7 @@ with lines, 1+cos(u)+.5*cos(u)*cos(v),\
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-```{.shebang im_out="img,fcb" im_fmt="png"}
+```{.shebang im_fmt="png" im_out="img,fcb"}
 #!/usr/bin/env python3
 import sys
 import pygal
@@ -84,7 +87,6 @@ xy_chart.add('y = cos(x)', [(x / 10., cos(x / 10.)) for x in range(-50, 50, 5)])
 xy_chart.render_to_png(sys.argv[-1])
 ```
 
-
 ### [boxes](http://boxes.thomasjensen.com)
 
 ```{.shebang im_out="stdout,fcb"}
@@ -94,7 +96,6 @@ cat $0 | boxes -d peek -p h4
 ```
 
 More examples on [github](https://github.com/hertogp/imagine/examples).
-
 
 ## Documentation
 

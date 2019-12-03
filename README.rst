@@ -34,6 +34,11 @@ classes into images or ascii art. The following are currently supported:
 Examples
 --------
 
+All examples are in ``png`` format since that seems to work best with
+pypi but imagine can handle any output format you throw at it, since the
+external utilities actually do all the hard work. Imagine is just a
+wrapper that feeds the fenced code blocks to the external tools.
+
 `Mscgen <http://www.mcternan.me.uk/mscgen/>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -41,7 +46,7 @@ Examples
 
 ::
 
-   ```{.mscgen im_out="img,fcb" im_fmt="svg"}
+   ```{.mscgen im_out="img,fcb" im_fmt="png"}
    msc {
     hscale="1.3", arcgradient = "8";
 
@@ -65,7 +70,7 @@ Examples
 
 ::
 
-   ```{.mermaid im_opt="-H 300" im_fmt="svg" im_out="img,fcb"}
+   ```{.mermaid im_opt="-H 300" im_fmt="png" im_out="img,fcb"}
    sequenceDiagram
        Alice ->> Bob: Hello Bob, how are you?
        Bob-->>John: How about you John?
@@ -84,7 +89,7 @@ Examples
 
 ::
 
-   ```{.gnuplot im_fmt="svg" im_out="img,fcb"}
+   ```{.gnuplot im_fmt="png" im_out="img,fcb"}
    set terminal svg
    set dummy u,v
    set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -108,7 +113,7 @@ Examples
 
 ::
 
-   ```{.shebang im_out="img,fcb" im_fmt="png"}
+   ```{.shebang im_fmt="png" im_out="img,fcb"}
    #!/usr/bin/env python3
    import sys
    import pygal
@@ -548,8 +553,8 @@ Individual Classes
        Wraps:
        -  'shebang' -> shebang
 
-.. |image0| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/6776b747ee7d989ff43620e8831703e4ba54b5e1.svg
-.. |image1| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/262c358ee3587d79636168b325547ccdc7166845.svg
-.. |image2| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/aee8b418b266abfc0d6c2741f0c963dd0637700d.svg
-.. |image3| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/09c7b88b451b8ce8bd939d49f2f3cf2f26349736.png
+.. |image0| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/3472ea8b47f0b7d2d2f30565851e320f39b5e3a9.png
+.. |image1| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/cc321a3330d39327fcaffac5dc39397e6166edc7.png
+.. |image2| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/b555209db2984012c3800df68960135200229589.png
+.. |image3| image:: https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/4d647b61c07fe8c3935def2b57796c0780ff38bd.png
 
