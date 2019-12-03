@@ -34,30 +34,15 @@ Markdown usage
     code
     ```
 
-  which will run `cmd` (if known) to proces the `code` into a png image and
-  replaces the fenced code block with an Image in a paragraph of its own or any
-  ascii art in its own CodeBlock.
-
   Alternate, longer form:
 
-    ```{.cmd im_opt=".." im_out=".." im_prg=<other-cmd>}
+    ```{.cmd im_opt=".." ...}
     code
     ```
 
-  - im_opt="..." will be passed onto the command line.
-    Some classes already provide some defaults (as required by the command).
-
-  - im_out="...", csv-list of keywords each specifying a certain output
-    - img     image in a paragraph
-    - fcb     codeblock containing the original codeblock
-    - stdout, codeblock containing stdout output (if any)
-    - stderr, codeblock containing stderr output (if any)
-
-  - im_prg=<other-cmd>, overrides class-to-command map.
-    Only useful if `cmd` itself is not an appropiate class in your document.
-
-  - im_fmt="..." for replacing the default output format (The list of available
-    formats depends of the class)
+  which will run `cmd` (if known) to proces the `code` into an image and
+  replaces the fenced code block with an Image in a paragraph of its own or any
+  ascii art in its own CodeBlock.
 
   If the command fails, the original fenced code block is retained unchanged.
   Any info on stderr is relayed by Imagine, which might be useful for
@@ -66,9 +51,49 @@ Markdown usage
   If the command succeeds but produces no image, a line reporting the missing
   image is included in the output document.
 
+
+Imagine options
+
+  Imagine's behaviour can be influenced by setting these options:
+
+  - im_opt="..." cli-options to pass in on the command line.
+    Some classes already provide some defaults (as required by the command).
+
+  - im_out="...", orderd csv-list of keywords indicating what to produce:
+    - img     an image-link in a paragraph
+    - fcb     anonymous codeblock containing the original codeblock
+    - stdout, anonymous codeblock containing captured stdout (if any)
+    - stderr, anonymous codeblock containing captured stderr (if any)
+
+    Some workers ignore 'img' by necessity since they donot produce graphical
+    data that can be linked to, e.g. `figlet` or `protocol`, while others the
+    'stdout' will ignored because that's were they produce their graphical
+    data.
+
+  - im_prg="..", overrides class-to-command map.
+    Only useful if `cmd` itself is not an appropiate class in your document.
+
+  - im_fmt="...", for replacing the default output format (The list of
+    available formats depends of the class)
+
+  - im_dir="..", to set part of the file-path where images get stored.
+    As a filter, Imagine has no access to the destination filename to be
+    created, so im_dir is relative to the filters current working directory
+    unless im_dir starts with an absolute filepath.
+
+  - im_log=N, where N=[0-4] to show logging from errors (0) to debug (4).
+    imlog=-1 will silence Imagine completely.
+
+  Each worker resolves the values for these options in this order:
+
+  1. {.klass im_xyz=".."}     codeblock specific setting
+  2. imagine.klass.im_xyz: .. klass specific metadata
+  3. imagine.im_xyz           imagine metadata setting
+  4. Klass class variable     Imagine's hardcoded default
+
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
-  - uses subdir `pd-images` to store any input/output files
+  - uses subdir `{im_dir}-images` to store any input/output files
   - there's no clean up of files stored there
   - if an output filename exists, it is not regenerated but simply linked to.
   - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
@@ -104,20 +129,19 @@ Imagine class
 The imagine class puts documentation of topics at your fingertips, like so:
 
     ```imagine
-    class
+    klass
     ```
 
-  Use `imagine` as class to get the module's docstring (ie this text) and/or
+  Use `imagine` as klass to get the module's docstring (ie this text) and/or
   one or more of the commands you're interested in, each on a separate line.
 
 
-Thanks for helping out:
+Thanks for feedback:
 
 - amietn
 - chdemko
 - heyrict
 - priiduonu
-
 '''
 
 from __future__ import print_function

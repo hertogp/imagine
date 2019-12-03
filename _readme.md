@@ -1,7 +1,7 @@
 
 ```{.shebang im_out="stdout"}
 #!/bin/bash
-echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4
+echo "$(figlet -kcf slant Imagine)" | boxes -d ian_jones -p h4v1
 ```
 
 
@@ -19,7 +19,7 @@ classes
 
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-```{.mscgen im_out="fcb,img"}
+```{.mscgen im_out="img,fcb" im_fmt="svg"}
 msc {
  hscale="1.3", arcgradient = "8";
 
@@ -36,20 +36,44 @@ msc {
 }
 ```
 
+### [Mermaid](https://github.com/mermaidjs/mermaid.cli)
 
-### [Octave](https://www.gnu.org/software/octave)
+```{.mermaid im_opt="-H 300" im_fmt="svg" im_out="img,fcb"}
+sequenceDiagram
+    Alice ->> Bob: Hello Bob, how are you?
+    Bob-->>John: How about you John?
+    Bob--x Alice: I am good thanks!
+    Bob-x John: I am good thanks!
+    Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
 
-```{.octave im_out="fcb,img"}
-figure(1, 'visible', 'off');
-surf(peaks);
-title("peaks");
-print(1, argv(){1});
+    Bob-->Alice: Checking with John...
+    Alice->John: Yes... John, how are you?
+```
+
+### [Gnuplot](http://www.gnuplot.info)
+
+
+```{.gnuplot im_fmt="svg" im_out="fcb,img" caption="Created by Gnuplot"}
+set terminal svg
+set dummy u,v
+set key bmargin center horizontal Right noreverse enhanced autotitles nobox
+set parametric
+set view 50, 30, 1, 1
+set isosamples 50, 20
+set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
+set ticslevel 0
+set title "Interlocking Tori"
+set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
+set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) \
+with lines, 1+cos(u)+.5*cos(u)*cos(v),\
+.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
 ```
 
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-```{.shebang im_out="fcb,img"}
+```{.shebang im_out="img,fcb" caption="Created by pygal"}
 #!/usr/bin/env python3
 import sys
 import pygal
@@ -64,13 +88,13 @@ xy_chart.render_to_png(sys.argv[-1])
 
 ### [boxes](http://boxes.thomasjensen.com)
 
-```{.shebang im_out="fcb,stdout"}
+```{.shebang im_out="stdout,fcb"}
 #!/bin/bash
 # I seem to have got myself boxed in!
 cat $0 | boxes -d peek -p h4
 ```
 
-More examples in the sample.pdf on [github](https://github.com/hertogp/imagine).
+More examples on [github](https://github.com/hertogp/imagine).
 
 
 ## Documentation
@@ -88,11 +112,11 @@ import pandoc_imagine
 
 classes = set(pandoc_imagine.Handler.workers.values())
 for cls in sorted(classes, key=lambda x: x.__name__):
-    print cls.__name__
-    print cls.__doc__
-    print '    Runs', cls.image.__doc__
-    print '    Wraps:'
+    print(cls.__name__)
+    print(cls.__doc__)
+    print('    Runs', cls.image.__doc__)
+    print('    Wraps:')
     for klass,cmd in cls.cmdmap.items():
-        print '    - ', repr(klass), '->', cmd
-    print
+        print('    - ', repr(klass), '->', cmd)
+    print("")
 ```
