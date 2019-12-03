@@ -13,7 +13,7 @@ Installation
 
     %% sudo -H pip install pandoc-imagine
 
-    or simply save `pandoc-imagine.py` anywhere along $PATH
+    or simply save `pandoc_imagine.py` anywhere along python's sys.path
 
 
 Dependencies
@@ -25,7 +25,7 @@ Dependencies
 
 Pandoc usage
 
-    %% pandoc --filter pandoc-imagine.py document.md -o document.pdf
+    %% pandoc --filter pandoc-imagine document.md -o document.pdf
 
 
 Markdown usage
@@ -45,8 +45,8 @@ Markdown usage
   ascii art in its own CodeBlock.
 
   If the command fails, the original fenced code block is retained unchanged.
-  Any info on stderr is relayed by Imagine, which might be useful for
-  troubleshooting.
+  Usually, only errors are printed to stderr but you can get more info by
+  setting the `im_log` option (see below).
 
   If the command succeeds but produces no image, a line reporting the missing
   image is included in the output document.
@@ -79,22 +79,23 @@ Imagine options
     maps gri to `gri`, but that can be changed by `{.gri im_prg="gri2"} to use
     `gri2` instead of `gri`.
 
-  - im_fmt="png", for replacing the default output format (The list of
-    available formats depends of the class).  Some tools donot derive their
-    output image format from an intended output file name extension, but
-    instead require it to be set in the tools codeblock containing its
-    instructions.  Be sure the code in the codeblock matches im_fmt or
-    pandoc may have trouble assembling the final document.
+  - im_fmt="png", or another output format of your choosing depending on the
+    command line tool used.  Some tools donot derive their output image format
+    from an intended output file name extension, but instead require it to be
+    set in the tool's codeblock containing its instructions.  Be sure the code
+    in the codeblock matches `im_fmt` or pandoc may have trouble assembling the
+    final document.
 
-  - im_dir="pd", to save input/output files in subdir "pd-images" relative to
-    the current working directory imagine finds itself in.  That can be changed
-    to another path (absolute or relative to the working directory), a
-    "-images" is still tacked onto the end of the path though.
+  - im_dir="pd", or antoher absolute or relative (to the working directory)
+    path in which input/output files are to be stored during processing.
+    Note that an "-images" is still tacked onto the end of the path though.
 
-  - im_log=0, where N=[0-4] to show logging from errors (0) to debug (4).
-    im_log=-1 will silence Imagine completely.
+  - im_log=0, which defaults to printing only errors caught during processing.
+    Set it to -1 to completely silence Imagine, or as high as 4 for debug level
+    output if somethings goes wrong and you need more information on what is
+    going on.
 
-  Option values are resolved in the order of most to least specific::
+  Option values are resolved in order of most to least specific::
 
   1. {.klass im_xyz=".."}       codeblock specific
   2. imagine.klass.im_xyz: ..   metadata, klass specific
