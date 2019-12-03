@@ -182,7 +182,7 @@ import pandocfilters as pf
 
 #-- version
 
-__version__ = '0.1.6'
+__version__ = '0.1.6rc0'
 
 #-- helpers
 def to_str(s, enc='ascii'):

@@ -1,3 +1,9 @@
+# 0.1.6rc0 - hertogp
+
+- struggling with test.pypi.org which doesn't allow for eh.. testing
+- image links are not working so expecting rc0 -- rc100 are in order to figure
+  out how to beat the system and then skip to 0.1.7 on pypi.org. pff..
+
 # 0.1.6 - hertogp
 
 - options resolved in this order (using gle and im_fmt as an example):
