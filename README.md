@@ -32,7 +32,7 @@ Examples
 
 ### [Mscgen](http://www.mcternan.me.uk/mscgen/)
 
-![](pd-images/6776b747ee7d989ff43620e8831703e4ba54b5e1.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/6776b747ee7d989ff43620e8831703e4ba54b5e1.svg)
 
     ```{.mscgen im_out="img,fcb" im_fmt="svg"}
     msc {
@@ -53,7 +53,7 @@ Examples
 
 ### [Mermaid](https://github.com/mermaidjs/mermaid.cli)
 
-![](pd-images/262c358ee3587d79636168b325547ccdc7166845.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/262c358ee3587d79636168b325547ccdc7166845.svg)
 
     ```{.mermaid im_opt="-H 300" im_fmt="svg" im_out="img,fcb"}
     sequenceDiagram
@@ -69,7 +69,7 @@ Examples
 
 ### [Gnuplot](http://www.gnuplot.info)
 
-![](pd-images/aee8b418b266abfc0d6c2741f0c963dd0637700d.svg)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/aee8b418b266abfc0d6c2741f0c963dd0637700d.svg)
 
     ```{.gnuplot im_fmt="svg" im_out="img,fcb"}
     set terminal svg
@@ -90,7 +90,7 @@ Examples
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-![](pd-images/ae15673c9f992da1234822c17e336cda03614e66.png)
+![](https://raw.githubusercontent.com/hertogp/imagine/master/pd-images/ae15673c9f992da1234822c17e336cda03614e66.png)
 
     ```{.shebang im_out="img,fcb"}
     #!/usr/bin/env python3
