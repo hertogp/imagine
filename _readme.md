@@ -53,7 +53,7 @@ sequenceDiagram
 ### [Gnuplot](http://www.gnuplot.info)
 
 
-```{.gnuplot im_fmt="svg" im_out="fcb,img" caption="Created by Gnuplot"}
+```{.gnuplot im_fmt="svg" im_out="img,fcb" caption="Created by Gnuplot"}
 set terminal svg
 set dummy u,v
 set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -94,7 +94,7 @@ xy_chart.render_to_png(sys.argv[-1])
 cat $0 | boxes -d peek -p h4
 ```
 
-More examples on [github](https://github.com/hertogp/imagine).
+More examples on [github](https://github.com/hertogp/imagine/examples).
 
 
 ## Documentation

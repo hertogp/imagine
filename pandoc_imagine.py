@@ -138,10 +138,7 @@ The imagine class puts documentation of topics at your fingertips, like so:
 
 Thanks for feedback:
 
-- amietn
-- chdemko
-- heyrict
-- priiduonu
+  amietn, chdemko, heyrict, priiduonu, K4zuki
 '''
 
 from __future__ import print_function
