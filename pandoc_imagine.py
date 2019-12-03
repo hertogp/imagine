@@ -56,10 +56,10 @@ Imagine options
 
   Imagine's behaviour can be influenced by setting these options:
 
-  - im_opt="..." cli-options to pass in on the command line.
+  - im_opt="" or any cli-options to pass in on the command line.
     Some classes already provide some defaults (as required by the command).
 
-  - im_out="...", orderd csv-list of keywords indicating what to produce:
+  - im_out="img", or ordered csv-list of keywords indicating what to produce:
     - img     an image-link in a paragraph
     - fcb     anonymous codeblock containing the original codeblock
     - stdout, anonymous codeblock containing captured stdout (if any)
@@ -70,33 +70,43 @@ Imagine options
     'stdout' will ignored because that's were they produce their graphical
     data.
 
-  - im_prg="..", overrides class-to-command map.
-    Only useful if `cmd` itself is not an appropiate class in your document.
+  - im_prg=None, or a cli-cmd name to override class-to-command map.
+    Normally, the class on the code block is mapped to a command line tool to
+    use. For example,
+    ```gri
+    ..
+    ```
+    maps gri to `gri`, but that can be changed by `{.gri im_prg="gri2"} to use
+    `gri2` instead of `gri`.
 
-  - im_fmt="...", for replacing the default output format (The list of
-    available formats depends of the class)
+  - im_fmt="png", for replacing the default output format (The list of
+    available formats depends of the class).  Some tools donot derive their
+    output image format from an intended output file name extension, but
+    instead require it to be set in the tools codeblock containing its
+    instructions.  Be sure the code in the codeblock matches im_fmt or
+    pandoc may have trouble assembling the final document.
 
-  - im_dir="..", to set part of the file-path where images get stored.
-    As a filter, Imagine has no access to the destination filename to be
-    created, so im_dir is relative to the filters current working directory
-    unless im_dir starts with an absolute filepath.
+  - im_dir="pd", to save input/output files in subdir "pd-images" relative to
+    the current working directory imagine finds itself in.  That can be changed
+    to another path (absolute or relative to the working directory), a
+    "-images" is still tacked onto the end of the path though.
 
-  - im_log=N, where N=[0-4] to show logging from errors (0) to debug (4).
+  - im_log=0, where N=[0-4] to show logging from errors (0) to debug (4).
     imlog=-1 will silence Imagine completely.
 
-  Each worker resolves the values for these options in this order:
+  Option values are resolved in the order of most to least specific::
 
-  1. {.klass im_xyz=".."}     codeblock specific setting
-  2. imagine.klass.im_xyz: .. klass specific metadata
-  3. imagine.im_xyz           imagine metadata setting
-  4. Klass class variable     Imagine's hardcoded default
+  1. {.klass im_xyz=".."}       codeblock specific setting
+  2. imagine.klass.im_xyz: ..   metadata, klass specific
+  3. imagine.im_xyz             metadata, toplevel
+  4. Klass class variable       hardcoded default
 
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
   - uses subdir `{im_dir}-images` to store any input/output files
   - there's no clean up of files stored there
   - if an output filename exists, it is not regenerated but simply linked to.
-  - `packetdiag` & `sfdp`s underlying libraries seem to have some problems.
+  - `packetdiag`'s underlying library seems to have some problems.
 
   Some commands follow a slightly different pattern:
   - 'img' directive is ignored by commands that only produce ascii
@@ -240,7 +250,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
     # Imagine defaults for worker options
     im_dir = 'pd'             # dir for images (absolute or relative to cwd)
     im_fmt = 'png'            # default format for image creation
-    im_log = 3                # log on notification level
+    im_log = 0                # log on notification level
     im_opt = ''               # options to pass in to cli-program
     im_out = 'img'            # what to output: csv-list img,fcb,stdout,stderr
     im_prg = None             # cli program to use to create graphic output
@@ -790,7 +800,7 @@ class Imagine(Handler):
     cmdmap = {'imagine': 'imagine'}
 
     def image(self):
-        'return documentation in a CodeBlock'
+        'returns documentation in a CodeBlock'
         # CodeBlock value = [(Identity, [classes], [(key, val)]), code]
         if not self.code:
             return pf.CodeBlock(('', [], []), __doc__)
