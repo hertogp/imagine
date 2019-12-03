@@ -69,9 +69,9 @@ Examples
 
 ### [Gnuplot](http://www.gnuplot.info)
 
-![Created by Gnuplot](pd-images/0567272971e7707f890f2364387459d715ae4b63.svg)
+![](pd-images/aee8b418b266abfc0d6c2741f0c963dd0637700d.svg)
 
-    ```{.gnuplot im_fmt="svg" im_out="img,fcb" caption="Created by Gnuplot"}
+    ```{.gnuplot im_fmt="svg" im_out="img,fcb"}
     set terminal svg
     set dummy u,v
     set key bmargin center horizontal Right noreverse enhanced autotitles nobox
@@ -90,9 +90,9 @@ Examples
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
-![Created by pygal](pd-images/6bfa890a06a915231f58c17ffa7e381bf400b91e.png)
+![](pd-images/ae15673c9f992da1234822c17e336cda03614e66.png)
 
-    ```{.shebang im_out="img,fcb" caption="Created by pygal"}
+    ```{.shebang im_out="img,fcb"}
     #!/usr/bin/env python3
     import sys
     import pygal

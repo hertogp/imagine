@@ -1,2 +1,2 @@
-pandocfilters==1.4.1
-six==1.10.0
+pandocfilters>=1.4.1
+six>=1.10.0
