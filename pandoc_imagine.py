@@ -92,14 +92,14 @@ Imagine options
     "-images" is still tacked onto the end of the path though.
 
   - im_log=0, where N=[0-4] to show logging from errors (0) to debug (4).
-    imlog=-1 will silence Imagine completely.
+    im_log=-1 will silence Imagine completely.
 
   Option values are resolved in the order of most to least specific::
 
-  1. {.klass im_xyz=".."}       codeblock specific setting
+  1. {.klass im_xyz=".."}       codeblock specific
   2. imagine.klass.im_xyz: ..   metadata, klass specific
-  3. imagine.im_xyz             metadata, toplevel
-  4. Klass class variable       hardcoded default
+  3. imagine.im_xyz             metadata, imagine specific
+  4. class variable             hardcoded default
 
   Notes:
   - filenames are based on a hash of the codeblock + its attributes
