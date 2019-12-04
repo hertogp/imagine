@@ -25,20 +25,24 @@ TEST:
 
 PYPI:
  + BEFORE uploading to pypi.org
- +  nvim pandoc_imagine.py --> remove -rcy from __version__ = '0.1.x-rcy'
- +
+ |  nvim pandoc_imagine.py --> remove -rcy from __version__ = '0.1.x-rcy'
+ |
  + UPDATE GIT w/ tags
- +  git add *
- +  git commit 'release message'
- +  git tag   # to see current tags
- +  git tag 0.1.x -m 'version 0.1.x'
- +  git push --tags origin master
- +
+ |  git add *
+ |  git commit 'release message'
+ |  git tag   # to see current tags
+ |  git tag 0.1.x -m 'version 0.1.x'
+ |  git push --tags origin master
+ |
  + NEW SDIST
- +  python3 setup.py sdat
- +
+ |  python3 setup.py sdat
+ |
  + UPLOAD
- +--> twine upload --repository-url https://pypi.org/legacy/ ./dist*
+ |  -> twine upload --repository-url https://pypi.org/legacy/ ./dist*
+ |
+ + AFTER
+ |  set new version number
+ |  nvim pandoc_imagine.py --> __version__ = '0.1.(x+1)-rc0'
 
 "
 
