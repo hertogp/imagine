@@ -179,7 +179,7 @@ import pandocfilters as pf
 #   png before including in pdf
 #   + sudo apt-get install librsvg2-bin
 
-__version__ = '0.1.6rc3'
+__version__ = '0.1.6rc4'
 
 #-- helpers
 def to_str(s, enc='ascii'):

@@ -1,18 +1,28 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+import re
 
+# RUN ./doxify.sh first: it generates README.md from _readme.md
 here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-version = {}
+# Autoget version from pandoc_imagine.py, do this by READING the file
+# and NOT by exec'ing it!
+version = None
 with open(path.join(here, 'pandoc_imagine.py'), encoding='utf-8') as f:
-    exec(f.read(), version)
+    code = f.read()
+    version_match = re.search(r"^__version__\s*=\s*['\"]([^'\"]*)['\"]",
+                              code, re.M)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 setup(
     name = 'pandoc-imagine',
-    version = version['__version__'],
+    version = version,
 
     # packages = ['pandoc-imagine'],
 
