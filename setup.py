@@ -3,18 +3,22 @@ from codecs import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
+
+version = {}
+with open(path.join(here, 'pandoc_imagine.py'), encoding='utf-8') as f:
+    exec(f.read(), version)
 
 setup(
     name = 'pandoc-imagine',
-    version = '0.1.6rc2',
+    version = version['__version__'],
 
     # packages = ['pandoc-imagine'],
 
     description = 'A filter to process codeblocks into images or ascii art',
     long_description = long_description,
-
+    long_description_content_type = 'text/markdown',
     author = 'hertogp',
     author_email = 'git.hertogp@gmail.com',
 

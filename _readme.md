@@ -62,11 +62,9 @@ set ticslevel 0
 set title "Interlocking Tori"
 set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
 set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
-splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) \
-with lines, 1+cos(u)+.5*cos(u)*cos(v),\
-.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines,\
+1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
 ```
-
 
 ### [Shebang](http://www.google.com/search?q=linux+shebang) using Python & Pygal
 
@@ -90,8 +88,9 @@ xy_chart.render_to_png(sys.argv[-1])
 cat $0 | boxes -d peek -p h4
 ```
 
-More examples on [github](https://github.com/hertogp/imagine/examples), which
-include better formats than `png`.
+More examples on
+[github](https://github.com/hertogp/imagine/tree/master/examples),
+which also includes formats other than `png`.
 
 ## Documentation
 

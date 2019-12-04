@@ -95,11 +95,11 @@ Imagine options
     output if somethings goes wrong and you need more information on what is
     going on.
 
-  Option values are resolved in order of most to least specific::
+  Option values are resolved in order of most to least specific:
 
   1. {.klass im_xyz=".."}       codeblock specific
   2. imagine.klass.im_xyz: ..   metadata, klass specific
-  3. imagine.im_xyz             metadata, imagine specific
+  3. imagine.im_xyz: ..         metadata, imagine specific
   4. class variable             hardcoded default
 
   Notes:
@@ -179,10 +179,7 @@ import pandocfilters as pf
 #   png before including in pdf
 #   + sudo apt-get install librsvg2-bin
 
-
-#-- version
-
-__version__ = '0.1.6rc2'
+__version__ = '0.1.6rc3'
 
 #-- helpers
 def to_str(s, enc='ascii'):
