@@ -67,7 +67,7 @@ Imagine options
 
     Some workers ignore 'img' by necessity since they donot produce graphical
     data that can be linked to, e.g. `figlet` or `protocol`, while others the
-    'stdout' will ignored because that's were they produce their graphical
+    'stdout' will ignored because that's where they produce their graphical
     data.
 
   - im_prg=None, or a cli-cmd name to override class-to-command map.
@@ -402,7 +402,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             self.msg(3, 'wrote:', len(dta), 'bytes to', dst)
         except (OSError, IOError) as e:
             self.msg(0, 'fail: could not write', len(dta), 'bytes to', dst)
-            self.msg(0, '>>: exception', e)
+            self.msg(0, 'exception:', e)
             return False
         return True
 
@@ -445,7 +445,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
                     rv.append(pf.Para([self.url()]))
                 else:
                     msg = '?? missing %s' % self.outfile
-                    self.msg(1, '>>:', msg)
+                    self.msg(1, msg)
                     rv.append(pf.Para([pf.Str(msg)]))
 
             elif output_elm == 'fcb':
@@ -456,14 +456,14 @@ class Handler(with_metaclass(HandlerMeta, object)):
                     attr = ['', self.classes, self.keyvals]
                     rv.append(pf.CodeBlock(attr, to_str(self.stdout, enc)))
                 else:
-                    self.msg(1, '>>:', 'stdout requested, but saw nothing')
+                    self.msg(1, 'stdout requested, but saw nothing')
 
             elif output_elm == 'stderr':
                 if self.stderr:
                     attr = ['', self.classes, self.keyvals]
                     rv.append(pf.CodeBlock(attr, to_str(self.stderr, enc)))
                 else:
-                    self.msg(1, '>>:', 'stderr requested, but saw nothing')
+                    self.msg(1, 'stderr requested, but saw nothing')
 
         if not rv:
             return None               # no results; None keeps original FCB
@@ -492,22 +492,18 @@ class Handler(with_metaclass(HandlerMeta, object)):
             self.stderr = err
 
             # STDERR
-            if self.stderr and not 'stderr' in self.im_out:
-                # not meant to capture, so simply print
-                for line in self.stderr.splitlines():
-                    self.msg(1, '<stderr>', line)
-            elif self.stderr:
-                self.msg(4, '<stderr>',
-                         'captured {} bytes'.format(len(self.stderr)))
-            else:
-                self.msg(4, '<stderr>', 'no output seen')
+            for line in self.stderr.splitlines():
+                self.msg(4, 'stderr>', line)
+
+            self.msg(2, 'stderr>',
+                     'captured {} bytes'.format(len(self.stderr)))
 
             # STDOUT
-            if self.stdout:
-                self.msg(4, '<stdout>',
-                    'saw {} bytes'.format(len(self.stdout)))
-            else:
-                self.msg(4, '<stdout>', 'no output seen')
+            for line in self.stdout.splitlines():
+                self.msg(4, 'stdout>', line)
+
+            self.msg(2, 'stdout>',
+                'saw {} bytes'.format(len(self.stdout)))
 
             if os.path.isfile(self.outfile):
                 # Note: not every worker actually produces an output file
@@ -787,7 +783,7 @@ class Gri(Handler):
         else:
             # relay gri's complaints on stdout to stderr.
             for line in self.stdout.splitlines():
-                self.msg(1, '>>:', line)
+                self.msg(1, line)
 
 
 class Imagine(Handler):
@@ -986,15 +982,22 @@ class PyxPlot(Handler):
     '''
     sudo apt-get install pyxplot
     http://pyxplot.org.uk
+    Note:
+     - Imagine adds the following lines to the top of the script
+        set terminal {im_fmt}
+        set output {outfile}
+     - that means you cannot use set output in the pyxplot itself.
+       There seems no way to convince `set output` to take a variable to
+       indicate an output filename.  It'll take anything quite literally..
     '''
     cmdmap = {'pyxplot': 'pyxplot'}
 
     def image(self):
         'pyxplot {im_opt} <fname>.pyxplot'
         args = self.im_opt + [self.inpfile]
-        self.code = '%s\n%s\n%s' % ('set terminal %s' % self.im_fmt,
-                                    'set output %s' % self.outfile,
-                                    self.code)
+        self.code = '%s%s%s' % ('set terminal %s\n' % self.im_fmt,
+                                'set output %s\n' % self.outfile,
+                                 self.code)
         self.write('w', self.code, self.inpfile)
         if self.cmd(self.im_prg, *args):
             return self.result()

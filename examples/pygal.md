@@ -23,7 +23,6 @@ Notes
 
 # [*Pygal*](http://pygal.org/en/stable)
 
-
 ## Solid Gauges
 
 ```shebang
