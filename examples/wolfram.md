@@ -2,7 +2,7 @@
 imagine.shebang.im_out: img,fcb
 ...
 
-```{.shebang im_out="stdout"}
+```{.shebang im_out=stdout}
 #!/bin/bash
 figlet -c -w 75 WolframScript | boxes -d ian_jones -ph4v1 -i box
 ```
@@ -42,7 +42,7 @@ Notes:
 
 ## Nearby words
 
-```{.shebang im_fmt=gif im_out=img,fcb,stdout,stderr, im_log=4}
+```{.shebang im_fmt=svg}
 #!/usr/bin/env wolframscript
 words = DictionaryLookup["pand*"];
 g = Graph[Flatten[Map[(Thread[# \[DirectedEdge]

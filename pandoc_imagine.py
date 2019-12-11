@@ -495,15 +495,13 @@ class Handler(with_metaclass(HandlerMeta, object)):
             for line in self.stderr.splitlines():
                 self.msg(4, 'stderr>', line)
 
-            self.msg(2, 'stderr>',
-                     'captured {} bytes'.format(len(self.stderr)))
+            self.msg(2, 'stderr>', 'saw {} bytes'.format(len(self.stderr)))
 
             # STDOUT
             for line in self.stdout.splitlines():
                 self.msg(4, 'stdout>', line)
 
-            self.msg(2, 'stdout>',
-                'saw {} bytes'.format(len(self.stdout)))
+            self.msg(2, 'stdout>', 'saw {} bytes'.format(len(self.stdout)))
 
             if os.path.isfile(self.outfile):
                 # Note: not every worker actually produces an output file
@@ -1021,6 +1019,7 @@ class SheBang(Handler):
 # to avoid pylint'rs complaints.
 sys.modules[__name__].__doc__ %= \
     {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
+
 
 # for PyPI
 def main():
