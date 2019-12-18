@@ -1,8 +1,16 @@
 
 # 0.1.7rc0 - hertogp
-- option im_out has new output directive: ocb
-    + ocb = original code block, i.e. retained as-is in the original document
-    + fcb = fenced code block, i.e. retained as-is in an anonymous code block
+- new `ocb` directive for the `im_out` directive
+    + retain original code block but without imagine class/options
+    + with imagine removed, codeblock is formatted along any remaining class
+      language.  Example:
+      ```{.shebang .lua im_out=ocb,stdout}
+      #!/usr/bin/env lua
+      print("here is stdout")
+      ```
+      ocd retains the codeblock but removes .shebang and im_out, so the code
+      block is rendered as lua-code.  stdout adds another codeblock with stdout
+      seen and with `lua` as its class.
 
 
 # 0.1.6 - hertogp

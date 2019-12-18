@@ -451,6 +451,10 @@ class Handler(with_metaclass(HandlerMeta, object)):
             elif output_elm == 'fcb':
                 rv.append(self.anon_codeblock())
 
+            elif output_elm == 'ocb':
+                attr = ['', self.classes, self.keyvals]
+                rv.append(pf.CodeBlock(attr, self.codec[1]))
+
             elif output_elm == 'stdout':
                 if self.stdout:
                     attr = ['', self.classes, self.keyvals]
