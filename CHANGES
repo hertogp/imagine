@@ -1,9 +1,9 @@
 
-# 0.1.6rc0 - 0.1.6.rcx hertogp
+# 0.1.7rc0 - hertogp
+- option im_out has new output directive: ocb
+    + ocb = original code block, i.e. retained as-is in the original document
+    + fcb = fenced code block, i.e. retained as-is in an anonymous code block
 
-- struggling with test.pypi.org which doesn't allow for eh.. testing
-- image links are not working so expecting rc0 -- rc100 are in order to figure
-  out how to beat the system and then skip to 0.1.7 on pypi.org. pff..
 
 # 0.1.6 - hertogp
 
