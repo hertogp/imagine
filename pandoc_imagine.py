@@ -61,9 +61,10 @@ Imagine options
 
   - im_out="img", or ordered csv-list of keywords indicating what to produce:
     - img     an image-link in a paragraph
-    - fcb     anonymous codeblock containing the original codeblock
-    - stdout, anonymous codeblock containing captured stdout (if any)
-    - stderr, anonymous codeblock containing captured stderr (if any)
+    - ocb     the original codeblock but without imagine's class or options
+    - fcb     an anonymous codeblock containing the original codeblock
+    - stdout  an anonymous codeblock containing captured stdout (if any)
+    - stderr  an anonymous codeblock containing captured stderr (if any)
 
     Some workers ignore 'img' by necessity since they donot produce graphical
     data that can be linked to, e.g. `figlet` or `protocol`, while others the
@@ -71,8 +72,8 @@ Imagine options
     data.
 
   - im_prg=None, or a cli-cmd name to override class-to-command map.
-    Normally, the class on the code block is mapped to a command line tool to
-    use. For example,
+    Normally, the class on the code block maps directly to a command line
+    tool to use. For example,
     ```gri
     ..
     ```
