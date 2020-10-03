@@ -163,6 +163,8 @@ from subprocess import Popen, CalledProcessError, PIPE
 
 # non-standard libraries
 from six import with_metaclass
+
+# -https://github.com/jgm/pandocfilters
 import pandocfilters as pf
 
 # Author: Pieter den Hertog
@@ -179,6 +181,10 @@ import pandocfilters as pf
 # - using svg requires rsvg-convert which pandoc uses to convert the svg to
 #   png before including in pdf
 #   + sudo apt-get install librsvg2-bin
+#
+# Inline Images #16
+# - https://github.com/hertogp/imagine/issues/16
+# - See https://lierdakil.github.io/pandoc-crossref/#subfigure-grid
 
 __version__ = '0.1.7rc0'
 
@@ -449,6 +455,18 @@ class Handler(with_metaclass(HandlerMeta, object)):
                     self.msg(1, msg)
                     rv.append(pf.Para([pf.Str(msg)]))
 
+            # feature inline
+            #
+            # elif output_elm == 'img:inline':
+            #     if os.path.isfile(self.outfile):
+            #         rv.append(self.url())
+            #     else:
+            #         msg = '?? missing %s' % self.outfile
+            #         self.msg(1, msg)
+            #         rv.append(pf.Str(msg))
+            #
+            # feature inline
+
             elif output_elm == 'fcb':
                 rv.append(self.anon_codeblock())
 
@@ -474,7 +492,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             return None               # no results; None keeps original FCB
         if len(rv) > 1:
             return rv                 # multiple results
-        return rv[0]                  # just 1 block level element
+        return rv[0]              # just 1 block level element
 
     def cmd(self, *args, **kwargs):
         'run, possibly forced, a cmd and return success indicator'
@@ -1025,6 +1043,56 @@ class SheBang(Handler):
 sys.modules[__name__].__doc__ %= \
     {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
+# helpers
+def mergeImage(l, p):
+    '''
+    Try to merge p's Image into l's last element.
+    Return True on success, False otherwise
+    '''
+    try:
+        # p must be a Para with 1 Image inline element
+        img = p['c'][0]
+        if img['t'] != 'Image': return False
+        # last element of list l, must be a 'Para' with only 'Images'
+        images = l[-1]['c']
+        if not all(x['t'] == 'Image' for x in images): return False
+
+        images.append(img)
+        return True
+
+    except:
+        pass
+
+    return False
+
+def mergeImages(rv, elms):
+
+    # ensure both elms is/becomes a list
+    if type(elms) != list: elms = [elms]
+    # ensure rv is a list as well, if empty set it to an emtpy Para
+    if type(rv) != list: return elms
+    if len(rv) == 0: rv.append(pf.Para([]))
+
+    # check rv[-1]'s contents is a list of 0 or all Inline Image's
+    try:
+        images = rv[-1]['c']
+        if any(x['t'] != 'Image' for x in images):
+            return elms
+    except:
+        return elms
+
+    residue = []
+    for elm in elms:
+        try:
+            for img in elm['c']:
+                if img['t'] == 'Image':
+                    images.append(img)
+                else:
+                    residue.append(elm)
+        except:
+            residue.append(elm)
+
+    return residue
 
 # for PyPI
 def main():
@@ -1034,6 +1102,25 @@ def main():
 
         if key == 'CodeBlock':
             return dispatch(value, fmt, meta).image()
+
+        elif key == 'Div':
+            # Process Div & try to merge its (subsequent) Image's
+            [[ident, classes, kvs], blocks] = value
+            if not "im_merge" in classes:
+                return None  # keep it as-is
+
+            classes = [x for x in classes if x != 'im_merge']
+
+            rv = []
+            for block in blocks:
+                if block['t'] != 'CodeBlock':
+                    rv.append(block)
+                else:
+                    elm = dispatch(block['c'], fmt, meta).image()
+                    rest = mergeImages(rv, elm)
+                    rv.extend(rest)
+
+            return pf.Div([ident, classes, kvs], rv)
 
     dispatch = Handler(None, None, None)
     pf.toJSONFilter(walker)

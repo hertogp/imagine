@@ -116,6 +116,53 @@ shipout(bbox(3mm, 2mm+black, FillDraw(paleyellow)));
 
 \newpage
 
+# Circle
+
+```{.asy im_fmt=eps}
+settings.outformat="eps";
+import graph;
+
+size(0,0);
+pair O=0;
+
+defaultpen(linewidth(2mm));
+draw(arc(O,2cm,0,60),.8red,BeginPenMargin);
+draw(arc(O,2cm,60,120),.7blue,PenMargins);
+draw(arc(O,2cm,120,360),.7green);
+
+```
+
+\newpage
+
+# Circle 2
+
+```{.asy im_fmt=png}
+settings.outformat="png";
+import geometry;
+size(6cm);
+
+// currentcoordsys=cartesiansystem((1,2),i=(1,0.5),j=(-0.5,.75));
+// show(currentcoordsys, xpen=invisible);
+
+point A=(-1,0);
+point B=(3,-1);
+point C=(0,1);
+
+circle cle=circle(A,C,B);
+draw(cle,linewidth(2mm));
+
+draw(arc(cle,A,B), dotsize()+green);
+draw(arc(cle,B,C), dotsize()+blue);
+draw(arc(cle,C,A), dotsize()+red);
+
+dot(Label("$A$", black), A, 1.5NW, white);
+dot(Label("$B$", black), B, E, white);
+dot(Label("$C$", black), C, NW, white);
+```
+
+
+\newpage
+
 ## 2D example (png)
 
 ```{.asy caption="Created by Asymptote"}
