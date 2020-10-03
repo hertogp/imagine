@@ -1046,10 +1046,11 @@ sys.modules[__name__].__doc__ %= \
 # Inline-helper
 def mergeImages(rv, elms):
 
-    # ensure both elms is/becomes a list
+    # ensure elms is/becomes a list
     if type(elms) != list: elms = [elms]
-    # ensure rv is a list as well, if empty set it to an emtpy Para
+    # ensure rv is a list as well
     if type(rv) != list: return elms
+    # if empty list, initialize first elm to empty Para
     if len(rv) == 0: rv.append(pf.Para([]))
 
     # check rv[-1]'s contents is a list of 0 or all Inline Image's
