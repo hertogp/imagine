@@ -1043,28 +1043,7 @@ class SheBang(Handler):
 sys.modules[__name__].__doc__ %= \
     {'cmds': '\n    '.join(wrap(', '.join(sorted(Handler.workers.keys()))))}
 
-# helpers
-def mergeImage(l, p):
-    '''
-    Try to merge p's Image into l's last element.
-    Return True on success, False otherwise
-    '''
-    try:
-        # p must be a Para with 1 Image inline element
-        img = p['c'][0]
-        if img['t'] != 'Image': return False
-        # last element of list l, must be a 'Para' with only 'Images'
-        images = l[-1]['c']
-        if not all(x['t'] == 'Image' for x in images): return False
-
-        images.append(img)
-        return True
-
-    except:
-        pass
-
-    return False
-
+# Inline-helper
 def mergeImages(rv, elms):
 
     # ensure both elms is/becomes a list
