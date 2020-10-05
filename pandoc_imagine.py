@@ -125,15 +125,15 @@ Imagine options
 
 Merge `Image`'s into a single `Para`.
 
-  Based on a [*feature request*](https://github.com/hertogp/imagine/issues/16)
-  by [*pbsds*](,https://github.com/pbsds) `pandoc-imagine` has been extended to
-  better cooperate with
-  [*pandoc-crossref*](https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-),
-  whose [*subfigure
-  grids*](https://lierdakil.github.io/pandoc-crossref/#subfigure-grid) facility
-  requires that consecutive image links be located inside a single paragraph.
+  Based on a feature request (https://github.com/hertogp/imagine/issues/16) by
+  pbsds (https://github.com/pbsds), `pandoc-imagine` has been extended to
+  better cooperate with pandoc-crossref
+  (https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-), whose
+  subfigure grids (https://lierdakil.github.io/pandoc-crossref/#subfigure-grid)
+  facility requires that consecutive image links be located inside a single
+  paragraph.
 
-  This means that `Div`'s, when assigned the `pandoc-imagine` specific class
+  This means that 'Div's, when assigned the 'pandoc-imagine' specific class
   `im_merge`, will have their block-level elements processed individually.  Any
   consecutive `Image`-links are collected into a single `Para`, other elements
   are included in the `Div` contents as-is.
@@ -204,7 +204,7 @@ import pandocfilters as pf
 # - https://github.com/hertogp/imagine/issues/16
 # - See https://lierdakil.github.io/pandoc-crossref/#subfigure-grid
 
-__version__ = '0.1.7rc0'
+__version__ = '0.1.7'
 
 #-- helpers
 def to_str(s, enc='ascii'):

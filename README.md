@@ -188,18 +188,19 @@ also includes formats other than `png`.
     
       - im_out="img", or ordered csv-list of keywords indicating what to produce:
         - img     an image-link in a paragraph
-        - fcb     anonymous codeblock containing the original codeblock
-        - stdout, anonymous codeblock containing captured stdout (if any)
-        - stderr, anonymous codeblock containing captured stderr (if any)
+        - ocb     the original codeblock but without imagine's class or options
+        - fcb     an anonymous codeblock containing the original codeblock
+        - stdout  an anonymous codeblock containing captured stdout (if any)
+        - stderr  an anonymous codeblock containing captured stderr (if any)
     
         Some workers ignore 'img' by necessity since they donot produce graphical
         data that can be linked to, e.g. `figlet` or `protocol`, while others the
-        'stdout' will ignored because that's were they produce their graphical
+        'stdout' will ignored because that's where they produce their graphical
         data.
     
       - im_prg=None, or a cli-cmd name to override class-to-command map.
-        Normally, the class on the code block is mapped to a command line tool to
-        use. For example,
+        Normally, the class on the code block maps directly to a command line
+        tool to use. For example,
         ```gri
         ..
         ```
@@ -249,6 +250,24 @@ also includes formats other than `png`.
         - use {.shebang im_out="stdout"} for text instead of an png
     
     
+    Merge `Image`'s into a single `Para`.
+    
+      Based on a [*feature request*](https://github.com/hertogp/imagine/issues/16)
+      by [*pbsds*](,https://github.com/pbsds) `pandoc-imagine` has been extended to
+      better cooperate with
+      [*pandoc-crossref*](https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-),
+      whose [*subfigure
+      grids*](https://lierdakil.github.io/pandoc-crossref/#subfigure-grid) facility
+      requires that consecutive image links be located inside a single paragraph.
+    
+      This means that `Div`'s, when assigned the `pandoc-imagine` specific class
+      `im_merge`, will have their block-level elements processed individually.  Any
+      consecutive `Image`-links are collected into a single `Para`, other elements
+      are included in the `Div` contents as-is.
+    
+      See Examples/inline.md and Examples/inline.pdf.
+    
+    
     Security
     
       Imagine just hands the fenced codeblocks to plotting tools to process or
@@ -276,7 +295,7 @@ also includes formats other than `png`.
     
     Thanks for feedback:
     
-      amietn, chdemko, heyrict, priiduonu, K4zuki
+      amietn, chdemko, heyrict, priiduonu, K4zuki, pbsds
 
 ## Individual Classes
 
@@ -509,6 +528,13 @@ PyxPlot
 
     sudo apt-get install pyxplot
     http://pyxplot.org.uk
+    Note:
+     - Imagine adds the following lines to the top of the script
+        set terminal {im_fmt}
+        set output {outfile}
+     - that means you cannot use set output in the pyxplot itself.
+       There seems no way to convince `set output` to take a variable to
+       indicate an output filename.  It'll take anything quite literally..
     
     Runs pyxplot {im_opt} <fname>.pyxplot
     Wraps:
