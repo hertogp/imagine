@@ -1,6 +1,11 @@
 
-# 0.1.7rc0 - hertogp
-- new `ocb` directive for the `im_out` directive
+# 0.1.7 - hertogp
+- new `im_merge` option for a `Div` element
+    + See feature request at https://github.com/hertogp/imagine/issues/16
+    + *merges* `Image` elements of subsequent `CodeBlocks` into a single `Para`
+    + See Examples/inline.md and Examples/inline.pdf
+
+- new `ocb` directive for the `im_out` option
     + retain original code block but without imagine class/options
     + with imagine removed, codeblock is formatted along any remaining class
       language.  Example:
@@ -8,9 +13,9 @@
       #!/usr/bin/env lua
       print("here is stdout")
       ```
-      ocd retains the codeblock but removes .shebang and im_out, so the code
-      block is rendered as lua-code.  stdout adds another codeblock with stdout
-      seen and with `lua` as its class.
+      `ocb` retains the codeblock but removes `.shebang` and `im_out`, so the
+      code block is rendered as lua-code.  `stdout` adds another codeblock with
+      stdout seen and with `lua` as its class.
 
 
 # 0.1.6 - hertogp

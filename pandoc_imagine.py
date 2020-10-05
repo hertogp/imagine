@@ -123,6 +123,24 @@ Imagine options
     - use {.shebang im_out="stdout"} for text instead of an png
 
 
+Merge `Image`'s into a single `Para`.
+
+  Based on a [*feature request*](https://github.com/hertogp/imagine/issues/16)
+  by [*pbsds*](,https://github.com/pbsds) `pandoc-imagine` has been extended to
+  better cooperate with
+  [*pandoc-crossref*](https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-),
+  whose [*subfigure
+  grids*](https://lierdakil.github.io/pandoc-crossref/#subfigure-grid) facility
+  requires that consecutive image links be located inside a single paragraph.
+
+  This means that `Div`'s, when assigned the `pandoc-imagine` specific class
+  `im_merge`, will have their block-level elements processed individually.  Any
+  consecutive `Image`-links are collected into a single `Para`, other elements
+  are included in the `Div` contents as-is.
+
+  See Examples/inline.md and Examples/inline.pdf.
+
+
 Security
 
   Imagine just hands the fenced codeblocks to plotting tools to process or
@@ -150,7 +168,7 @@ The imagine class puts documentation of topics at your fingertips, like so:
 
 Thanks for feedback:
 
-  amietn, chdemko, heyrict, priiduonu, K4zuki
+  amietn, chdemko, heyrict, priiduonu, K4zuki, pbsds
 '''
 
 from __future__ import print_function

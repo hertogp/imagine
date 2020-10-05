@@ -13,7 +13,9 @@ DEMOS:= $(INPFILES:%.md=%)
 
 help:
 	@echo "make all        -- builds all pdf's"
+	@echo "make tidy       -- removes pd-images subdir"
 	@echo "make clean      -- removes all pdf's"
+	@echo "make purge      -- removes all pdf's and pd-images subdir"
 	@echo "make <name>     -- build <name>.pdf"
 	@echo "possible <name>'s:"
 	@echo $(foreach DEMO, $(DEMOS), "\n - $(DEMO)")
