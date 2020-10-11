@@ -252,15 +252,15 @@ also includes formats other than `png`.
     
     Merge `Image`'s into a single `Para`.
     
-      Based on a [*feature request*](https://github.com/hertogp/imagine/issues/16)
-      by [*pbsds*](,https://github.com/pbsds) `pandoc-imagine` has been extended to
-      better cooperate with
-      [*pandoc-crossref*](https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-),
-      whose [*subfigure
-      grids*](https://lierdakil.github.io/pandoc-crossref/#subfigure-grid) facility
-      requires that consecutive image links be located inside a single paragraph.
+      Based on a feature request (https://github.com/hertogp/imagine/issues/16) by
+      pbsds (https://github.com/pbsds), `pandoc-imagine` has been extended to
+      better cooperate with pandoc-crossref
+      (https://github.com/lierdakil/pandoc-crossref#pandoc-crossref-filter-), whose
+      subfigure grids (https://lierdakil.github.io/pandoc-crossref/#subfigure-grid)
+      facility requires that consecutive image links be located inside a single
+      paragraph.
     
-      This means that `Div`'s, when assigned the `pandoc-imagine` specific class
+      This means that 'Div's, when assigned the 'pandoc-imagine' specific class
       `im_merge`, will have their block-level elements processed individually.  Any
       consecutive `Image`-links are collected into a single `Para`, other elements
       are included in the `Div` contents as-is.
@@ -528,13 +528,6 @@ PyxPlot
 
     sudo apt-get install pyxplot
     http://pyxplot.org.uk
-    Note:
-     - Imagine adds the following lines to the top of the script
-        set terminal {im_fmt}
-        set output {outfile}
-     - that means you cannot use set output in the pyxplot itself.
-       There seems no way to convince `set output` to take a variable to
-       indicate an output filename.  It'll take anything quite literally..
     
     Runs pyxplot {im_opt} <fname>.pyxplot
     Wraps:
