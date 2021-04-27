@@ -121,6 +121,7 @@ Imagine options
   - pyxplot will have `set terminal` & `set output` prepended to its `code`
   - shebang runs its codeblock as a script with <fname>.{im_fmt} as its argument.
     - use {.shebang im_out="stdout"} for text instead of an png
+    - set im_prg to override the shebang line
 
 
 Merge `Image`'s into a single `Para`.
@@ -1056,10 +1057,13 @@ class SheBang(Handler):
     cmdmap = {'shebang': 'shebang'}
 
     def image(self):
-        '<fname>.shebang {im_opt} <fname>.{im_fmt}'
+        '[{im_prg}] <fname>.shebang {im_opt} <fname>.{im_fmt}'
         os.chmod(self.inpfile, stat.S_IEXEC | os.stat(self.inpfile).st_mode)
+        prog = [self.inpfile]
         args = self.im_opt + [self.outfile]
-        if self.cmd(self.inpfile, *args):
+        if self.im_prg != ['shebang']:  # shebang overrided by user
+            prog = self.im_prg + [self.inpfile]
+        if self.cmd(*prog, *args):
             return self.result()
 
 # use sys.modules[__name__].__doc__ instead of __doc__ directly
