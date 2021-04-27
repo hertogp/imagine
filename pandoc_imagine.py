@@ -71,7 +71,7 @@ Imagine options
     'stdout' will ignored because that's where they produce their graphical
     data.
 
-  - im_prg=None, or a cli-cmd name to override class-to-command map.
+  - im_prg=None, or a cli-cmd to override class-to-command map.
     Normally, the class on the code block maps directly to a command line
     tool to use. For example,
     ```gri
@@ -354,6 +354,10 @@ class Handler(with_metaclass(HandlerMeta, object)):
             self.msg(0, self.klass, 'not listed in', self.cmdmap)
             raise Exception('no worker found for %s' % self.klass)
 
+        if isinstance(self.im_prg, str):
+            # split arguments in im_prg
+            self.im_prg = shlex.split(self.im_prg)
+
         self.basename = pf.get_filename4code(self.im_dir, str(codec))
         self.outfile = self.basename + '.%s' % self.im_fmt
         self.inpfile = self.basename + '.%s' % self.klass # _name.lower()
@@ -559,7 +563,8 @@ class Handler(with_metaclass(HandlerMeta, object)):
             except OSError:
                 pass
             self.msg(1, 'fail:', *args)
-            self.msg(1, 'msg:', self.im_prg, str(e))
+            cmd = " ".join(map(shlex.quote, self.im_prg))
+            self.msg(1, 'msg:', cmd, str(e))
             return False
 
     def image(self):
@@ -584,7 +589,7 @@ class Asy(Handler):
     def image(self):
         'asy -o <fname>.{im_fmt} {im_opt} <fname>.asy'
         args = ['-o', self.outfile] + self.im_opt + [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -603,7 +608,7 @@ class Boxes(Handler):
         # boxes produces text only, so silently ignore 'img'
         self.im_out = [x for x in self.im_out if x not in ['img']]
         args = self.im_opt + [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             if self.stdout:
                 self.write('w', to_str(self.stdout), self.outfile)
             else:
@@ -620,9 +625,9 @@ class BlockDiag(Handler):
     cmdmap = dict(zip(progs, progs))
 
     def image(self):
-        '{im_prg} {im_opt} -T {im_fmt} <fname>.{im_fmt} -o <fname>.{im_prg}'
+        '{im_prg} {im_opt} -T {im_fmt} <fname>.{im_fmt} -o <fname>.{cmd}'
         args = self.im_opt + ['-T', self.im_fmt, self.inpfile, '-o', self.outfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -637,7 +642,7 @@ class Ctioga2(Handler):
     def image(self):
         'ctioga2 {im_opt} -f <fname>.ctioga2'
         args = self.im_opt + ['-f', self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -651,7 +656,7 @@ class Ditaa(Handler):
     def image(self):
         'ditaa <fname>.ditaa <fname>.{im_fmt} {im_opt}'
         args = [self.inpfile, self.outfile] + self.im_opt
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -671,7 +676,7 @@ class Figlet(Handler):
         self.im_out = [x for x in self.im_out if x not in ['img']]
 
         args = self.im_opt
-        if self.cmd(self.im_prg, stdin=self.code, *args):
+        if self.cmd(*self.im_prg, *args, stdin=self.code):
             if self.stdout:
                 # save figlet's stdout to outfile for next time around
                 self.write('w', to_str(self.stdout), self.outfile)
@@ -701,7 +706,7 @@ class Flydraw(Handler):
         # remove stdout from im_out, it contains graphic output, not text
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = self.im_opt
-        if self.cmd(self.im_prg, stdin=self.code, *args):
+        if self.cmd(*self.im_prg, *args, stdin=self.code):
             if self.stdout:
                 self.write('wb', self.stdout, self.outfile)
             return self.result()
@@ -719,7 +724,7 @@ class Gle(Handler):
         args = self.im_opt
         args += ['-verbosity', '0', '-output', self.outfile, self.inpfile]
         # gle leaves im_dir-images/.gle lying around ...
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -738,7 +743,7 @@ class GnuPlot(Handler):
         # stdout captures the graphic image
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = self.im_opt + [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             if self.stdout:
                 self.write('wb', self.stdout, self.outfile)
             return self.result()
@@ -759,7 +764,7 @@ class Graph(Handler):
         # stdout is used to capture graphic image data
         self.im_out = [x for x in self.im_out if x not in ['stdout']]
         args = ['-T', self.im_fmt] + self.im_opt + [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -775,11 +780,11 @@ class Graphviz(Handler):
     im_fmt = 'svg'  # override Handler's png default
 
     def image(self):
-        '{im_prg} {im_opt} -T{im_fmt} <fname>.{im_prg} <fname>.{im_fmt}'
-        args = self.im_opt + ['-T%s' % self.im_fmt, self.inpfile, 
+        '{im_prg} {im_opt} -T{im_fmt} <fname>.{cmd} <fname>.{im_fmt}'
+        args = self.im_opt + ['-T%s' % self.im_fmt, self.inpfile,
                 '-o', self.outfile]
 
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -809,7 +814,7 @@ class Gri(Handler):
         'gri {im_opt} -c 0 -b <fname>.gri'
         # -> <x>.ps -> <x>.{im_fmt} -> Para(Img(<x>.{im_fmt}))'
         args = self.im_opt + ['-c', '0', '-b', self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             # gri insists on producing a .ps in current working dir
             dstfile = self.inpfile.replace('.gri', '.ps')
             srcfile = os.path.split(dstfile)[-1]   # the temp ps in working dir
@@ -891,7 +896,7 @@ class Mermaid(Handler):
     def image(self):
         'mmdc -i <fname>.mermaid -o <fname>.<fmt> {im_opt}'
         args = ['-i', self.inpfile, '-o', self.outfile] + self.im_opt
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -906,7 +911,7 @@ class MscGen(Handler):
         'mscgen -T {im_fmt} -o <fname>.{im_fmt} <fname>.mscgen'
         args = self.im_opt
         args += ['-T', self.im_fmt, '-o', self.outfile, self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -920,7 +925,7 @@ class Octave(Handler):
     def image(self):
         'octage --no-gui -q {im_opt} <fname>.octave <fname>.{im_fmt}'
         args = ['--no-gui', '-q'] + self.im_opt + [self.inpfile, self.outfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -937,7 +942,7 @@ class Pic2Plot(Handler):
     def image(self):
         'pic2plot -T png {im_opt} <fname>.pic2plot'
         args = ['-T', self.im_fmt] + self.im_opt + [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -952,7 +957,7 @@ class PlantUml(Handler):
     def image(self):
         'plantuml -t{im_fmt} <fname>.plantuml {im_opt}'
         args = ['-t' + self.im_fmt, self.inpfile] + self.im_opt
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -974,7 +979,7 @@ class Plot(Handler):
             self.msg(0, 'fail: cannot read file %r' % self.code)
             return
         args = ['-T', self.im_fmt] + self.im_opt + [self.code]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             self.write('wb', self.stdout, self.outfile)
             return self.result()
 
@@ -990,7 +995,7 @@ class Ploticus(Handler):
         'ploticus -{im_fmt} -o <fname>.{im_fmt} {im_opt} <fname>.ploticus'
         args = ['-'+self.im_fmt, '-o', self.outfile] + self.im_opt
         args += [self.inpfile]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
@@ -1010,7 +1015,7 @@ class Protocol(Handler):
         args = self.im_opt + [self.code]
         # silently ignore any request for an 'image'
         self.im_out = [x for x in self.im_out if x not in ['img']]
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             if self.stdout:
                 self.write('w', to_str(self.stdout), self.outfile)
             else:
@@ -1039,7 +1044,7 @@ class PyxPlot(Handler):
                                 'set output %s\n' % self.outfile,
                                  self.code)
         self.write('w', self.code, self.inpfile)
-        if self.cmd(self.im_prg, *args):
+        if self.cmd(*self.im_prg, *args):
             return self.result()
 
 
