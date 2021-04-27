@@ -94,7 +94,8 @@ Imagine options
   - im_log=0, which defaults to printing only errors caught during processing.
     Set it to -1 to completely silence Imagine, or as high as 4 for debug level
     output if somethings goes wrong and you need more information on what is
-    going on.
+    going on. The default logging level can be overridden with the
+    environment variable PANDOC_IMAGINE_LOG_LEVEL.
 
   Option values are resolved in order of most to least specific:
 
@@ -206,6 +207,8 @@ import pandocfilters as pf
 
 __version__ = '0.1.7'
 
+LOG_LEVEL = int(os.environ.get("PANDOC_IMAGINE_LOG_LEVEL", "0"))
+
 #-- helpers
 def to_str(s, enc='ascii'):
     'return encoded byte stream for s. PY2->str, PY3->bytes'
@@ -273,7 +276,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
     # Imagine defaults for worker options
     im_dir = 'pd'             # dir for images (absolute or relative to cwd)
     im_fmt = 'png'            # default format for image creation
-    im_log = 0                # log on notification level
+    im_log = LOG_LEVEL        # log on notification level
     im_opt = ''               # options to pass in to cli-program
     im_out = 'img'            # what to output: csv-list img,fcb,stdout,stderr
     im_prg = None             # cli program to use to create graphic output
