@@ -1056,6 +1056,21 @@ class SheBang(Handler):
         if self.cmd(self.inpfile, *args):
             return self.result()
 
+class SheBangVia(Handler):
+    '''
+    http://www.google.com/search?q=shebang+line
+    '''
+    # runs fenced code block as a hash-bang system script'
+    cmdmap = {'shebangvia': ''}
+
+    def image(self):
+        '[im_prg | .] <fname>.shebangvia {im_opt} <fname>.{im_fmt}'
+        os.chmod(self.inpfile, stat.S_IEXEC | os.stat(self.inpfile).st_mode)
+        args = [self.inpfile] + self.im_opt + [self.outfile]
+        via = self.im_prg.split()
+        if self.cmd(*via, *args):
+            return self.result()
+
 # use sys.modules[__name__].__doc__ instead of __doc__ directly
 # to avoid pylint'rs complaints.
 sys.modules[__name__].__doc__ %= \
