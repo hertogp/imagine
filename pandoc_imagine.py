@@ -176,6 +176,7 @@ from __future__ import print_function
 import os
 import sys
 import stat
+import shlex
 from textwrap import wrap
 from subprocess import Popen, CalledProcessError, PIPE
 
@@ -340,7 +341,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             setattr(self, opt, val)
 
         # post-process options
-        self.im_opt = self.im_opt.split()
+        self.im_opt = shlex.split(self.im_opt)
         self.im_out = self.im_out.lower().replace(',', ' ').split()
         self.im_log = int(self.im_log)
         self.im_fmt = pf.get_extension(fmt, self.im_fmt)
