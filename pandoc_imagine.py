@@ -176,6 +176,8 @@ from __future__ import print_function
 import os
 import sys
 import stat
+# as suggested by https://github.com/pbsd
+import shlex
 from textwrap import wrap
 from subprocess import Popen, CalledProcessError, PIPE
 
@@ -340,7 +342,7 @@ class Handler(with_metaclass(HandlerMeta, object)):
             setattr(self, opt, val)
 
         # post-process options
-        self.im_opt = self.im_opt.split()
+        self.im_opt = shlex.split(self.im_opt)
         self.im_out = self.im_out.lower().replace(',', ' ').split()
         self.im_log = int(self.im_log)
         self.im_fmt = pf.get_extension(fmt, self.im_fmt)
@@ -1056,19 +1058,48 @@ class SheBang(Handler):
         if self.cmd(self.inpfile, *args):
             return self.result()
 
-class SheBangVia(Handler):
+class ImPrg(Handler):
     '''
-    http://www.google.com/search?q=shebang+line
+    Class `ImPrg` processes a codeblock using the (required) `im_prg` option.
+
+    This runs `<im_prg parts> <fname>.imgprg {im_opt} <fname>.{im_fmt}`
+
+    The `im_prg` option value is split before feeding it to the command-line
+    (hence the `parts` above) so options can be given to the actual program the
+    `im_prg` option refers to.
+
+    If a codeblock's class is `imprg` and it has no `im_prg` option set, the
+    codeblock will be retained as an anonymous fenced codeblock with an error
+    message included below.  (See examples/imprg.md).
+
+    Example:
+
+      ```{.imprg im_prg="nice -n 10" im_opt="1 2 3"}
+         #!/usr/bin/bash
+         code here...
+      ```
+
+    which runs: `nice -n 10 <hashname>.imprg 1 2 3 <hashname>.png`
+
+    Useful if you would like to use a SheBang with `#!/usr/bin/env -S ...`, but
+    don't have that on your system.
     '''
-    # runs fenced code block as a hash-bang system script'
-    cmdmap = {'shebangvia': ''}
+
+    # runs fenced code block through the user supplied `im_prg`.
+    cmdmap = {'imprg': ''}
 
     def image(self):
-        '[im_prg | .] <fname>.shebangvia {im_opt} <fname>.{im_fmt}'
+        '<im_prg parts> <fname>.imprg {im_opt} <fname>.{im_fmt}'
         os.chmod(self.inpfile, stat.S_IEXEC | os.stat(self.inpfile).st_mode)
         args = [self.inpfile] + self.im_opt + [self.outfile]
-        via = self.im_prg.split()
-        if self.cmd(*via, *args):
+        prog = shlex.split(self.im_prg)
+        if not prog:
+            self.stderr = "** [Imagine] error: class `imprg` requires the `im_prg` option to be set on codeblock"
+            self.msg(0, self.stderr)
+            self.im_out = ['fcb', 'stderr']
+            return self.result()
+
+        if self.cmd(*prog, *args):
             return self.result()
 
 # use sys.modules[__name__].__doc__ instead of __doc__ directly

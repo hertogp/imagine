@@ -22,11 +22,10 @@ Notes
 
 ## `Graphviz` (svg)
 
-```{.graphviz im_opt="-Gsize=4,1.5" caption="Created by Graphviz"}
+```{.graphviz caption="Created by Graphviz"}
 
 digraph finite_state_machine {
   rankdir=LR;
-  size="6,3"
   node [shape = doublecircle]; LR_0 LR_3 LR_4 LR_8;
   node [shape = circle];
   LR_0 -> LR_2 [ label = "SS(B)" ];
@@ -51,7 +50,7 @@ digraph finite_state_machine {
 
 ## `fdp`
 
-```{.fdp im_opt="-Gsize=2,3" caption="Created by fdp"}
+```{.fdp caption="Created by fdp"}
 
 digraph {
  blockcode -> fdp;
@@ -67,7 +66,6 @@ digraph {
 
 ```{.sfdp caption="Created by sfdp"}
 graph G {
-size="8,4"
 run -- intr;
 intr -- runbl;
 runbl -- run;
@@ -92,7 +90,6 @@ States in a kernel OS plotted by `neato`:
 
 ```{.neato caption="Created by neato"}
 graph G {
-size="3,2"
 run -- intr;
 intr -- runbl;
 runbl -- run;
@@ -115,7 +112,6 @@ sleep -- runmem;
 
 ```{.twopi caption="Created by twopi"}
 graph G {
-size="3,2"
 run -- intr;
 intr -- runbl;
 runbl -- run;
@@ -141,7 +137,6 @@ Again, the same but by `circo`:
 ```{.circo caption="created by circo"}
 
 graph G {
-size="3,2"
 run -- intr;
 intr -- runbl;
 runbl -- run;
