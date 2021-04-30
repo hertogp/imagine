@@ -12,10 +12,6 @@ figlet -c -w 60 ImPrg-class | boxes -d ian_jones -ph4v1 -i box
 imprg
 ```
 
-Notes:
-
-- first note
-
 \newpage
 
 # ImPrg, without `im_prg` set
