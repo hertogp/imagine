@@ -1085,7 +1085,6 @@ class ImPrg(Handler):
     don't have that on your system.
     '''
 
-    # feature requested by @pbsds
     # runs fenced code block through the user supplied `im_prg`.
     cmdmap = {'imprg': ''}
 
